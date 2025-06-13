@@ -1,6 +1,5 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
   title: 'NexusWorks - Futuristic Freelance Platform',
@@ -21,9 +20,7 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <Providers>
-          {children}
-        </Providers>
+        {children}
       </body>
     </html>
   );
