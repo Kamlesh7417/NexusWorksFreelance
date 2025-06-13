@@ -94,7 +94,7 @@ export function ProjectManager() {
       const { data, error } = await ProjectService.getProjects(filters);
 
       if (error) {
-        setError(typeof error === 'string' ? error : error.message || 'An error occurred');
+        setError(typeof error === 'string' ? error : (error as any)?.message || 'An error occurred');
       } else {
         setProjects(data || []);
       }
@@ -134,7 +134,7 @@ export function ProjectManager() {
       const { data, error } = await ProjectService.createProject(projectData);
 
       if (error) {
-        setError(typeof error === 'string' ? error : error.message || 'Failed to create project');
+        setError(typeof error === 'string' ? error : (error as any)?.message || 'Failed to create project');
       } else {
         setShowCreateForm(false);
         setFormData({
@@ -164,7 +164,7 @@ export function ProjectManager() {
       const { error } = await ProjectService.deleteProject(id);
 
       if (error) {
-        setError(typeof error === 'string' ? error : error.message || 'Failed to delete project');
+        setError(typeof error === 'string' ? error : (error as any)?.message || 'Failed to delete project');
       }
       // Project will be removed via real-time subscription
     } catch (err) {
