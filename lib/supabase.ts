@@ -27,7 +27,7 @@ export interface UserProfile {
   avatar_url?: string;
   bio?: string;
   skills?: string[];
-  hourly_rate?: number;
+  hourly_rate: number | null;
   location?: string;
   created_at: string;
   updated_at: string;

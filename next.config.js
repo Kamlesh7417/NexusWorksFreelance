@@ -7,7 +7,6 @@ const nextConfig = {
   images: { unoptimized: true },
   optimizeFonts: false,
   experimental: {
-    fontLoaders: []
   },
   webpack: (config, { dev, isServer }) => {
     // Disable webpack cache in development to prevent cache corruption
