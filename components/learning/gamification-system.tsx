@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Trophy, Star, Zap, Target, Award, TrendingUp, Users, Gift } from 'lucide-react';
+import { Trophy, Star, Zap, Target, Award, TrendingUp, Users, Gift, Clock } from 'lucide-react';
 
 interface Achievement {
   id: string;
