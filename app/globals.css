@@ -265,6 +265,11 @@
   transition: all 0.3s ease;
   cursor: pointer;
   font-family: 'Inter', sans-serif;
+  font-size: 0.875rem;
+  min-height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .nexus-nav ul li a:hover {
@@ -356,28 +361,95 @@
   left: -1rem;
 }
 
-/* NAVIGATION-ALIGNED LOGIN BUTTON - Smaller and consistent */
-.nexus-action-btn {
-  background: transparent;
-  color: #00e6ff;
-  border: 1px solid #00e6ff;
-  padding: 0.5rem 1rem; /* Same as nav links */
-  border-radius: 20px; /* Same as nav links */
-  cursor: pointer;
-  font-weight: 500; /* Same as nav links */
-  font-size: 0.875rem; /* Slightly smaller, consistent with nav */
-  transition: all 0.3s ease;
-  position: relative;
-  overflow: hidden;
-  font-family: 'Inter', sans-serif;
+/* CONSISTENT BUTTON SYSTEM */
+
+/* Base button styles - consistent for all buttons */
+.btn-base {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  text-transform: none; /* Remove uppercase */
-  letter-spacing: normal; /* Remove letter spacing */
-  box-shadow: none; /* Remove shadow */
-  min-height: auto; /* Remove min height */
+  font-weight: 500;
+  font-size: 0.875rem;
+  font-family: 'Inter', sans-serif;
+  border-radius: 20px;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  text-decoration: none;
+  border: 1px solid;
+  outline: none;
+  position: relative;
+  overflow: hidden;
+  min-height: 40px;
+  padding: 0.5rem 1rem;
+}
+
+/* PRIMARY BUTTONS - 40% larger with gradient backgrounds */
+.btn-primary {
+  @apply btn-base;
+  padding: 0.875rem 1.75rem; /* 40% larger */
+  font-size: 1.125rem; /* 40% larger */
+  min-height: 56px; /* 40% larger */
+  font-weight: 600;
+  border: none;
+  background: linear-gradient(135deg, #00e6ff, #0099cc, #0066ff);
+  background-size: 200% 200%;
+  animation: gradient-shift 3s ease-in-out infinite;
+  color: white;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 25px rgba(0, 230, 255, 0.3);
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:hover {
+  box-shadow: 0 12px 35px rgba(0, 230, 255, 0.4);
+  transform: scale(1.05) translateY(-2px);
+}
+
+.btn-primary svg {
+  width: 20px; /* 40% larger */
+  height: 20px; /* 40% larger */
+}
+
+/* SECONDARY BUTTONS - Standard size, consistent styling */
+.btn-secondary {
+  @apply btn-base;
+  background: transparent;
+  color: #00e6ff;
+  border-color: #00e6ff;
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 230, 255, 0.2);
+  box-shadow: 0 0 15px rgba(0, 230, 255, 0.4);
+  transform: scale(1.05);
+}
+
+.btn-secondary svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* NAVIGATION LOGIN BUTTON - Matches nav link styling exactly */
+.nexus-action-btn {
+  @apply btn-base;
+  background: transparent;
+  color: #00e6ff;
+  border-color: #00e6ff;
 }
 
 .nexus-action-btn:hover {
@@ -392,29 +464,37 @@
   transform: scale(0.98);
 }
 
-/* Icon sizing within buttons - smaller for nav alignment */
 .nexus-action-btn svg {
-  width: 16px; /* Smaller icon */
-  height: 16px; /* Smaller icon */
+  width: 16px;
+  height: 16px;
 }
 
+/* BACK BUTTONS - Consistent styling */
 .nexus-back-btn {
+  @apply btn-base;
   background: rgba(255, 77, 106, 0.2);
   color: #ff4d6a;
-  border: 1px solid #ff4d6a;
-  padding: 0.5rem 1rem;
-  border-radius: 25px;
-  cursor: pointer;
+  border-color: #ff4d6a;
   margin: 1rem 0;
   font-weight: 600;
-  transition: all 0.3s ease;
-  font-family: 'Inter', sans-serif;
 }
 
 .nexus-back-btn:hover {
   background: rgba(255, 77, 106, 0.3);
   box-shadow: 0 0 10px rgba(255, 77, 106, 0.4);
   transform: scale(1.05);
+}
+
+.nexus-back-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Gradient animation for primary buttons */
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
 
 /* Welcome section */
@@ -1080,9 +1160,18 @@
   }
   
   /* Responsive button sizing for mobile */
-  .nexus-action-btn {
-    padding: 0.5rem 1rem; /* Keep consistent with nav */
-    font-size: 0.875rem; /* Keep consistent with nav */
+  .btn-primary {
+    padding: 0.75rem 1.5rem; /* Slightly smaller on mobile but still 40% larger than base */
+    font-size: 1rem;
+    min-height: 48px;
+  }
+  
+  .btn-secondary,
+  .nexus-action-btn,
+  .nexus-back-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    min-height: 40px;
   }
   
   /* Disable 3D effects on mobile for performance */
@@ -1098,8 +1187,17 @@
 }
 
 @media screen and (max-width: 480px) {
-  .nexus-action-btn {
-    padding: 0.5rem 1rem; /* Keep consistent */
-    font-size: 0.875rem; /* Keep consistent */
+  .btn-primary {
+    padding: 0.625rem 1.25rem;
+    font-size: 0.9rem;
+    min-height: 44px;
+  }
+  
+  .btn-secondary,
+  .nexus-action-btn,
+  .nexus-back-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    min-height: 40px;
   }
 }

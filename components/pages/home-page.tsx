@@ -363,12 +363,16 @@ export function HomePage() {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="nexus-action-btn text-lg px-8 py-4 flex items-center gap-2 group">
+            <button className="btn-primary flex items-center gap-2 group">
               <Users size={20} className="group-hover:animate-pulse" />
               Find Developers
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
             </button>
-            <button className="nexus-action-btn text-lg px-8 py-4 flex items-center gap-2 !border-purple-500/40 !text-purple-400 hover:!bg-purple-500/20 group">
+            <button className="btn-primary flex items-center gap-2 group" style={{
+              background: 'linear-gradient(135deg, #8b5cf6, #a855f7, #9333ea)',
+              backgroundSize: '200% 200%',
+              animation: 'gradient-shift 3s ease-in-out infinite'
+            }}>
               <Code size={20} className="group-hover:animate-pulse" />
               Join as Developer
               <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
@@ -885,11 +889,11 @@ export function HomePage() {
           </div>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <button className="nexus-action-btn text-lg px-8 py-4 group transform hover:scale-110 transition-all duration-300">
+            <button className="btn-primary group transform hover:scale-110 transition-all duration-300">
               <Rocket size={20} className="group-hover:animate-bounce" />
               Start Your Journey
             </button>
-            <button className="nexus-action-btn text-lg px-8 py-4 !border-white/20 !text-white hover:!bg-white/10 group transform hover:scale-110 transition-all duration-300">
+            <button className="btn-secondary group transform hover:scale-110 transition-all duration-300">
               <Sparkles size={20} className="group-hover:animate-spin" />
               Learn More
             </button>
