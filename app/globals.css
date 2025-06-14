@@ -1,78 +1,81 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@400;500;600;700;800;900&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* CSS Variables for Theme System */
+/* Enhanced CSS Variables for Holographic Theme System */
 :root {
-  /* Light Theme */
-  --background: 0 0% 100%;
-  --foreground: 222.2 84% 4.9%;
-  --card: 0 0% 100%;
-  --card-foreground: 222.2 84% 4.9%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222.2 84% 4.9%;
-  --primary: 180 100% 50%;
-  --primary-foreground: 0 0% 9%;
-  --secondary: 210 40% 98%;
-  --secondary-foreground: 222.2 84% 4.9%;
-  --muted: 210 40% 96%;
-  --muted-foreground: 215.4 16.3% 46.9%;
-  --accent: 210 40% 96%;
-  --accent-foreground: 222.2 84% 4.9%;
-  --destructive: 0 84.2% 60.2%;
+  /* Light Theme - Holographic Pastels */
+  --background: 340 15% 97%;
+  --foreground: 240 15% 9%;
+  --card: 340 10% 95%;
+  --card-foreground: 240 15% 9%;
+  --popover: 340 10% 95%;
+  --popover-foreground: 240 15% 9%;
+  --primary: 280 100% 70%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 320 20% 92%;
+  --secondary-foreground: 240 15% 9%;
+  --muted: 320 15% 90%;
+  --muted-foreground: 240 10% 45%;
+  --accent: 300 25% 88%;
+  --accent-foreground: 240 15% 9%;
+  --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 180 100% 50%;
-  --radius: 0.75rem;
+  --border: 320 20% 85%;
+  --input: 320 20% 85%;
+  --ring: 280 100% 70%;
+  --radius: 1rem;
   
-  /* Custom theme variables */
-  --bg-primary: 0 0% 100%;
-  --bg-secondary: 210 40% 98%;
-  --bg-tertiary: 210 40% 96%;
-  --text-primary: 222.2 84% 4.9%;
-  --text-secondary: 215.4 16.3% 46.9%;
-  --text-accent: 180 100% 40%;
-  --border-primary: 214.3 31.8% 91.4%;
-  --border-secondary: 214.3 31.8% 85%;
-  --shadow-primary: 0 0% 0% / 0.1;
-  --shadow-secondary: 0 0% 0% / 0.05;
+  /* Holographic gradients */
+  --holographic-primary: linear-gradient(135deg, #ff6b9d, #c44569, #f8b500, #00d2ff, #3742fa);
+  --holographic-secondary: linear-gradient(135deg, #a8edea, #fed6e3, #ffeaa7, #fab1a0, #fd79a8);
+  --holographic-accent: linear-gradient(135deg, #667eea, #764ba2, #f093fb, #f5576c, #4facfe);
+  
+  /* Glass morphism */
+  --glass-bg: rgba(255, 255, 255, 0.15);
+  --glass-border: rgba(255, 255, 255, 0.2);
+  --glass-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+  
+  /* Neon effects */
+  --neon-pink: #ff0080;
+  --neon-cyan: #00ffff;
+  --neon-purple: #8000ff;
+  --neon-green: #00ff80;
+  --neon-yellow: #ffff00;
 }
 
 [data-theme="dark"] {
-  /* Dark Theme */
-  --background: 222.2 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222.2 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222.2 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 180 100% 50%;
-  --primary-foreground: 222.2 84% 4.9%;
-  --secondary: 217.2 32.6% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215 20.2% 65.1%;
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
+  /* Dark Theme - Cyberpunk Neon */
+  --background: 240 15% 6%;
+  --foreground: 280 20% 95%;
+  --card: 240 15% 8%;
+  --card-foreground: 280 20% 95%;
+  --popover: 240 15% 8%;
+  --popover-foreground: 280 20% 95%;
+  --primary: 280 100% 70%;
+  --primary-foreground: 240 15% 6%;
+  --secondary: 240 10% 12%;
+  --secondary-foreground: 280 20% 95%;
+  --muted: 240 10% 15%;
+  --muted-foreground: 240 5% 65%;
+  --accent: 240 10% 15%;
+  --accent-foreground: 280 20% 95%;
+  --destructive: 0 62% 50%;
   --destructive-foreground: 210 40% 98%;
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 180 100% 50%;
+  --border: 240 10% 18%;
+  --input: 240 10% 18%;
+  --ring: 280 100% 70%;
   
-  /* Custom dark theme variables */
-  --bg-primary: 222.2 84% 4.9%;
-  --bg-secondary: 217.2 32.6% 17.5%;
-  --bg-tertiary: 215 25% 27%;
-  --text-primary: 210 40% 98%;
-  --text-secondary: 215 20.2% 65.1%;
-  --text-accent: 180 100% 60%;
-  --border-primary: 217.2 32.6% 17.5%;
-  --border-secondary: 215 25% 27%;
-  --shadow-primary: 0 0% 0% / 0.3;
-  --shadow-secondary: 0 0% 0% / 0.2;
+  /* Dark holographic gradients */
+  --holographic-primary: linear-gradient(135deg, #ff0080, #8000ff, #00ffff, #ff8000, #0080ff);
+  --holographic-secondary: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460, #533483, #7209b7);
+  --holographic-accent: linear-gradient(135deg, #2d1b69, #11998e, #38ef7d, #ee5a24, #0984e3);
+  
+  /* Dark glass morphism */
+  --glass-bg: rgba(0, 0, 0, 0.25);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 @layer base {
@@ -84,42 +87,50 @@
   }
   
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: hsl(var(--bg-primary));
-    color: hsl(var(--text-primary));
+    background: hsl(var(--background));
+    color: hsl(var(--foreground));
     min-height: 100vh;
     overflow-x: hidden;
     line-height: 1.6;
     letter-spacing: -0.01em;
-    transition: background-color 0.3s ease, color 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+    
+    /* Holographic background */
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
+    font-family: 'Orbitron', 'Inter', sans-serif;
     font-weight: 700;
     line-height: 1.2;
     letter-spacing: -0.02em;
-    color: hsl(var(--text-primary));
+    color: hsl(var(--foreground));
   }
 
   h1 {
     @apply text-4xl md:text-5xl lg:text-6xl;
-    font-weight: 800;
+    font-weight: 900;
   }
 
   h2 {
     @apply text-2xl md:text-3xl lg:text-4xl;
-    font-weight: 700;
+    font-weight: 800;
   }
 
   h3 {
     @apply text-xl md:text-2xl;
-    font-weight: 600;
+    font-weight: 700;
   }
 
   p {
-    color: hsl(var(--text-secondary));
+    color: hsl(var(--muted-foreground));
     line-height: 1.7;
   }
 
@@ -129,217 +140,389 @@
   }
 }
 
-/* Enhanced Component Styles */
+/* Enhanced Holographic Component Styles */
 @layer components {
-  /* Primary Button - Large and Prominent */
+  /* Primary Button - Large and Holographic */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-3 px-8 py-4 text-lg font-semibold;
-    @apply bg-primary text-primary-foreground rounded-xl;
-    @apply hover:bg-primary/90 active:bg-primary/80;
-    @apply transition-all duration-200 ease-out;
-    @apply shadow-lg hover:shadow-xl;
+    @apply inline-flex items-center justify-center gap-3 px-10 py-5 text-xl font-bold;
+    @apply rounded-2xl relative overflow-hidden;
+    @apply transition-all duration-300 ease-out;
+    @apply shadow-2xl hover:shadow-[0_0_40px_rgba(128,0,255,0.6)];
     @apply border-0 outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2;
+    @apply transform hover:scale-110 active:scale-95;
+    
+    background: var(--holographic-primary);
+    background-size: 200% 200%;
+    animation: holographic-shift 3s ease-in-out infinite;
+    color: white;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    min-height: 64px;
+    font-weight: 800;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+  }
+
+  .btn-primary:hover::before {
+    left: 100%;
+  }
+
+  /* Secondary Button - Holographic Glass */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold;
+    @apply rounded-xl relative overflow-hidden;
+    @apply transition-all duration-300 ease-out;
+    @apply shadow-lg hover:shadow-[0_0_30px_rgba(255,0,128,0.4)];
+    @apply border border-primary/30 outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1;
     @apply transform hover:scale-105 active:scale-95;
+    
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    color: hsl(var(--primary));
     min-height: 56px;
     font-weight: 600;
-    letter-spacing: -0.01em;
   }
 
-  /* Secondary Button */
-  .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-medium;
-    @apply bg-secondary text-secondary-foreground rounded-lg;
-    @apply hover:bg-secondary/80 active:bg-secondary/70;
-    @apply transition-all duration-200 ease-out;
-    @apply shadow-md hover:shadow-lg;
-    @apply border border-border outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1;
-    @apply transform hover:scale-105 active:scale-95;
-    min-height: 44px;
-    font-weight: 500;
-  }
-
-  /* Outline Button */
+  /* Outline Button - Neon Glow */
   .btn-outline {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-medium;
-    @apply bg-transparent text-primary rounded-lg;
-    @apply border-2 border-primary hover:bg-primary hover:text-primary-foreground;
-    @apply transition-all duration-200 ease-out;
-    @apply shadow-sm hover:shadow-md;
-    @apply outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1;
+    @apply inline-flex items-center justify-center gap-2 px-8 py-4 text-lg font-semibold;
+    @apply rounded-xl relative overflow-hidden;
+    @apply transition-all duration-300 ease-out;
+    @apply shadow-lg hover:shadow-[0_0_25px_rgba(0,255,255,0.5)];
+    @apply border-2 border-primary outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1;
     @apply transform hover:scale-105 active:scale-95;
-    min-height: 44px;
-    font-weight: 500;
+    
+    background: transparent;
+    color: hsl(var(--primary));
+    min-height: 56px;
+    font-weight: 600;
+    position: relative;
+  }
+
+  .btn-outline::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--holographic-accent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: inherit;
+  }
+
+  .btn-outline:hover::before {
+    opacity: 0.1;
+  }
+
+  .btn-outline:hover {
+    color: white;
+    text-shadow: 0 0 10px currentColor;
+    box-shadow: 
+      0 0 25px rgba(0, 255, 255, 0.5),
+      inset 0 0 25px rgba(0, 255, 255, 0.1);
   }
 
   /* Ghost Button */
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium;
-    @apply bg-transparent text-muted-foreground rounded-md;
-    @apply hover:bg-accent hover:text-accent-foreground;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3 text-base font-medium;
+    @apply rounded-lg relative;
     @apply transition-all duration-200 ease-out;
     @apply outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1;
-    min-height: 36px;
+    @apply hover:scale-105 active:scale-95;
+    
+    background: transparent;
+    color: hsl(var(--muted-foreground));
+    min-height: 44px;
     font-weight: 500;
   }
 
-  /* Enhanced Card */
+  .btn-ghost:hover {
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    color: hsl(var(--foreground));
+  }
+
+  /* Enhanced Holographic Card */
   .card {
-    @apply bg-card text-card-foreground rounded-2xl border border-border;
-    @apply shadow-lg hover:shadow-xl transition-all duration-300;
-    @apply backdrop-blur-sm;
-    background: hsl(var(--bg-secondary) / 0.8);
-    border: 1px solid hsl(var(--border-primary));
+    @apply rounded-3xl border relative overflow-hidden;
+    @apply shadow-2xl transition-all duration-500;
+    @apply backdrop-blur-xl;
+    
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    position: relative;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: var(--holographic-secondary);
+    opacity: 0.6;
   }
 
   .card-hover {
-    @apply transform hover:scale-105 hover:-translate-y-1;
-    @apply transition-all duration-300 ease-out;
+    @apply transform hover:scale-105 hover:-translate-y-2;
+    @apply transition-all duration-500 ease-out;
   }
 
-  /* Enhanced Tags */
+  .card-hover:hover {
+    box-shadow: 
+      var(--glass-shadow),
+      0 0 40px rgba(128, 0, 255, 0.3),
+      0 0 80px rgba(255, 0, 128, 0.2);
+  }
+
+  /* Holographic Tags */
   .tag {
-    @apply inline-flex items-center gap-1 px-3 py-1 text-xs font-medium rounded-full;
-    @apply bg-secondary text-secondary-foreground border border-border;
-    @apply transition-all duration-200;
-    font-weight: 500;
-    letter-spacing: 0.01em;
+    @apply inline-flex items-center gap-1 px-4 py-2 text-sm font-semibold rounded-full;
+    @apply transition-all duration-300;
+    
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    font-weight: 600;
+    letter-spacing: 0.02em;
   }
 
   .tag-primary {
-    @apply bg-primary/10 text-primary border-primary/20;
+    background: linear-gradient(135deg, rgba(128, 0, 255, 0.2), rgba(255, 0, 128, 0.2));
+    border: 1px solid rgba(128, 0, 255, 0.4);
+    color: hsl(var(--primary));
+    box-shadow: 0 0 15px rgba(128, 0, 255, 0.3);
   }
 
   .tag-success {
-    @apply bg-green-500/10 text-green-600 border-green-500/20;
+    background: linear-gradient(135deg, rgba(0, 255, 128, 0.2), rgba(0, 255, 255, 0.2));
+    border: 1px solid rgba(0, 255, 128, 0.4);
+    color: var(--neon-green);
+    box-shadow: 0 0 15px rgba(0, 255, 128, 0.3);
   }
 
   .tag-warning {
-    @apply bg-yellow-500/10 text-yellow-600 border-yellow-500/20;
+    background: linear-gradient(135deg, rgba(255, 255, 0, 0.2), rgba(255, 128, 0, 0.2));
+    border: 1px solid rgba(255, 255, 0, 0.4);
+    color: var(--neon-yellow);
+    box-shadow: 0 0 15px rgba(255, 255, 0, 0.3);
   }
 
   .tag-error {
-    @apply bg-red-500/10 text-red-600 border-red-500/20;
+    background: linear-gradient(135deg, rgba(255, 0, 128, 0.2), rgba(255, 0, 0, 0.2));
+    border: 1px solid rgba(255, 0, 128, 0.4);
+    color: var(--neon-pink);
+    box-shadow: 0 0 15px rgba(255, 0, 128, 0.3);
   }
 
-  /* Enhanced Input */
+  /* Enhanced Input with Holographic Border */
   .input {
-    @apply flex h-12 w-full rounded-lg border border-input bg-background px-4 py-3 text-base;
+    @apply flex h-14 w-full rounded-xl border px-4 py-3 text-lg;
     @apply placeholder:text-muted-foreground;
     @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-1;
     @apply disabled:cursor-not-allowed disabled:opacity-50;
-    @apply transition-all duration-200;
-    font-weight: 400;
+    @apply transition-all duration-300;
+    
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    color: hsl(var(--foreground));
+    font-weight: 500;
   }
 
-  /* Theme Toggle */
+  .input:focus {
+    border-color: hsl(var(--primary));
+    box-shadow: 
+      0 0 0 2px rgba(128, 0, 255, 0.2),
+      0 0 20px rgba(128, 0, 255, 0.3);
+  }
+
+  /* Theme Toggle with Holographic Effect */
   .theme-toggle {
-    @apply fixed top-4 right-4 z-50;
-    @apply inline-flex items-center justify-center w-12 h-12;
-    @apply bg-card border border-border rounded-full;
-    @apply shadow-lg hover:shadow-xl;
-    @apply transition-all duration-200;
+    @apply fixed top-6 right-6 z-50;
+    @apply inline-flex items-center justify-center w-14 h-14;
+    @apply rounded-full relative overflow-hidden;
+    @apply shadow-2xl transition-all duration-300;
     @apply hover:scale-110 active:scale-95;
+    
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+  }
+
+  .theme-toggle:hover {
+    box-shadow: 
+      0 0 30px rgba(128, 0, 255, 0.5),
+      0 0 60px rgba(255, 0, 128, 0.3);
   }
 
   /* Enhanced Navigation */
   .nav-link {
-    @apply inline-flex items-center gap-2 px-4 py-2 text-base font-medium;
-    @apply text-muted-foreground hover:text-foreground;
-    @apply rounded-lg hover:bg-accent;
-    @apply transition-all duration-200;
-    font-weight: 500;
+    @apply inline-flex items-center gap-3 px-6 py-4 text-lg font-semibold;
+    @apply rounded-xl relative overflow-hidden;
+    @apply transition-all duration-300;
+    
+    color: hsl(var(--muted-foreground));
+    font-weight: 600;
+    position: relative;
+  }
+
+  .nav-link::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--holographic-accent);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-radius: inherit;
+  }
+
+  .nav-link:hover::before {
+    opacity: 0.1;
+  }
+
+  .nav-link:hover {
+    color: hsl(var(--foreground));
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
   }
 
   .nav-link-active {
-    @apply text-primary bg-primary/10 border border-primary/20;
+    color: hsl(var(--primary));
+    background: var(--glass-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--glass-border);
+    box-shadow: 0 0 20px rgba(128, 0, 255, 0.3);
   }
 
-  /* Hero Section */
+  /* Holographic Hero Title */
   .hero-title {
-    @apply text-5xl md:text-6xl lg:text-7xl font-black;
-    @apply bg-gradient-to-r from-primary via-blue-600 to-purple-600;
-    @apply bg-clip-text text-transparent;
+    @apply text-6xl md:text-7xl lg:text-8xl font-black;
     @apply leading-tight tracking-tight;
+    
+    font-family: 'Orbitron', sans-serif;
     font-weight: 900;
     line-height: 1.1;
+    background: var(--holographic-primary);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: holographic-shift 4s ease-in-out infinite;
+    text-shadow: 0 0 30px rgba(128, 0, 255, 0.5);
   }
 
   .hero-subtitle {
-    @apply text-xl md:text-2xl text-muted-foreground;
-    @apply max-w-3xl mx-auto leading-relaxed;
+    @apply text-2xl md:text-3xl;
+    @apply max-w-4xl mx-auto leading-relaxed;
+    
+    color: hsl(var(--muted-foreground));
     font-weight: 400;
     line-height: 1.6;
   }
 
-  /* Section Headers */
+  /* Section Headers with Holographic Accent */
   .section-title {
-    @apply text-3xl md:text-4xl font-bold text-center mb-4;
-    @apply text-foreground;
-    font-weight: 700;
+    @apply text-4xl md:text-5xl font-bold text-center mb-6;
+    
+    font-family: 'Orbitron', sans-serif;
+    color: hsl(var(--foreground));
+    font-weight: 800;
     letter-spacing: -0.02em;
+    position: relative;
+  }
+
+  .section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: var(--holographic-primary);
+    border-radius: 2px;
   }
 
   .section-subtitle {
-    @apply text-lg md:text-xl text-muted-foreground text-center;
-    @apply max-w-2xl mx-auto mb-12;
+    @apply text-xl md:text-2xl text-center;
+    @apply max-w-3xl mx-auto mb-16;
+    
+    color: hsl(var(--muted-foreground));
     font-weight: 400;
     line-height: 1.6;
   }
 
   /* Enhanced Animations */
   .animate-fade-in {
-    animation: fadeIn 0.6s ease-out forwards;
+    animation: fadeIn 0.8s ease-out forwards;
   }
 
   .animate-slide-up {
-    animation: slideUp 0.6s ease-out forwards;
+    animation: slideUp 0.8s ease-out forwards;
   }
 
   .animate-scale-in {
-    animation: scaleIn 0.4s ease-out forwards;
+    animation: scaleIn 0.6s ease-out forwards;
   }
 
-  /* Glassmorphism Effect */
+  .animate-holographic {
+    animation: holographic-shift 3s ease-in-out infinite;
+  }
+
+  /* Holographic Glassmorphism Effect */
   .glass {
-    @apply backdrop-blur-xl bg-white/5 border border-white/10;
-    background: hsl(var(--bg-secondary) / 0.6);
-    backdrop-filter: blur(20px);
-    border: 1px solid hsl(var(--border-primary) / 0.3);
-  }
-
-  /* Dark theme specific adjustments */
-  [data-theme="dark"] .glass {
-    @apply bg-white/5 border-white/10;
-    background: hsl(var(--bg-secondary) / 0.4);
+    background: var(--glass-bg);
+    backdrop-filter: blur(25px);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--glass-shadow);
   }
 
   /* Container */
   .container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply max-w-7xl mx-auto px-6 sm:px-8 lg:px-12;
   }
 
   /* Grid Layouts */
   .grid-auto-fit {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
   }
 
   .grid-auto-fill {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
   }
 }
 
-/* Enhanced Animations */
+/* Enhanced Holographic Animations */
+@keyframes holographic-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
+  from { opacity: 0; transform: translateY(30px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(40px); }
+  from { opacity: 0; transform: translateY(50px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
@@ -349,38 +532,78 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+  0%, 100% { transform: translateY(0px) rotateZ(0deg); }
+  33% { transform: translateY(-15px) rotateZ(1deg); }
+  66% { transform: translateY(5px) rotateZ(-1deg); }
 }
 
 @keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
-  50% { box-shadow: 0 0 40px hsl(var(--primary) / 0.6); }
+  0%, 100% { 
+    box-shadow: 
+      0 0 20px rgba(128, 0, 255, 0.4),
+      0 0 40px rgba(255, 0, 128, 0.2);
+  }
+  50% { 
+    box-shadow: 
+      0 0 40px rgba(128, 0, 255, 0.6),
+      0 0 80px rgba(255, 0, 128, 0.4);
+  }
+}
+
+@keyframes neon-flicker {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.8; }
+}
+
+@keyframes holographic-rotate {
+  0% { transform: rotateY(0deg); }
+  100% { transform: rotateY(360deg); }
 }
 
 /* Utility Classes */
 .text-gradient {
-  @apply bg-gradient-to-r from-primary via-blue-600 to-purple-600;
-  @apply bg-clip-text text-transparent;
+  background: var(--holographic-primary);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: holographic-shift 3s ease-in-out infinite;
 }
 
 .border-gradient {
-  border-image: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary) / 0.3)) 1;
+  border-image: var(--holographic-primary) 1;
+}
+
+.neon-glow {
+  box-shadow: 
+    0 0 20px currentColor,
+    0 0 40px currentColor,
+    0 0 60px currentColor;
+}
+
+.holographic-bg {
+  background: var(--holographic-primary);
+  background-size: 200% 200%;
+  animation: holographic-shift 3s ease-in-out infinite;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
   .btn-primary {
-    @apply px-6 py-3 text-base;
-    min-height: 48px;
+    @apply px-8 py-4 text-lg;
+    min-height: 56px;
   }
   
   .hero-title {
-    @apply text-4xl md:text-5xl;
+    @apply text-5xl md:text-6xl;
   }
   
   .section-title {
-    @apply text-2xl md:text-3xl;
+    @apply text-3xl md:text-4xl;
+  }
+  
+  .container {
+    @apply px-4 sm:px-6;
   }
 }
 
@@ -391,26 +614,26 @@
 
 /* Selection Styles */
 ::selection {
-  background: hsl(var(--primary) / 0.2);
-  color: hsl(var(--text-primary));
+  background: rgba(128, 0, 255, 0.3);
+  color: white;
 }
 
 /* Scrollbar Styles */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
 }
 
 ::-webkit-scrollbar-track {
-  background: hsl(var(--bg-secondary));
+  background: var(--glass-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--border-secondary));
-  border-radius: 4px;
+  background: var(--holographic-primary);
+  border-radius: 6px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: hsl(var(--text-secondary));
+  background: var(--holographic-accent);
 }
 
 /* Print Styles */
@@ -420,4 +643,67 @@
   .btn-secondary {
     display: none !important;
   }
+}
+
+/* Special Effects */
+.particle-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.particle-bg::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    radial-gradient(circle at 25% 25%, rgba(128, 0, 255, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 75% 75%, rgba(255, 0, 128, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(0, 255, 255, 0.05) 0%, transparent 50%);
+  animation: float 20s ease-in-out infinite;
+}
+
+/* Holographic Loading States */
+.loading-holographic {
+  background: var(--holographic-primary);
+  background-size: 200% 200%;
+  animation: holographic-shift 1.5s ease-in-out infinite;
+  border-radius: 4px;
+}
+
+/* Enhanced Hover States */
+.hover-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.hover-lift:hover {
+  transform: translateY(-8px) scale(1.02);
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.1),
+    0 0 30px rgba(128, 0, 255, 0.2);
+}
+
+/* Quantum Effects */
+.quantum-border {
+  position: relative;
+  border: 2px solid transparent;
+  background: linear-gradient(var(--background), var(--background)) padding-box,
+              var(--holographic-primary) border-box;
+  border-radius: 12px;
+}
+
+.quantum-text {
+  background: var(--holographic-primary);
+  background-size: 200% 200%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: holographic-shift 2s ease-in-out infinite;
 }
