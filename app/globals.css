@@ -253,6 +253,7 @@
   display: flex;
   list-style: none;
   gap: 1.5rem;
+  align-items: center;
 }
 
 .nexus-nav ul li a {
@@ -355,47 +356,46 @@
   left: -1rem;
 }
 
-/* MUCH BIGGER BUTTONS - Increased by 80% */
+/* NAVIGATION-ALIGNED LOGIN BUTTON - Smaller and consistent */
 .nexus-action-btn {
   background: transparent;
   color: #00e6ff;
-  border: 2px solid #00e6ff;
-  padding: 1.5rem 3rem; /* Increased from 0.5rem 1rem */
-  border-radius: 50px; /* Increased from 25px */
+  border: 1px solid #00e6ff;
+  padding: 0.5rem 1rem; /* Same as nav links */
+  border-radius: 20px; /* Same as nav links */
   cursor: pointer;
-  margin-top: 1rem;
-  font-weight: 700; /* Increased from 600 */
-  font-size: 1.4rem; /* Added larger font size */
+  font-weight: 500; /* Same as nav links */
+  font-size: 0.875rem; /* Slightly smaller, consistent with nav */
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
   font-family: 'Inter', sans-serif;
-  min-height: 80px; /* Added minimum height */
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem; /* Increased gap between icon and text */
-  text-transform: uppercase; /* Added for more impact */
-  letter-spacing: 0.1em; /* Added letter spacing */
-  box-shadow: 0 8px 25px rgba(0, 230, 255, 0.3); /* Added shadow */
+  gap: 0.5rem;
+  text-transform: none; /* Remove uppercase */
+  letter-spacing: normal; /* Remove letter spacing */
+  box-shadow: none; /* Remove shadow */
+  min-height: auto; /* Remove min height */
 }
 
 .nexus-action-btn:hover {
   background: rgba(0, 230, 255, 0.2);
-  box-shadow: 0 12px 40px rgba(0, 230, 255, 0.5); /* Increased shadow */
-  transform: scale(1.08) translateY(-3px); /* Increased scale and lift */
-  border-color: #00ffff;
-  color: #00ffff;
+  box-shadow: 0 0 10px rgba(0, 230, 255, 0.4);
+  transform: scale(1.05);
+  border-color: #00e6ff;
+  color: #00e6ff;
 }
 
 .nexus-action-btn:active {
-  transform: scale(1.02) translateY(-1px);
+  transform: scale(0.98);
 }
 
-/* Icon sizing within buttons */
+/* Icon sizing within buttons - smaller for nav alignment */
 .nexus-action-btn svg {
-  width: 28px; /* Increased from default */
-  height: 28px; /* Increased from default */
+  width: 16px; /* Smaller icon */
+  height: 16px; /* Smaller icon */
 }
 
 .nexus-back-btn {
@@ -1081,9 +1081,8 @@
   
   /* Responsive button sizing for mobile */
   .nexus-action-btn {
-    padding: 1.2rem 2.5rem; /* Slightly smaller on mobile but still big */
-    font-size: 1.2rem; /* Slightly smaller font on mobile */
-    min-height: 70px; /* Reduced min height for mobile */
+    padding: 0.5rem 1rem; /* Keep consistent with nav */
+    font-size: 0.875rem; /* Keep consistent with nav */
   }
   
   /* Disable 3D effects on mobile for performance */
@@ -1100,8 +1099,7 @@
 
 @media screen and (max-width: 480px) {
   .nexus-action-btn {
-    padding: 1rem 2rem; /* Even smaller on very small screens */
-    font-size: 1.1rem;
-    min-height: 60px;
+    padding: 0.5rem 1rem; /* Keep consistent */
+    font-size: 0.875rem; /* Keep consistent */
   }
 }
