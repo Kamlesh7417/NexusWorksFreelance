@@ -390,7 +390,7 @@ export function HomePage() {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {aiAvatars.map((avatar, index) => {
             const isActive = activeAvatar === index;
             return (
@@ -434,19 +434,6 @@ export function HomePage() {
               </div>
             );
           })}
-        </div>
-
-        {/* Active Avatar Message Display */}
-        <div className="nexus-card bg-gradient-to-r from-cyan-500/20 to-purple-500/20 border-cyan-500/30">
-          <div className="flex items-center gap-4">
-            <div className="text-4xl animate-pulse">{aiAvatars[activeAvatar].avatar}</div>
-            <div className="flex-1">
-              <h4 className={`font-bold ${aiAvatars[activeAvatar].color} mb-2`}>
-                {aiAvatars[activeAvatar].name} says:
-              </h4>
-              <p className="text-gray-300">{aiAvatars[activeAvatar].message}</p>
-            </div>
-          </div>
         </div>
       </section>
 
