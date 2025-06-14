@@ -386,7 +386,7 @@ export function HomePage() {
         <div className="text-center mb-12">
           <h2 className="text-4xl font-bold text-cyan-400 mb-4">Meet Your AI Team</h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Advanced AI avatars with unique personalities guide you through every step of your journey.
+            Our AI assistant handles proposals, project scoping, and client communication so you focus on what you do best - creating exceptional work.
           </p>
         </div>
         
