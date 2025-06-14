@@ -1,42 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
   --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 15, 32, 39;
-  --background-end-rgb: 44, 83, 100;
+  --background-start-rgb: 8, 8, 12;
+  --background-end-rgb: 15, 15, 20;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background-end-rgb: 8, 8, 12;
   }
 }
 
 @layer base {
   :root {
-    --background: 0 0% 3.9%;
+    --background: 0 0% 2%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 3.9%;
+    --card: 0 0% 3%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 3.9%;
+    --popover: 0 0% 3%;
     --popover-foreground: 0 0% 98%;
     --primary: 180 100% 50%;
     --primary-foreground: 0 0% 9%;
-    --secondary: 0 0% 14.9%;
+    --secondary: 0 0% 8%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 14.9%;
+    --muted: 0 0% 8%;
     --muted-foreground: 0 0% 63.9%;
-    --accent: 0 0% 14.9%;
+    --accent: 0 0% 8%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
-    --border: 0 0% 14.9%;
-    --input: 0 0% 14.9%;
+    --border: 0 0% 12%;
+    --input: 0 0% 12%;
     --ring: 180 100% 50%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
@@ -53,17 +53,53 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Orbitron', sans-serif;
+    font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
   
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+    background: linear-gradient(135deg, #080810, #0f0f14, #151520);
     color: #ffffff;
     min-height: 100vh;
     overflow-x: hidden;
-    letter-spacing: 1px;
+    letter-spacing: 0.3px;
     transition: background 1s ease;
+    line-height: 1.6;
+    font-weight: 400;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', 'Inter', sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    color: #ffffff;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+    font-weight: 800;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl lg:text-4xl;
+    font-weight: 700;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl;
+    font-weight: 600;
+  }
+
+  p {
+    color: #e5e5e5;
+    line-height: 1.7;
+    font-weight: 400;
+  }
+
+  code {
+    font-family: 'JetBrains Mono', 'Fira Code', Consolas, monospace;
+    font-feature-settings: 'liga' 1, 'calt' 1;
   }
 }
 
@@ -186,13 +222,13 @@
 }
 
 .neural-theme-dark {
-  background: linear-gradient(135deg, #000000, #1a1a1a, #2d3748);
+  background: linear-gradient(135deg, #000000, #0a0a0f, #151520);
 }
 
 /* Header styling */
 .nexus-header {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(15px);
   padding: 1.5rem;
   display: flex;
   justify-content: space-between;
@@ -209,6 +245,8 @@
   text-transform: uppercase;
   color: #00e6ff;
   text-shadow: 0 0 10px rgba(0, 230, 255, 0.8);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
 }
 
 .nexus-nav ul {
@@ -225,6 +263,7 @@
   border-radius: 20px;
   transition: all 0.3s ease;
   cursor: pointer;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-nav ul li a:hover {
@@ -253,12 +292,12 @@
 }
 
 .nexus-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.4);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 15px;
   padding: 1.5rem;
   transition: transform 0.4s ease, box-shadow 0.4s ease;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
   position: relative;
   overflow: hidden;
 }
@@ -270,11 +309,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, transparent, rgba(0, 230, 255, 0.2), transparent);
+  background: linear-gradient(45deg, transparent, rgba(0, 230, 255, 0.1), transparent);
   transform: rotate(45deg);
   transform-origin: top left;
   animation: glow 3s infinite;
-  opacity: 0.5;
+  opacity: 0.3;
   z-index: -1;
 }
 
@@ -288,12 +327,15 @@
   margin-bottom: 1rem;
   color: #00e6ff;
   text-shadow: 0 0 5px rgba(0, 230, 255, 0.5);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
 }
 
 .nexus-card p, .nexus-card ul {
-  font-size: 0.9rem;
-  line-height: 1.6;
-  opacity: 0.9;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: #e5e5e5;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-card ul {
@@ -325,6 +367,7 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-action-btn:hover {
@@ -343,6 +386,7 @@
   margin: 1rem 0;
   font-weight: 600;
   transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-back-btn:hover {
@@ -363,6 +407,8 @@
   color: #00e6ff;
   text-shadow: 0 0 15px rgba(0, 230, 255, 0.6);
   margin-bottom: 1rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 800;
 }
 
 /* Holographic effect for 3D portfolio */
@@ -383,6 +429,8 @@
   font-size: 1.2rem;
   text-align: center;
   box-shadow: 0 0 30px rgba(0, 230, 255, 0.5);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
 }
 
 .nexus-hologram::before {
@@ -403,7 +451,7 @@
 }
 
 .nexus-profile-item {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(0, 230, 255, 0.2);
   padding: 0.6rem;
   margin-bottom: 0.5rem;
@@ -416,7 +464,7 @@
 
 .nexus-profile-item:hover {
   transform: translateX(5px) scale(1.02);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .nexus-profile-details {
@@ -427,16 +475,19 @@
 .nexus-profile-name {
   font-weight: bold;
   color: #00e6ff;
+  font-family: 'Poppins', sans-serif;
 }
 
 .nexus-profile-skills {
   font-size: 0.8rem;
-  opacity: 0.8;
+  color: #e5e5e5;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-profile-rating {
   font-size: 0.8rem;
   color: #00ff99;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Virtual Workspace Styling */
@@ -468,6 +519,7 @@
   text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
   animation: avatarPulse 3s infinite;
   transition: transform 0.3s ease;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-avatar:hover {
@@ -487,6 +539,7 @@
   position: relative;
   overflow: hidden;
   transition: transform 0.3s ease;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-whiteboard:hover {
@@ -499,6 +552,7 @@
   bottom: 10px;
   font-size: 0.7rem;
   color: rgba(255, 255, 255, 0.7);
+  font-family: 'Inter', sans-serif;
 }
 
 /* Notification Bar for AI Mentor */
@@ -514,17 +568,22 @@
   box-shadow: 0 0 20px rgba(0, 230, 255, 0.3);
   animation: slideInOut 8s ease-in-out forwards;
   z-index: 9999;
+  backdrop-filter: blur(10px);
 }
 
 .nexus-notification-bar h3 {
   color: #00e6ff;
   margin-bottom: 0.5rem;
   font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
 }
 
 .nexus-notification-bar p {
   font-size: 0.85rem;
   line-height: 1.4;
+  color: #e5e5e5;
+  font-family: 'Inter', sans-serif;
 }
 
 /* BCI Control Panel */
@@ -532,11 +591,11 @@
   position: fixed;
   top: 80px;
   right: 20px;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   border: 1px solid rgba(0, 230, 255, 0.3);
   padding: 1rem;
   border-radius: 10px;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
   box-shadow: 0 0 15px rgba(0, 230, 255, 0.2);
   z-index: 999;
   min-width: 200px;
@@ -546,6 +605,8 @@
   color: #00e6ff;
   margin-bottom: 0.8rem;
   font-size: 1rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
 }
 
 .nexus-bci-option {
@@ -558,6 +619,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   text-align: center;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-bci-option:hover {
@@ -576,6 +638,8 @@
   justify-content: space-between;
   font-size: 0.8rem;
   margin-bottom: 0.3rem;
+  color: #e5e5e5;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-progress-bar {
@@ -615,10 +679,10 @@
   left: 20px;
   width: 300px;
   height: 400px;
-  background: rgba(0, 0, 0, 0.8);
+  background: rgba(0, 0, 0, 0.9);
   border: 1px solid rgba(0, 230, 255, 0.4);
   border-radius: 15px;
-  backdrop-filter: blur(10px);
+  backdrop-filter: blur(15px);
   display: flex;
   flex-direction: column;
   z-index: 1001;
@@ -631,6 +695,7 @@
   text-align: center;
   font-weight: bold;
   color: #00e6ff;
+  font-family: 'Poppins', sans-serif;
 }
 
 .nexus-chat-messages {
@@ -644,17 +709,21 @@
   padding: 0.8rem;
   border-radius: 10px;
   max-width: 80%;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.5;
 }
 
 .nexus-ai-message {
   background: rgba(0, 230, 255, 0.2);
   align-self: flex-start;
+  color: #e5e5e5;
 }
 
 .nexus-user-message {
   background: rgba(255, 0, 204, 0.2);
   align-self: flex-end;
   margin-left: auto;
+  color: #e5e5e5;
 }
 
 .nexus-chat-input {
@@ -671,6 +740,7 @@
   padding: 0.5rem 1rem;
   color: white;
   outline: none;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-chat-input button {
@@ -706,6 +776,8 @@
   font-size: 1.2rem;
   text-align: center;
   text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
 }
 
 .nexus-project-controls {
@@ -727,6 +799,7 @@
   cursor: pointer;
   font-size: 0.8rem;
   transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-project-btn:hover {
@@ -741,7 +814,7 @@
 }
 
 .nexus-project-item {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.3);
   border: 1px solid rgba(0, 230, 255, 0.2);
   padding: 0.6rem;
   margin-bottom: 0.5rem;
@@ -751,24 +824,27 @@
 
 .nexus-project-item:hover {
   transform: translateX(5px) scale(1.02);
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.5);
 }
 
 .nexus-project-title {
   font-weight: bold;
   color: #00e6ff;
   margin-bottom: 0.3rem;
+  font-family: 'Poppins', sans-serif;
 }
 
 .nexus-project-desc {
   font-size: 0.8rem;
   margin-bottom: 0.3rem;
-  opacity: 0.8;
+  color: #e5e5e5;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-project-budget {
   font-size: 0.8rem;
   color: #00ff99;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Emotion Feedback System */
@@ -813,6 +889,7 @@
   width: 100%;
   font-size: 0.7rem;
   margin-top: 0.5rem;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Skill Growth Tracker */
@@ -842,13 +919,15 @@
   font-size: 0.7rem;
   margin-top: 0.2rem;
   text-align: center;
+  color: #e5e5e5;
+  font-family: 'Inter', sans-serif;
 }
 
 /* Detailed Analytics */
 .nexus-analytics-chart {
   width: 100%;
   height: 120px;
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.5);
   margin: 1rem 0;
   border-radius: 8px;
   display: flex;
@@ -880,7 +959,8 @@
   justify-content: space-between;
   margin-top: 0.3rem;
   font-size: 0.7rem;
-  opacity: 0.8;
+  color: #e5e5e5;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-analytics-stats {
@@ -891,7 +971,7 @@
 }
 
 .nexus-stat-box {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(0, 0, 0, 0.3);
   padding: 0.5rem;
   border-radius: 8px;
   text-align: center;
@@ -906,6 +986,8 @@
   font-size: 1.1rem;
   color: #00e6ff;
   margin-bottom: 0.2rem;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 600;
 }
 
 /* Loading Overlay */
@@ -915,12 +997,12 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 99999;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(10px);
 }
 
 .nexus-spinner {
@@ -934,14 +1016,15 @@
 
 /* Footer */
 .nexus-footer {
-  background: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(10px);
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(15px);
   padding: 1.5rem;
   text-align: center;
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   margin-top: 3rem;
   font-size: 0.9rem;
-  opacity: 0.8;
+  color: #e5e5e5;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-footer a {
@@ -949,6 +1032,7 @@
   text-decoration: none;
   margin: 0 1rem;
   transition: all 0.3s ease;
+  font-family: 'Inter', sans-serif;
 }
 
 .nexus-footer a:hover {
