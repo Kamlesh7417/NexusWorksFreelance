@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AuthService, User } from '@/lib/auth';
+import { useSession } from 'next-auth/react';
 import { LoginModal } from '@/components/auth/login-modal';
 import { ClientDashboard } from '@/components/client/client-dashboard';
 import { DeveloperDashboard } from '@/components/developer/developer-dashboard';
@@ -14,29 +14,15 @@ import { BCIPanel } from '@/components/bci/bci-panel';
 import { NotificationBar } from '@/components/notifications/notification-bar';
 import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import { LogOut, User as UserIcon, Home as HomeIcon } from 'lucide-react';
+import { AuthStatus } from '@/components/auth/auth-status';
 
 export type PageType = 'home' | 'marketplace' | 'learning' | 'community';
 
 export default function Home() {
-  const [user, setUser] = useState<User | null>(null);
+  const { data: session, status } = useSession();
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    const currentUser = AuthService.getCurrentUser();
-    setUser(currentUser);
-  }, []);
-
-  const handleLogin = (loggedInUser: User) => {
-    setUser(loggedInUser);
-  };
-
-  const handleLogout = () => {
-    AuthService.logout();
-    setUser(null);
-    setCurrentPage('home');
-  };
 
   const switchPage = (page: PageType) => {
     setIsLoading(true);
@@ -47,10 +33,10 @@ export default function Home() {
   };
 
   // If user is logged in, show role-specific dashboard
-  if (user) {
-    if (user.role === 'client') {
+  if (session?.user) {
+    if (session.user.role === 'client') {
       return <ClientDashboard />;
-    } else if (user.role === 'developer') {
+    } else if (session.user.role === 'developer' || session.user.role === 'freelancer' || session.user.role === 'student') {
       return <DeveloperDashboard />;
     }
   }
@@ -117,13 +103,7 @@ export default function Home() {
               </a>
             </li>
             <li>
-              <button
-                onClick={() => setShowLoginModal(true)}
-                className="nexus-action-btn flex items-center gap-2"
-              >
-                <UserIcon size={16} />
-                Login
-              </button>
+              <AuthStatus />
             </li>
           </ul>
         </nav>
@@ -153,7 +133,6 @@ export default function Home() {
       <LoginModal
         isOpen={showLoginModal}
         onClose={() => setShowLoginModal(false)}
-        onLogin={handleLogin}
       />
     </div>
   );

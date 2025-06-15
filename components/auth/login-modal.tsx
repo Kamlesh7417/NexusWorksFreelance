@@ -1,57 +1,22 @@
 'use client';
 
 import { useState } from 'react';
-import { AuthService, DEMO_USERS } from '@/lib/auth';
-import { X, User, Lock, Eye, EyeOff } from 'lucide-react';
+import { X, User, Lock, Eye, EyeOff, Github } from 'lucide-react';
+import { GithubSignInButton } from './github-signin-button';
 
 interface LoginModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onLogin: (user: any) => void;
 }
 
-export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+export function LoginModal({ isOpen, onClose }: LoginModalProps) {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    setError('');
-
-    try {
-      const user = await AuthService.login(email, password);
-      if (user) {
-        onLogin(user);
-        onClose();
-        setEmail('');
-        setPassword('');
-      } else {
-        setError('Invalid credentials. Use demo credentials provided below.');
-      }
-    } catch (err) {
-      setError('Login failed. Please try again.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const quickLogin = (userEmail: string) => {
-    setEmail(userEmail);
-    setPassword('demo123');
-  };
 
   if (!isOpen) return null;
 
-  const clientUsers = DEMO_USERS.filter(u => u.role === 'client');
-  const developerUsers = DEMO_USERS.filter(u => u.role === 'developer');
-
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm">
-      <div className="bg-white/5 border border-white/20 rounded-2xl p-8 max-w-4xl w-[90%] max-h-[90vh] overflow-y-auto">
+      <div className="bg-white/5 border border-white/20 rounded-2xl p-8 max-w-md w-[90%] max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-cyan-400">Access NexusWorks</h2>
           <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-lg transition-colors">
@@ -59,145 +24,65 @@ export function LoginModal({ isOpen, onClose, onLogin }: LoginModalProps) {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Login Form */}
-          <div>
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-cyan-400 mb-2">
-                  Email Address
-                </label>
-                <div className="relative">
-                  <User size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-white/10 border border-cyan-500/30 rounded-lg pl-10 pr-3 py-2 text-white outline-none focus:border-cyan-400"
-                    placeholder="Enter your email"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-cyan-400 mb-2">
-                  Password
-                </label>
-                <div className="relative">
-                  <Lock size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-white/10 border border-cyan-500/30 rounded-lg pl-10 pr-10 py-2 text-white outline-none focus:border-cyan-400"
-                    placeholder="Enter your password"
-                    required
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
-                </div>
-              </div>
-
-              {error && (
-                <div className="bg-red-500/20 border border-red-500/40 rounded-lg p-3 text-red-400 text-sm">
-                  {error}
-                </div>
-              )}
-
-              <button
-                type="submit"
-                disabled={isLoading}
-                className="nexus-action-btn w-full flex items-center justify-center gap-2"
-              >
-                {isLoading ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
-                    Authenticating...
-                  </>
-                ) : (
-                  'Access Platform'
-                )}
-              </button>
-            </form>
-
-            <div className="mt-6 p-4 bg-blue-500/20 border border-blue-500/30 rounded-lg">
-              <h4 className="text-blue-400 font-medium mb-2">Demo Credentials</h4>
-              <p className="text-sm text-gray-300 mb-2">
-                Use any email from the demo accounts with password: <code className="bg-white/10 px-2 py-1 rounded">demo123</code>
-              </p>
-            </div>
+        <div className="space-y-6">
+          <GithubSignInButton />
+          
+          <div className="relative flex items-center justify-center">
+            <div className="border-t border-white/10 flex-grow"></div>
+            <span className="mx-4 text-sm text-gray-400">or continue with email</span>
+            <div className="border-t border-white/10 flex-grow"></div>
           </div>
 
-          {/* Demo Accounts */}
-          <div className="space-y-6">
-            {/* Client Accounts */}
+          <div className="space-y-4">
             <div>
-              <h3 className="text-lg font-semibold text-green-400 mb-4">Client Accounts</h3>
-              <div className="space-y-3">
-                {clientUsers.map(user => (
-                  <div key={user.id} className="bg-white/5 rounded-lg p-4 border border-green-500/20">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
-                        <User size={16} className="text-green-400" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-green-400">{user.name}</div>
-                        <div className="text-xs text-gray-400">{user.email}</div>
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-300 mb-3">
-                      {(user.profile as any).company} • {(user.profile as any).industry}
-                    </div>
-                    <button
-                      onClick={() => quickLogin(user.email)}
-                      className="text-xs bg-green-500/20 border border-green-500/40 text-green-400 px-3 py-1 rounded-full hover:bg-green-500/30 transition-colors"
-                    >
-                      Quick Login
-                    </button>
-                  </div>
-                ))}
+              <label className="block text-sm font-medium text-cyan-400 mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <User size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type="email"
+                  className="w-full bg-white/10 border border-cyan-500/30 rounded-lg pl-10 pr-3 py-2 text-white outline-none focus:border-cyan-400"
+                  placeholder="Enter your email"
+                />
               </div>
             </div>
 
-            {/* Developer Accounts */}
             <div>
-              <h3 className="text-lg font-semibold text-purple-400 mb-4">Developer Accounts</h3>
-              <div className="space-y-3">
-                {developerUsers.map(user => (
-                  <div key={user.id} className="bg-white/5 rounded-lg p-4 border border-purple-500/20">
-                    <div className="flex items-center gap-3 mb-2">
-                      <div className="w-10 h-10 bg-purple-500/20 rounded-full flex items-center justify-center">
-                        <User size={16} className="text-purple-400" />
-                      </div>
-                      <div>
-                        <div className="font-medium text-purple-400">{user.name}</div>
-                        <div className="text-xs text-gray-400">{user.email}</div>
-                      </div>
-                    </div>
-                    <div className="text-sm text-gray-300 mb-2">
-                      {(user.profile as any).specializations[0]} • ${(user.profile as any).hourlyRate}/hr
-                    </div>
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="text-xs text-yellow-400">★ {(user.profile as any).rating}</span>
-                      <span className="text-xs text-gray-400">•</span>
-                      <span className="text-xs text-gray-400">{(user.profile as any).completedProjects} projects</span>
-                    </div>
-                    <button
-                      onClick={() => quickLogin(user.email)}
-                      className="text-xs bg-purple-500/20 border border-purple-500/40 text-purple-400 px-3 py-1 rounded-full hover:bg-purple-500/30 transition-colors"
-                    >
-                      Quick Login
-                    </button>
-                  </div>
-                ))}
+              <label className="block text-sm font-medium text-cyan-400 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <Lock size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="w-full bg-white/10 border border-cyan-500/30 rounded-lg pl-10 pr-10 py-2 text-white outline-none focus:border-cyan-400"
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-white"
+                >
+                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                </button>
               </div>
             </div>
+
+            <button
+              className="nexus-action-btn w-full flex items-center justify-center gap-2"
+            >
+              Access Platform
+            </button>
+          </div>
+
+          <div className="mt-4 text-center">
+            <p className="text-sm text-gray-400">
+              Don't have an account?{' '}
+              <a href="/auth/signin" className="text-cyan-400 hover:underline">
+                Sign up
+              </a>
+            </p>
           </div>
         </div>
       </div>
