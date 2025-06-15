@@ -2,22 +2,21 @@
 
 import { Component, ErrorInfo, ReactNode } from 'react';
 import { AlertTriangle, RefreshCw } from 'lucide-react';
+import { errorLogger } from '@/lib/error-logger';
 
 interface ErrorBoundaryProps {
   children: ReactNode;
-  fallback?: ReactNode;
 }
 
 interface ErrorBoundaryState {
   hasError: boolean;
-  error?: Error;
-  errorInfo?: ErrorInfo;
+  error: Error | null;
 }
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false };
+    this.state = { hasError: false, error: null };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
@@ -25,76 +24,58 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    this.setState({ error, errorInfo });
-    
-    // Log error to monitoring service
-    console.error('Error caught by boundary:', error, errorInfo);
-    
-    // In production, you would send this to your error tracking service
-    // Example: Sentry.captureException(error);
+    // Log the error to our error tracking system
+    errorLogger.captureException(error, { errorInfo });
   }
+
+  handleRetry = (): void => {
+    this.setState({ hasError: false, error: null });
+    // Force a refresh of the page
+    window.location.reload();
+  };
 
   render(): ReactNode {
     if (this.state.hasError) {
-      if (this.props.fallback) {
-        return this.props.fallback;
-      }
-      
       return (
-        <div className="min-h-[400px] bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
-          <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4">
-            <AlertTriangle size={32} className="text-red-400" />
-          </div>
-          <h2 className="text-xl font-semibold text-white mb-2">Something went wrong</h2>
-          <p className="text-gray-400 mb-6 max-w-md">
-            We've encountered an unexpected error. Our team has been notified.
-          </p>
-          <button
-            onClick={() => window.location.reload()}
-            className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center gap-2"
-          >
-            <RefreshCw size={16} />
-            Refresh Page
-          </button>
-          
-          {process.env.NODE_ENV !== 'production' && this.state.error && (
-            <div className="mt-6 text-left w-full">
-              <details className="bg-black/30 p-4 rounded-lg text-sm">
-                <summary className="text-red-400 cursor-pointer mb-2">Error Details (Development Only)</summary>
-                <p className="text-white mb-2">{this.state.error.toString()}</p>
-                {this.state.errorInfo && (
-                  <pre className="text-gray-400 overflow-auto p-2 bg-black/50 rounded text-xs">
-                    {this.state.errorInfo.componentStack}
-                  </pre>
-                )}
-              </details>
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
+          <div className="max-w-md w-full bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-8 text-center">
+            <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
+              <AlertTriangle size={32} className="text-red-400" />
             </div>
-          )}
+            
+            <h1 className="text-2xl font-bold text-white mb-4">Something went wrong</h1>
+            
+            <div className="bg-black/20 rounded-lg p-4 mb-6 text-left overflow-auto max-h-32">
+              <p className="text-red-400 text-sm font-mono">
+                {this.state.error?.message || 'An unexpected error occurred'}
+              </p>
+            </div>
+            
+            <p className="text-gray-400 mb-6">
+              We've logged this error and will work on fixing it as soon as possible.
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={this.handleRetry}
+                className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <RefreshCw size={16} />
+                Retry
+              </button>
+              
+              <a
+                href="/"
+                className="border border-gray-500 text-gray-300 hover:bg-gray-500/20 font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center"
+              >
+                Back to Home
+              </a>
+            </div>
+          </div>
         </div>
       );
     }
 
     return this.props.children;
   }
-}
-
-export function ErrorFallback({ error }: { error?: Error }) {
-  return (
-    <div className="min-h-[400px] bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-8 flex flex-col items-center justify-center text-center">
-      <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mb-4">
-        <AlertTriangle size={32} className="text-red-400" />
-      </div>
-      <h2 className="text-xl font-semibold text-white mb-2">Something went wrong</h2>
-      <p className="text-gray-400 mb-6 max-w-md">
-        {error?.message || "We've encountered an unexpected error. Our team has been notified."}
-      </p>
-      <button
-        onClick={() => window.location.reload()}
-        className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center gap-2"
-      >
-        <RefreshCw size={16} />
-        Refresh Page
-      </button>
-    </div>
-  );
 }

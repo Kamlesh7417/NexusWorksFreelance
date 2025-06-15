@@ -14,62 +14,56 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    const loadUnreadCount = async () => {
+    const loadUnreadMessages = async () => {
       try {
         const { count, error } = await supabase
           .from('messages')
-          .select('*', { count: 'exact', head: true })
+          .select('id', { count: 'exact', head: true })
           .eq('receiver_id', userId)
           .eq('read', false);
 
         if (error) throw error;
         setUnreadCount(count || 0);
       } catch (error) {
-        console.error('Error loading unread count:', error);
+        console.error('Error loading unread messages:', error);
       }
     };
 
-    loadUnreadCount();
+    if (userId) {
+      loadUnreadMessages();
+      
+      // Subscribe to new messages
+      const subscription = supabase
+        .channel('messages')
+        .on('postgres_changes', 
+          { 
+            event: 'INSERT', 
+            schema: 'public', 
+            table: 'messages',
+            filter: `receiver_id=eq.${userId}`
+          }, 
+          () => {
+            // Increment unread count
+            setUnreadCount(prev => prev + 1);
+          }
+        )
+        .subscribe();
 
-    // Subscribe to new messages
-    const subscription = supabase
-      .channel('messages_count')
-      .on('postgres_changes', 
-        { 
-          event: 'INSERT', 
-          schema: 'public', 
-          table: 'messages',
-          filter: `receiver_id=eq.${userId}`
-        }, 
-        () => {
-          setUnreadCount(prev => prev + 1);
-        }
-      )
-      .on('postgres_changes', 
-        { 
-          event: 'UPDATE', 
-          schema: 'public', 
-          table: 'messages',
-          filter: `receiver_id=eq.${userId} AND read=eq.true`
-        }, 
-        () => {
-          setUnreadCount(prev => Math.max(0, prev - 1));
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(subscription);
-    };
+      return () => {
+        supabase.removeChannel(subscription);
+      };
+    }
   }, [userId, supabase]);
 
   return (
     <Link href="/messages" className="relative">
       <Bell size={20} className="text-gray-400 hover:text-white transition-colors" />
       {unreadCount > 0 && (
-        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-          {unreadCount > 9 ? '9+' : unreadCount}
-        </span>
+        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+          <span className="text-xs text-white font-bold">
+            {unreadCount > 9 ? '9+' : unreadCount}
+          </span>
+        </div>
       )}
     </Link>
   );

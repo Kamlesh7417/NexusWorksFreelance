@@ -1,55 +1,76 @@
 import Head from 'next/head';
 
-interface SEOMetaProps {
+interface SeoMetaProps {
   title: string;
   description: string;
-  canonical?: string;
+  keywords?: string;
   ogImage?: string;
-  ogType?: 'website' | 'article';
+  ogUrl?: string;
+  ogType?: 'website' | 'article' | 'profile';
   twitterCard?: 'summary' | 'summary_large_image';
   noIndex?: boolean;
+  canonicalUrl?: string;
 }
 
-export function SEOMeta({
+export function SeoMeta({
   title,
   description,
-  canonical,
+  keywords,
   ogImage = 'https://nexusworks.in/og-image.jpg',
+  ogUrl,
   ogType = 'website',
   twitterCard = 'summary_large_image',
-  noIndex = false
-}: SEOMetaProps) {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://nexusworks.in';
-  const fullCanonical = canonical ? `${siteUrl}${canonical}` : siteUrl;
+  noIndex = false,
+  canonicalUrl,
+}: SeoMetaProps) {
+  const fullTitle = `${title} | NexusWorks`;
   
   return (
     <Head>
-      <title>{title}</title>
+      {/* Basic Meta Tags */}
+      <title>{fullTitle}</title>
       <meta name="description" content={description} />
-      <link rel="canonical" href={fullCanonical} />
+      {keywords && <meta name="keywords" content={keywords} />}
       
-      {/* Open Graph */}
-      <meta property="og:title" content={title} />
-      <meta property="og:description" content={description} />
-      <meta property="og:url" content={fullCanonical} />
+      {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
+      <meta property="og:title" content={fullTitle} />
+      <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
+      {ogUrl && <meta property="og:url" content={ogUrl} />}
       <meta property="og:site_name" content="NexusWorks" />
       
       {/* Twitter */}
       <meta name="twitter:card" content={twitterCard} />
-      <meta name="twitter:title" content={title} />
+      <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
       
-      {/* No index if specified */}
+      {/* Canonical URL */}
+      {canonicalUrl && <link rel="canonical" href={canonicalUrl} />}
+      
+      {/* No Index */}
       {noIndex && <meta name="robots" content="noindex, nofollow" />}
       
-      {/* Additional meta tags */}
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta name="theme-color" content="#080810" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+      {/* Structured Data for Rich Results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'NexusWorks',
+            url: 'https://nexusworks.in',
+            logo: 'https://nexusworks.in/logo.png',
+            sameAs: [
+              'https://twitter.com/nexusworks',
+              'https://linkedin.com/company/nexusworks',
+              'https://github.com/nexusworks'
+            ],
+            description: 'The Future of Freelancing with Holographic Immersion & AI Integration'
+          })
+        }}
+      />
     </Head>
   );
 }
