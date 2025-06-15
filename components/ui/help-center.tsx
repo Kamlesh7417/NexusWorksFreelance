@@ -37,7 +37,7 @@ const helpTopics: HelpTopic[] = [
   {
     id: 'submit-bid',
     title: 'How to Submit a Bid',
-    content: 'To bid on a project, navigate to the project details page and click "Submit Bid". Enter your proposed amount and a compelling message explaining why you're the right fit for the project.',
+    content: 'To bid on a project, navigate to the project details page and click "Submit Bid". Enter your proposed amount and a compelling message explaining why you\'re the right fit for the project.',
     category: 'developers'
   },
   {
