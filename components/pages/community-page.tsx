@@ -18,7 +18,7 @@ export function CommunityPage({ onPageChange }: CommunityPageProps) {
         <div className="bg-purple-500/20 border border-purple-500/30 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
           <div className="flex items-center gap-2 mb-2">
             <AlertCircle size={16} className="text-purple-400" />
-            <span className="font-medium text-purple-400">Developer Community Hub</span>
+            <span className="font-medium text-purple-400">Community Hub</span>
           </div>
           <p className="text-sm text-gray-300">
             This community space is exclusively for developers to network, collaborate, and participate in 
@@ -38,14 +38,14 @@ export function CommunityPage({ onPageChange }: CommunityPageProps) {
         {/* Developer Events */}
         <div className="nexus-card">
           <h2>Developer Events & Hackathons</h2>
-          <p>Join global developer events in metaverse spaces to network and collaborate on cutting-edge projects.</p>
+          <p>Join global developer events to network and collaborate on cutting-edge projects.</p>
           <div className="w-full h-[200px] bg-gradient-to-r from-purple-600 to-blue-500 mt-4 rounded-lg relative flex items-center justify-center">
             <div className="w-[150px] h-[150px] rounded-full bg-black/30 border-4 border-cyan-500/50 flex items-center justify-center animate-spin" style={{ animationDuration: '10s' }}>
-              <div className="text-white text-xl text-center">Enter Metaverse</div>
+              <div className="text-white text-xl text-center">Join Events</div>
             </div>
             <div className="absolute bottom-2 w-[90%] bg-black/50 border border-cyan-500/30 rounded-lg p-2 text-xs">
               <div className="flex justify-between mb-1">
-                <span>1. QuantumCoders</span>
+                <span>1. CodeMasters</span>
                 <span>12,450 pts</span>
               </div>
               <div className="flex justify-between mb-1">
@@ -61,9 +61,9 @@ export function CommunityPage({ onPageChange }: CommunityPageProps) {
           <div className="max-h-[300px] overflow-y-auto mt-4">
             {[
               {
-                title: "Quantum Computing Hackathon",
-                desc: "Dec 15 | Online Metaverse | Prize: 5,000 WORK",
-                details: "Theme: Build quantum algorithms for real-world problems. Teams of 3-5 developers.",
+                title: "Web Development Hackathon",
+                desc: "Dec 15 | Online | Prize: 5,000 USD",
+                details: "Theme: Build web applications for real-world problems. Teams of 3-5 developers.",
                 type: "Hackathon"
               },
               {
@@ -74,14 +74,14 @@ export function CommunityPage({ onPageChange }: CommunityPageProps) {
               },
               {
                 title: "Blockchain Security Summit",
-                desc: "Jan 5 | Online | Prize: 8,000 WORK",
+                desc: "Jan 5 | Online | Prize: 8,000 USD",
                 details: "Focus on smart contract security and DeFi protocol development.",
                 type: "Summit"
               },
               {
-                title: "AR/VR Developer Meetup",
-                desc: "Jan 12 | Virtual Reality Space | Free",
-                details: "Monthly meetup for AR/VR developers to share projects and techniques.",
+                title: "Mobile App Developer Meetup",
+                desc: "Jan 12 | Virtual | Free",
+                details: "Monthly meetup for mobile developers to share projects and techniques.",
                 type: "Meetup"
               }
             ].map((event, index) => (
@@ -147,8 +147,8 @@ export function CommunityPage({ onPageChange }: CommunityPageProps) {
           <p>Build your reputation and see top contributors in the developer community.</p>
           <div className="max-h-[300px] overflow-y-auto mt-4">
             {[
-              { name: "Alexandra Reed", specialty: "Quantum Computing", score: 9850 },
-              { name: "Marcus Tan", specialty: "AR/VR Development", score: 9420 },
+              { name: "Alexandra Reed", specialty: "Full Stack Development", score: 9850 },
+              { name: "Marcus Tan", specialty: "Mobile Development", score: 9420 },
               { name: "Sofia Mendes", specialty: "Blockchain Security", score: 9180 },
               { name: "James Okoro", specialty: "AI/ML Engineering", score: 8950 },
               { name: "Li Wei Zhang", specialty: "DevOps & Cloud", score: 8720 },
@@ -187,9 +187,9 @@ export function CommunityPage({ onPageChange }: CommunityPageProps) {
           <div className="max-h-[300px] overflow-y-auto mt-4">
             {[
               {
-                title: "Quantum Computing Discussion",
-                desc: 'Topic: "Quantum Supremacy in 2024" | Posts: 89 | Last: 1 hour ago',
-                category: "Quantum"
+                title: "Web Development",
+                desc: 'Topic: "Modern Frontend Frameworks" | Posts: 89 | Last: 1 hour ago',
+                category: "Web"
               },
               {
                 title: "AI & Machine Learning",
@@ -202,9 +202,9 @@ export function CommunityPage({ onPageChange }: CommunityPageProps) {
                 category: "Blockchain"
               },
               {
-                title: "AR/VR Innovation",
-                desc: 'Topic: "WebXR Best Practices" | Posts: 43 | Last: 8 hours ago',
-                category: "AR/VR"
+                title: "Mobile Development",
+                desc: 'Topic: "Cross-Platform Best Practices" | Posts: 43 | Last: 8 hours ago',
+                category: "Mobile"
               },
               {
                 title: "Cybersecurity Hub",

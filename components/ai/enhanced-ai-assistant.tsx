@@ -16,7 +16,7 @@ export function EnhancedAIAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Quantum neural pathways initialized. I'm your AI mentor with access to real-time project analysis and skill optimization algorithms. How can I enhance your freelancing journey today?",
+      text: "Hi there! I'm your AI assistant ready to help with project planning, skill development, and freelancing advice. How can I help you today?",
       isUser: false,
       timestamp: new Date()
     }
@@ -50,7 +50,7 @@ export function EnhancedAIAssistant() {
     // Add typing indicator
     const typingMessage: Message = {
       id: (Date.now() + 1).toString(),
-      text: 'Quantum algorithms processing...',
+      text: 'Processing your request...',
       isUser: false,
       timestamp: new Date(),
       isTyping: true
@@ -76,7 +76,7 @@ export function EnhancedAIAssistant() {
         const filtered = prev.filter(msg => !msg.isTyping);
         return [...filtered, {
           id: (Date.now() + 2).toString(),
-          text: data.response || 'Neural pathways are recalibrating. Please try again.',
+          text: data.response || 'I apologize, but I encountered an issue processing your request. Please try again.',
           isUser: false,
           timestamp: new Date()
         }];
@@ -87,7 +87,7 @@ export function EnhancedAIAssistant() {
         const filtered = prev.filter(msg => !msg.isTyping);
         return [...filtered, {
           id: (Date.now() + 2).toString(),
-          text: 'Quantum interference detected. Please try your query again.',
+          text: 'I apologize, but I encountered an issue processing your request. Please try again.',
           isUser: false,
           timestamp: new Date()
         }];
@@ -138,10 +138,10 @@ export function EnhancedAIAssistant() {
         <div className="nexus-ai-assistant-chat">
           <div className="nexus-chat-header">
             <div className="flex items-center justify-between">
-              <span>Quantum AI Mentor</span>
+              <span>AI Assistant</span>
               <div className="flex items-center gap-1">
                 <Zap size={16} className="text-cyan-400" />
-                <span className="text-xs text-cyan-400">Neural Link Active</span>
+                <span className="text-xs text-cyan-400">Active</span>
               </div>
             </div>
           </div>

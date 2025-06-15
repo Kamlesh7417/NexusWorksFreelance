@@ -90,7 +90,7 @@ export default function Home() {
                 }}
                 className={currentPage === 'learning' ? 'active' : ''}
               >
-                Developer Learning
+                Learning
               </a>
             </li>
             <li>
@@ -102,7 +102,7 @@ export default function Home() {
                 }}
                 className={currentPage === 'community' ? 'active' : ''}
               >
-                Developer Community
+                Community
               </a>
             </li>
           </ul>
@@ -123,7 +123,7 @@ export default function Home() {
       </main>
       
       <footer className="nexus-footer">
-        <p>&copy; 2024 NexusWorks. The Future of Freelancing.</p>
+        <p>&copy; 2024 NexusWorks. Where Talent Meets Opportunity.</p>
         <div>
           <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a> | <a href="#">Support</a>
         </div>

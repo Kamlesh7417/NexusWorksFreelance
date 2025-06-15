@@ -172,31 +172,6 @@
   100% { transform: rotate(45deg) translate(-50%, -50%); }
 }
 
-@keyframes hologramPulse {
-  0% { opacity: 0.7; transform: rotateX(20deg) rotateY(20deg) scale(1); }
-  50% { opacity: 0.9; transform: rotateX(20deg) rotateY(20deg) scale(1.05); }
-  100% { opacity: 0.7; transform: rotateX(20deg) rotateY(20deg) scale(1); }
-}
-
-@keyframes workspaceFloat {
-  0% { transform: rotateX(15deg) translateY(0); }
-  50% { transform: rotateX(15deg) translateY(-15px); }
-  100% { transform: rotateX(15deg) translateY(0); }
-}
-
-@keyframes avatarPulse {
-  0% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
-  50% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.5); }
-  100% { box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); }
-}
-
-@keyframes slideInOut {
-  0% { transform: translateX(100%); opacity: 0; }
-  10% { transform: translateX(0); opacity: 1; }
-  90% { transform: translateX(0); opacity: 1; }
-  100% { transform: translateX(100%); opacity: 0; }
-}
-
 @keyframes pulse {
   0% { transform: scale(1); box-shadow: 0 0 20px rgba(0, 230, 255, 0.7); }
   50% { transform: scale(1.1); box-shadow: 0 0 30px rgba(0, 230, 255, 0.9); }
@@ -214,15 +189,6 @@
 
 .animate-fadeIn {
   animation: fadeIn 1s ease-out;
-}
-
-/* Theme variations for BCI simulation */
-.neural-theme-light {
-  background: linear-gradient(135deg, #1a365d, #3182ce, #63b3ed);
-}
-
-.neural-theme-dark {
-  background: linear-gradient(135deg, #000000, #0a0a0f, #151520);
 }
 
 /* Header styling */
@@ -324,7 +290,7 @@
 }
 
 .nexus-card:hover {
-  transform: translateY(-10px) rotateX(10deg);
+  transform: translateY(-10px);
   box-shadow: 0 15px 30px rgba(0, 230, 255, 0.2), 0 0 20px rgba(0, 230, 255, 0.1);
 }
 
@@ -535,17 +501,6 @@
   font-weight: 600;
 }
 
-.nexus-hologram::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: repeating-linear-gradient(transparent, transparent 5px, rgba(255, 255, 255, 0.1) 5px, rgba(255, 255, 255, 0.1) 6px);
-  z-index: 1;
-}
-
 .nexus-profile-list {
   margin-top: 1rem;
   max-height: 200px;
@@ -592,144 +547,6 @@
   font-family: 'Inter', sans-serif;
 }
 
-/* Virtual Workspace Styling */
-.nexus-workspace-preview {
-  width: 100%;
-  height: 220px;
-  background: linear-gradient(60deg, #0066ff, #00cc99);
-  margin: 1rem 0;
-  border-radius: 12px;
-  transform-style: preserve-3d;
-  transform: rotateX(15deg);
-  animation: workspaceFloat 5s ease-in-out infinite;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  padding: 1rem;
-  box-shadow: 0 0 40px rgba(0, 102, 255, 0.4);
-  position: relative;
-}
-
-.nexus-avatar {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #fff;
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
-  animation: avatarPulse 3s infinite;
-  transition: transform 0.3s ease;
-  font-family: 'Inter', sans-serif;
-}
-
-.nexus-avatar:hover {
-  transform: scale(1.05) rotateY(10deg);
-}
-
-.nexus-whiteboard {
-  grid-column: 2;
-  grid-row: 1 / span 2;
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.9rem;
-  color: #fff;
-  position: relative;
-  overflow: hidden;
-  transition: transform 0.3s ease;
-  font-family: 'Inter', sans-serif;
-}
-
-.nexus-whiteboard:hover {
-  transform: scale(1.05) rotateY(-10deg);
-}
-
-.nexus-whiteboard::after {
-  content: "Draw with Gestures";
-  position: absolute;
-  bottom: 10px;
-  font-size: 0.7rem;
-  color: rgba(255, 255, 255, 0.7);
-  font-family: 'Inter', sans-serif;
-}
-
-/* Notification Bar for AI Mentor */
-.nexus-notification-bar {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: linear-gradient(145deg, rgba(0, 230, 255, 0.3), rgba(255, 0, 204, 0.2));
-  border: 1px solid rgba(0, 230, 255, 0.4);
-  padding: 1rem 2rem;
-  border-radius: 10px;
-  max-width: 300px;
-  box-shadow: 0 0 20px rgba(0, 230, 255, 0.3);
-  animation: slideInOut 8s ease-in-out forwards;
-  z-index: 9999;
-  backdrop-filter: blur(10px);
-}
-
-.nexus-notification-bar h3 {
-  color: #00e6ff;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-}
-
-.nexus-notification-bar p {
-  font-size: 0.85rem;
-  line-height: 1.4;
-  color: #e5e5e5;
-  font-family: 'Inter', sans-serif;
-}
-
-/* BCI Control Panel */
-.nexus-bci-panel {
-  position: fixed;
-  top: 80px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  border: 1px solid rgba(0, 230, 255, 0.3);
-  padding: 1rem;
-  border-radius: 10px;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 15px rgba(0, 230, 255, 0.2);
-  z-index: 999;
-  min-width: 200px;
-}
-
-.nexus-bci-panel h3 {
-  color: #00e6ff;
-  margin-bottom: 0.8rem;
-  font-size: 1rem;
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-}
-
-.nexus-bci-option {
-  margin: 0.5rem 0;
-  padding: 0.4rem 0.8rem;
-  background: rgba(0, 230, 255, 0.1);
-  border: 1px solid rgba(0, 230, 255, 0.2);
-  color: #ffffff;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-align: center;
-  font-family: 'Inter', sans-serif;
-}
-
-.nexus-bci-option:hover {
-  background: rgba(0, 230, 255, 0.3);
-  box-shadow: 0 0 10px rgba(0, 230, 255, 0.4);
-  transform: scale(1.05);
-}
-
 /* Social Impact Progress Bars */
 .nexus-progress-container {
   margin-top: 1rem;
@@ -757,7 +574,7 @@
   transition: width 1.5s ease;
 }
 
-/* Quantum AI Assistant */
+/* AI Assistant */
 .nexus-ai-assistant {
   position: fixed;
   bottom: 20px;
@@ -853,147 +670,6 @@
   margin-left: 0.5rem;
 }
 
-/* Holographic Project Visualization */
-.nexus-project-visualizer {
-  width: 100%;
-  height: 250px;
-  background: linear-gradient(45deg, #0066ff, #00cc99);
-  margin: 1rem 0;
-  border-radius: 12px;
-  position: relative;
-  overflow: hidden;
-  transform-style: preserve-3d;
-  transform: rotateX(10deg);
-  animation: float 6s ease-in-out infinite;
-}
-
-.nexus-project-layer {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 1.2rem;
-  text-align: center;
-  text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-}
-
-.nexus-project-controls {
-  position: absolute;
-  bottom: 10px;
-  left: 0;
-  right: 0;
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-
-.nexus-project-btn {
-  background: rgba(0, 0, 0, 0.5);
-  border: 1px solid rgba(0, 230, 255, 0.5);
-  color: white;
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  cursor: pointer;
-  font-size: 0.8rem;
-  transition: all 0.3s ease;
-  font-family: 'Inter', sans-serif;
-}
-
-.nexus-project-btn:hover {
-  background: rgba(0, 230, 255, 0.3);
-  transform: scale(1.05);
-}
-
-.nexus-project-list {
-  margin-top: 1rem;
-  max-height: 180px;
-  overflow-y: auto;
-}
-
-.nexus-project-item {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(0, 230, 255, 0.2);
-  padding: 0.6rem;
-  margin-bottom: 0.5rem;
-  border-radius: 8px;
-  transition: transform 0.3s ease, background 0.3s ease;
-}
-
-.nexus-project-item:hover {
-  transform: translateX(5px) scale(1.02);
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.nexus-project-title {
-  font-weight: bold;
-  color: #00e6ff;
-  margin-bottom: 0.3rem;
-  font-family: 'Poppins', sans-serif;
-}
-
-.nexus-project-desc {
-  font-size: 0.8rem;
-  margin-bottom: 0.3rem;
-  color: #e5e5e5;
-  font-family: 'Inter', sans-serif;
-}
-
-.nexus-project-budget {
-  font-size: 0.8rem;
-  color: #00ff99;
-  font-family: 'Inter', sans-serif;
-}
-
-/* Emotion Feedback System */
-.nexus-emotion-feedback {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 1rem;
-}
-
-.nexus-emotion-wheel {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  background: conic-gradient(
-    #ff4d6a 0% 20%, 
-    #ff9e6a 20% 40%, 
-    #ffd166 40% 60%, 
-    #06d6a0 60% 80%, 
-    #118ab2 80% 100%
-  );
-  position: relative;
-  margin: 1rem 0;
-}
-
-.nexus-emotion-indicator {
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  background: white;
-  border: 2px solid #00e6ff;
-  border-radius: 50%;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transition: all 1s ease;
-}
-
-.nexus-emotion-labels {
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  font-size: 0.7rem;
-  margin-top: 0.5rem;
-  font-family: 'Inter', sans-serif;
-}
-
 /* Skill Growth Tracker */
 .nexus-skill-tracker {
   display: grid;
@@ -1081,7 +757,7 @@
 }
 
 .nexus-stat-box:hover {
-  transform: scale(1.05) rotateY(5deg);
+  transform: scale(1.05);
 }
 
 .nexus-stat-number {
@@ -1154,9 +830,6 @@
   }
   .nexus-dashboard {
     grid-template-columns: 1fr;
-  }
-  .nexus-bci-panel {
-    display: none !important;
   }
   
   /* Responsive button sizing for mobile - still 90% larger than base */

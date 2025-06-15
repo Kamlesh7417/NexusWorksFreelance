@@ -44,16 +44,14 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
           filter: `receiver_id=eq.${userId}`
         }, 
         (payload) => {
-          const newMessage = payload.new as any;
-          if (!newMessage.read) {
-            setUnreadCount(prev => prev + 1);
-          }
+          // Increment unread count
+          setUnreadCount(prev => prev + 1);
         }
       )
       .subscribe();
 
-    // Subscribe to message updates (read status changes)
-    const updateSubscription = supabase
+    // Subscribe to message updates (read status)
+    const readSubscription = supabase
       .channel('message-updates')
       .on('postgres_changes', 
         { 
@@ -63,11 +61,8 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
           filter: `receiver_id=eq.${userId}`
         }, 
         (payload) => {
-          const updatedMessage = payload.new as any;
-          const oldMessage = payload.old as any;
-          
-          // If message was marked as read
-          if (!oldMessage.read && updatedMessage.read) {
+          // If message was marked as read, decrement count
+          if (payload.new.read && !payload.old.read) {
             setUnreadCount(prev => Math.max(0, prev - 1));
           }
         }
@@ -76,7 +71,7 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
 
     return () => {
       supabase.removeChannel(subscription);
-      supabase.removeChannel(updateSubscription);
+      supabase.removeChannel(readSubscription);
     };
   }, [userId, supabase]);
 
