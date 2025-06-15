@@ -2,8 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { signOut } from 'next-auth/react';
-import { User, LogOut, Settings, Briefcase, MessageSquare, User as UserIcon } from 'lucide-react';
-import Image from 'next/image';
+import { LogOut, Settings, Briefcase, MessageSquare, User as UserIcon, Github } from 'lucide-react';
 
 interface UserMenuProps {
   user: any;
@@ -79,7 +78,7 @@ export function UserMenu({ user }: UserMenuProps) {
               href="/profile" 
               className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
-              <User size={16} />
+              <UserIcon size={16} />
               Profile
             </a>
             <a 

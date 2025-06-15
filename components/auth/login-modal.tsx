@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { X, User, Lock, Eye, EyeOff, Github } from 'lucide-react';
+import { X, User, Lock, Eye, EyeOff } from 'lucide-react';
 import { GithubSignInButton } from './github-signin-button';
 
 interface LoginModalProps {
