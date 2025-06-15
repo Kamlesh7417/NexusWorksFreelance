@@ -1,87 +1,83 @@
 'use client';
 
 import { useState } from 'react';
-import { signIn } from 'next-auth/react';
-import { useRouter, useSearchParams } from 'next/navigation';
-import { Github, Loader2, AlertCircle } from 'lucide-react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { Github, Loader2, ArrowLeft } from 'lucide-react';
+import Link from 'next/link';
 
-export default function SignIn() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-  const [isLoading, setIsLoading] = useState(false);
+export default function SignInPage() {
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const supabase = createClientComponentClient();
 
-  const handleGithubSignIn = async () => {
-    setIsLoading(true);
-    setError(null);
-    
+  const handleGitHubSignIn = async () => {
     try {
-      const result = await signIn('github', {
-        callbackUrl,
-        redirect: false,
+      setLoading(true);
+      setError(null);
+
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+        options: {
+          redirectTo: `${window.location.origin}/auth/callback`,
+          scopes: 'read:user user:email'
+        }
       });
-      
-      if (result?.error) {
-        setError(result.error);
-      } else if (result?.url) {
-        router.push(result.url);
+
+      if (error) {
+        setError(error.message);
       }
     } catch (err) {
       setError('An unexpected error occurred');
       console.error('Sign in error:', err);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-2xl">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-cyan-400 mb-2">
-              Welcome to NexusWorks
-            </h1>
-            <p className="text-gray-400">
-              Sign in to access the future of freelancing
-            </p>
+      <div className="max-w-md w-full bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-8">
+        <div className="text-center mb-8">
+          <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <span className="text-white font-bold text-2xl">N</span>
           </div>
+          <h1 className="text-3xl font-bold text-white mb-2">Welcome to NexusWorks</h1>
+          <p className="text-gray-400">Sign in to access the future of freelancing</p>
+        </div>
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-500/20 border border-red-500/40 rounded-lg">
-              <div className="flex items-center gap-2">
-                <AlertCircle size={16} className="text-red-400" />
-                <p className="text-red-400 text-sm">{error}</p>
-              </div>
-            </div>
-          )}
+        {error && (
+          <div className="bg-red-500/20 border border-red-500/40 rounded-lg p-4 mb-6">
+            <p className="text-red-400 text-sm">{error}</p>
+          </div>
+        )}
 
+        <div className="space-y-4">
           <button
-            onClick={handleGithubSignIn}
-            disabled={isLoading}
-            className="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-3 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleGitHubSignIn}
+            disabled={loading}
+            className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-3 border border-gray-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? (
+            {loading ? (
               <Loader2 className="h-5 w-5 animate-spin" />
             ) : (
               <Github className="h-5 w-5" />
             )}
-            Sign in with GitHub
+            {loading ? 'Signing in...' : 'Continue with GitHub'}
           </button>
 
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-400">
-              By signing in, you agree to our{' '}
-              <a href="#" className="text-cyan-400 hover:underline">
-                Terms of Service
-              </a>{' '}
-              and{' '}
-              <a href="#" className="text-cyan-400 hover:underline">
-                Privacy Policy
-              </a>
-            </p>
+          <div className="text-center">
+            <Link 
+              href="/"
+              className="text-gray-400 hover:text-white text-sm flex items-center justify-center gap-2 transition-colors"
+            >
+              <ArrowLeft size={16} />
+              Back to Home
+            </Link>
           </div>
+        </div>
+
+        <div className="mt-8 text-center text-xs text-gray-500">
+          By signing in, you agree to our Terms of Service and Privacy Policy
         </div>
       </div>
     </div>

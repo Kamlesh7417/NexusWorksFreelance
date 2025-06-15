@@ -1,64 +1,69 @@
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { getToken } from 'next-auth/jwt';
 
-// Protected routes that require authentication
-const protectedRoutes = [
-  '/dashboard',
-  '/profile',
-  '/projects/create',
-  '/messages',
-  '/settings',
-];
+export async function middleware(req: NextRequest) {
+  const res = NextResponse.next();
+  const supabase = createMiddlewareClient({ req, res });
 
-// Routes that require specific roles
-const roleProtectedRoutes = {
-  '/projects/create': ['client', 'admin'],
-  '/client-dashboard': ['client', 'admin'],
-  '/developer-dashboard': ['developer', 'freelancer', 'student', 'admin'],
-};
+  // Refresh session if expired - required for Server Components
+  const { data: { session } } = await supabase.auth.getSession();
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  
-  // Check if the route is protected
+  // Protected routes that require authentication
+  const protectedRoutes = ['/dashboard', '/profile', '/projects/create'];
+  const authRoutes = ['/auth/signin', '/onboarding'];
+
   const isProtectedRoute = protectedRoutes.some(route => 
-    pathname === route || pathname.startsWith(`${route}/`)
+    req.nextUrl.pathname.startsWith(route)
   );
   
-  if (isProtectedRoute) {
-    const token = await getToken({ req: request, secret: process.env.NEXTAUTH_SECRET });
-    
-    // If no token, redirect to sign in
-    if (!token) {
-      const url = new URL('/auth/signin', request.url);
-      url.searchParams.set('callbackUrl', encodeURI(pathname));
-      return NextResponse.redirect(url);
-    }
-    
-    // Check role-based access
-    for (const [route, roles] of Object.entries(roleProtectedRoutes)) {
-      if (pathname === route || pathname.startsWith(`${route}/`)) {
-        const userRole = token.role as string;
-        
-        if (!roles.includes(userRole)) {
-          return NextResponse.redirect(new URL('/unauthorized', request.url));
-        }
+  const isAuthRoute = authRoutes.some(route => 
+    req.nextUrl.pathname.startsWith(route)
+  );
+
+  // Redirect unauthenticated users from protected routes
+  if (isProtectedRoute && !session) {
+    const redirectUrl = new URL('/auth/signin', req.url);
+    redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  // Redirect authenticated users from auth routes
+  if (isAuthRoute && session) {
+    return NextResponse.redirect(new URL('/dashboard', req.url));
+  }
+
+  // Check if user needs onboarding
+  if (session && req.nextUrl.pathname === '/dashboard') {
+    try {
+      const { data: profile } = await supabase
+        .from('user_profiles')
+        .select('skills, role')
+        .eq('id', session.user.id)
+        .single();
+
+      // Redirect to onboarding if profile is incomplete
+      if (!profile || !profile.skills || profile.skills.length === 0) {
+        return NextResponse.redirect(new URL('/onboarding', req.url));
       }
+    } catch (error) {
+      // If profile doesn't exist, redirect to onboarding
+      return NextResponse.redirect(new URL('/onboarding', req.url));
     }
   }
-  
-  return NextResponse.next();
+
+  return res;
 }
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/profile/:path*',
-    '/projects/create/:path*',
-    '/messages/:path*',
-    '/settings/:path*',
-    '/client-dashboard/:path*',
-    '/developer-dashboard/:path*',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     * - public folder
+     */
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

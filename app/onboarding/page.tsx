@@ -1,274 +1,227 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Loader2, User, Briefcase, Code, Building, Plus, X } from 'lucide-react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { User, Briefcase, GraduationCap, Loader2, ArrowRight } from 'lucide-react';
 
-export default function Onboarding() {
-  const { data: session, status, update } = useSession();
-  const router = useRouter();
+export default function OnboardingPage() {
+  const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
-    role: 'developer',
+    role: '',
+    skills: '',
+    hourly_rate: '',
     bio: '',
-    skills: [] as string[],
-    hourlyRate: 0,
-    newSkill: ''
+    experience_level: 'junior'
   });
-  const [loading, setLoading] = useState(false);
+
+  const router = useRouter();
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
-    if (status === 'unauthenticated') {
-      router.push('/auth/signin?callbackUrl=/onboarding');
-    } else if (status === 'authenticated' && session?.user?.profile?.onboarded) {
-      router.push('/dashboard');
-    }
-  }, [status, session, router]);
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        router.push('/auth/signin');
+        return;
+      }
+      setUser(user);
+    };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-  };
+    getUser();
+  }, [router, supabase.auth]);
 
-  const handleAddSkill = () => {
-    if (formData.newSkill.trim() && !formData.skills.includes(formData.newSkill.trim())) {
-      setFormData(prev => ({
-        ...prev,
-        skills: [...prev.skills, prev.newSkill.trim()],
-        newSkill: ''
-      }));
-    }
-  };
-
-  const handleRemoveSkill = (skill: string) => {
-    setFormData(prev => ({
-      ...prev,
-      skills: prev.skills.filter(s => s !== skill)
-    }));
+  const handleRoleSelect = (role: string) => {
+    setFormData(prev => ({ ...prev, role }));
+    setStep(2);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) return;
+
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/onboarding', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          role: formData.role,
-          bio: formData.bio,
-          skills: formData.skills,
-          hourlyRate: formData.hourlyRate
-        }),
-      });
+      const skillsArray = formData.skills
+        .split(',')
+        .map(skill => skill.trim())
+        .filter(skill => skill.length > 0);
 
-      if (!response.ok) {
-        throw new Error('Failed to complete onboarding');
+      const { error } = await supabase
+        .from('user_profiles')
+        .update({
+          role: formData.role,
+          skills: skillsArray,
+          hourly_rate: formData.role === 'developer' ? parseInt(formData.hourly_rate) || null : null,
+          bio: formData.bio,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', user.id);
+
+      if (error) {
+        console.error('Profile update error:', error);
+        alert('Failed to update profile. Please try again.');
+        return;
       }
 
-      // Update session
-      await update();
-      
-      // Redirect to dashboard
       router.push('/dashboard');
-    } catch (error) {
-      console.error('Error during onboarding:', error);
+    } catch (err) {
+      console.error('Onboarding error:', err);
+      alert('An error occurred. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
-  if (status === 'loading' || !session) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
-        <div className="text-center">
-          <Loader2 size={48} className="animate-spin text-cyan-400 mx-auto mb-4" />
-          <p className="text-cyan-400 text-lg">Loading...</p>
-        </div>
+        <Loader2 className="h-8 w-8 animate-spin text-cyan-400" />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
-      <div className="w-full max-w-2xl">
-        <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-8 shadow-2xl">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-cyan-400 mb-2">
-              Complete Your Profile
-            </h1>
-            <p className="text-gray-400">
-              Welcome to NexusWorks, {session.user.name}! Let's set up your profile.
-            </p>
-          </div>
+      <div className="max-w-2xl w-full bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-8">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-white mb-2">Welcome to NexusWorks!</h1>
+          <p className="text-gray-400">Let's set up your profile to get started</p>
+        </div>
 
-          <div className="flex justify-between mb-8">
-            {[1, 2].map((s) => (
-              <div 
-                key={s} 
-                className={`w-1/2 h-2 rounded-full mx-1 ${
-                  s <= step ? 'bg-cyan-400' : 'bg-white/20'
-                }`}
-              ></div>
-            ))}
-          </div>
+        {step === 1 && (
+          <div className="space-y-6">
+            <h2 className="text-xl font-semibold text-white text-center mb-6">
+              What best describes you?
+            </h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <button
+                onClick={() => handleRoleSelect('client')}
+                className="p-6 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl transition-all duration-200 text-center group"
+              >
+                <Briefcase size={48} className="mx-auto mb-4 text-green-400 group-hover:scale-110 transition-transform" />
+                <h3 className="text-lg font-semibold text-white mb-2">Client</h3>
+                <p className="text-sm text-gray-400">I want to hire developers for my projects</p>
+              </button>
 
+              <button
+                onClick={() => handleRoleSelect('developer')}
+                className="p-6 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl transition-all duration-200 text-center group"
+              >
+                <User size={48} className="mx-auto mb-4 text-cyan-400 group-hover:scale-110 transition-transform" />
+                <h3 className="text-lg font-semibold text-white mb-2">Developer</h3>
+                <p className="text-sm text-gray-400">I'm a freelancer looking for projects</p>
+              </button>
+
+              <button
+                onClick={() => handleRoleSelect('developer')}
+                className="p-6 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl transition-all duration-200 text-center group"
+              >
+                <GraduationCap size={48} className="mx-auto mb-4 text-purple-400 group-hover:scale-110 transition-transform" />
+                <h3 className="text-lg font-semibold text-white mb-2">Student</h3>
+                <p className="text-sm text-gray-400">I want to learn and earn while building skills</p>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {step === 2 && (
           <form onSubmit={handleSubmit} className="space-y-6">
-            {step === 1 && (
+            <h2 className="text-xl font-semibold text-white text-center mb-6">
+              Tell us more about yourself
+            </h2>
+
+            <div>
+              <label className="block text-sm font-medium text-cyan-400 mb-2">
+                Bio
+              </label>
+              <textarea
+                value={formData.bio}
+                onChange={(e) => setFormData(prev => ({ ...prev, bio: e.target.value }))}
+                className="w-full bg-white/10 border border-cyan-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 min-h-[100px]"
+                placeholder="Tell us about yourself, your experience, and what you're passionate about..."
+              />
+            </div>
+
+            {formData.role === 'developer' && (
               <>
                 <div>
                   <label className="block text-sm font-medium text-cyan-400 mb-2">
-                    I am a...
+                    Skills (comma-separated)
                   </label>
-                  <div className="grid grid-cols-2 gap-4">
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, role: 'developer' }))}
-                      className={`p-4 rounded-lg border text-left transition-colors ${
-                        formData.role === 'developer'
-                          ? 'bg-cyan-500/20 border-cyan-500/40 text-white'
-                          : 'bg-white/5 border-white/20 text-gray-400 hover:bg-white/10'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 mb-2">
-                        <Code size={20} className={formData.role === 'developer' ? 'text-cyan-400' : 'text-gray-400'} />
-                        <span className="font-medium">Developer</span>
-                      </div>
-                      <p className="text-sm opacity-80">I want to find work and build projects</p>
-                    </button>
-                    
-                    <button
-                      type="button"
-                      onClick={() => setFormData(prev => ({ ...prev, role: 'client' }))}
-                      className={`p-4 rounded-lg border text-left transition-colors ${
-                        formData.role === 'client'
-                          ? 'bg-cyan-500/20 border-cyan-500/40 text-white'
-                          : 'bg-white/5 border-white/20 text-gray-400 hover:bg-white/10'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3 mb-2">
-                        <Building size={20} className={formData.role === 'client' ? 'text-cyan-400' : 'text-gray-400'} />
-                        <span className="font-medium">Client</span>
-                      </div>
-                      <p className="text-sm opacity-80">I want to hire developers for my projects</p>
-                    </button>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-cyan-400 mb-2">
-                    Bio
-                  </label>
-                  <textarea
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    rows={4}
-                    className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-400"
-                    placeholder="Tell us about yourself..."
+                  <input
+                    type="text"
+                    value={formData.skills}
+                    onChange={(e) => setFormData(prev => ({ ...prev, skills: e.target.value }))}
+                    className="w-full bg-white/10 border border-cyan-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                    placeholder="React, Node.js, Python, TypeScript..."
+                    required
                   />
                 </div>
 
-                <div className="flex justify-end">
-                  <button
-                    type="button"
-                    onClick={() => setStep(2)}
-                    className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200"
-                  >
-                    Next
-                  </button>
-                </div>
-              </>
-            )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-cyan-400 mb-2">
+                      Experience Level
+                    </label>
+                    <select
+                      value={formData.experience_level}
+                      onChange={(e) => setFormData(prev => ({ ...prev, experience_level: e.target.value }))}
+                      className="w-full bg-white/10 border border-cyan-500/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                    >
+                      <option value="junior" className="bg-gray-900">Junior (0-2 years)</option>
+                      <option value="mid" className="bg-gray-900">Mid-level (2-5 years)</option>
+                      <option value="senior" className="bg-gray-900">Senior (5+ years)</option>
+                      <option value="expert" className="bg-gray-900">Expert (10+ years)</option>
+                    </select>
+                  </div>
 
-            {step === 2 && (
-              <>
-                {formData.role === 'developer' && (
                   <div>
                     <label className="block text-sm font-medium text-cyan-400 mb-2">
                       Hourly Rate (USD)
                     </label>
                     <input
                       type="number"
-                      name="hourlyRate"
-                      value={formData.hourlyRate}
-                      onChange={handleInputChange}
-                      min="0"
-                      className="w-full bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-400"
+                      value={formData.hourly_rate}
+                      onChange={(e) => setFormData(prev => ({ ...prev, hourly_rate: e.target.value }))}
+                      className="w-full bg-white/10 border border-cyan-500/30 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                       placeholder="50"
+                      min="1"
                     />
                   </div>
-                )}
-
-                <div>
-                  <label className="block text-sm font-medium text-cyan-400 mb-2">
-                    Skills
-                  </label>
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {formData.skills.map((skill, index) => (
-                      <div key={index} className="flex items-center gap-1 bg-cyan-500/20 border border-cyan-500/40 rounded-full px-3 py-1">
-                        <span className="text-sm text-white">{skill}</span>
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveSkill(skill)}
-                          className="text-red-400 hover:text-red-300"
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      name="newSkill"
-                      value={formData.newSkill}
-                      onChange={handleInputChange}
-                      placeholder="Add a skill..."
-                      className="flex-1 bg-white/10 border border-white/20 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-cyan-400"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleAddSkill}
-                      className="bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-500/40 text-cyan-400 px-4 py-2 rounded-lg transition-colors"
-                    >
-                      <Plus size={16} />
-                    </button>
-                  </div>
-                </div>
-
-                <div className="flex justify-between">
-                  <button
-                    type="button"
-                    onClick={() => setStep(1)}
-                    className="bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200"
-                  >
-                    Back
-                  </button>
-                  
-                  <button
-                    type="submit"
-                    disabled={loading}
-                    className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    {loading ? (
-                      <>
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        Saving...
-                      </>
-                    ) : (
-                      'Complete Setup'
-                    )}
-                  </button>
                 </div>
               </>
             )}
+
+            <div className="flex gap-4">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="flex-1 border border-gray-500 text-gray-300 hover:bg-gray-500/20 font-semibold py-3 px-6 rounded-lg transition-all duration-200"
+              >
+                Back
+              </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    Complete Setup
+                    <ArrowRight size={16} />
+                  </>
+                )}
+              </button>
+            </div>
           </form>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -1,10 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useSession } from 'next-auth/react';
-import { LoginModal } from '@/components/auth/login-modal';
-import { ClientDashboard } from '@/components/client/client-dashboard';
-import { DeveloperDashboard } from '@/components/developer/developer-dashboard';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { AuthButton } from '@/components/auth/auth-button';
 import { HomePage } from '@/components/pages/home-page';
 import { MarketplacePage } from '@/components/pages/marketplace-page';
 import { EnhancedLearningPage } from '@/components/pages/enhanced-learning-page';
@@ -13,16 +11,32 @@ import { EnhancedAIAssistant } from '@/components/ai/enhanced-ai-assistant';
 import { BCIPanel } from '@/components/bci/bci-panel';
 import { NotificationBar } from '@/components/notifications/notification-bar';
 import { LoadingOverlay } from '@/components/ui/loading-overlay';
-import { LogOut, Home as HomeIcon } from 'lucide-react';
-import { AuthStatus } from '@/components/auth/auth-status';
 
 export type PageType = 'home' | 'marketplace' | 'learning' | 'community';
 
 export default function Home() {
-  const { data: session, status } = useSession();
-  const [showLoginModal, setShowLoginModal] = useState(false);
   const [currentPage, setCurrentPage] = useState<PageType>('home');
   const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<any>(null);
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+    };
+
+    getUser();
+
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user ?? null);
+      }
+    );
+
+    return () => subscription.unsubscribe();
+  }, [supabase]);
 
   const switchPage = (page: PageType) => {
     setIsLoading(true);
@@ -32,21 +46,17 @@ export default function Home() {
     }, 500);
   };
 
-  // If user is logged in, show role-specific dashboard
-  if (session?.user) {
-    if (session.user.role === 'client') {
-      return <ClientDashboard />;
-    } else if (session.user.role === 'developer' || session.user.role === 'freelancer' || session.user.role === 'student') {
-      return <DeveloperDashboard />;
-    }
-  }
-
-  // Show public website with proper navigation
   return (
     <div className="min-h-screen">
-      {/* Header with Role-Based Navigation */}
+      {/* Header with Enhanced Navigation */}
       <header className="nexus-header">
-        <h1>NexusWorks</h1>
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center">
+            <span className="text-white font-bold text-xl">N</span>
+          </div>
+          <h1>NexusWorks</h1>
+        </div>
+        
         <nav className="nexus-nav">
           <ul>
             <li>
@@ -103,10 +113,16 @@ export default function Home() {
               </a>
             </li>
             <li>
-              <AuthStatus />
+              <a href="/supabase-demo" className="text-green-400 hover:text-green-300">
+                Supabase Demo
+              </a>
             </li>
           </ul>
         </nav>
+
+        <div className="flex items-center gap-4">
+          <AuthButton />
+        </div>
       </header>
 
       <BCIPanel />
@@ -128,12 +144,6 @@ export default function Home() {
       </footer>
       
       {isLoading && <LoadingOverlay />}
-
-      {/* Login Modal */}
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-      />
     </div>
   );
 }
