@@ -1,7 +1,7 @@
 'use client';
 
-import { Component, ErrorInfo, ReactNode } from 'react';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import React, { Component, ErrorInfo, ReactNode } from 'react';
+import { AlertTriangle, RefreshCw } from 'lucide-react';
 import { errorLogger } from '@/lib/error-logger';
 
 interface ErrorBoundaryProps {
@@ -17,16 +17,25 @@ interface ErrorBoundaryState {
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
     super(props);
-    this.state = { hasError: false, error: null };
+    this.state = {
+      hasError: false,
+      error: null
+    };
   }
 
   static getDerivedStateFromError(error: Error): ErrorBoundaryState {
-    return { hasError: true, error };
+    return {
+      hasError: true,
+      error
+    };
   }
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     // Log the error to our error tracking service
-    errorLogger.captureException(error, { errorInfo });
+    errorLogger.captureException(error, { 
+      componentStack: errorInfo.componentStack,
+      url: typeof window !== 'undefined' ? window.location.href : ''
+    });
   }
 
   handleRetry = (): void => {
@@ -35,27 +44,50 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   render(): ReactNode {
     if (this.state.hasError) {
-      // Custom fallback UI
-      return this.props.fallback || (
+      if (this.props.fallback) {
+        return this.props.fallback;
+      }
+
+      return (
         <div className="min-h-[400px] flex items-center justify-center p-6">
           <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-8 max-w-md text-center">
             <div className="w-16 h-16 bg-red-500/20 rounded-full flex items-center justify-center mx-auto mb-6">
-              <AlertCircle size={32} className="text-red-400" />
+              <AlertTriangle size={32} className="text-red-400" />
             </div>
             
             <h2 className="text-2xl font-bold text-white mb-4">Something went wrong</h2>
             
             <p className="text-gray-300 mb-6">
-              {this.state.error?.message || 'An unexpected error occurred. Our team has been notified.'}
+              We've encountered an unexpected error. Our team has been notified and is working on a fix.
             </p>
             
-            <button 
-              onClick={this.handleRetry}
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 mx-auto"
-            >
-              <RefreshCw size={16} />
-              Try Again
-            </button>
+            <div className="space-y-3">
+              <button 
+                onClick={this.handleRetry}
+                className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center gap-2"
+              >
+                <RefreshCw size={16} />
+                Try Again
+              </button>
+              
+              <a 
+                href="/"
+                className="w-full border border-gray-500 text-gray-300 hover:bg-gray-500/20 font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center justify-center"
+              >
+                Back to Home
+              </a>
+            </div>
+            
+            {this.state.error && (
+              <div className="mt-6 text-left">
+                <details className="text-xs text-gray-400">
+                  <summary className="cursor-pointer hover:text-gray-300 transition-colors">Error Details</summary>
+                  <pre className="mt-2 p-2 bg-black/30 rounded overflow-auto">
+                    {this.state.error.toString()}
+                  </pre>
+                </details>
+              </div>
+            )}
           </div>
         </div>
       );
