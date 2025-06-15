@@ -29,59 +29,47 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
       }
     };
 
-    if (userId) {
-      loadUnreadCount();
-      
-      // Subscribe to new messages
-      const subscription = supabase
-        .channel('messages')
-        .on('postgres_changes', 
-          { 
-            event: 'INSERT', 
-            schema: 'public', 
-            table: 'messages',
-            filter: `receiver_id=eq.${userId}`
-          }, 
-          () => {
-            setUnreadCount(prev => prev + 1);
-          }
-        )
-        .subscribe();
+    loadUnreadCount();
 
-      // Subscribe to message updates (read status)
-      const updateSubscription = supabase
-        .channel('message-updates')
-        .on('postgres_changes', 
-          { 
-            event: 'UPDATE', 
-            schema: 'public', 
-            table: 'messages',
-            filter: `receiver_id=eq.${userId}`
-          }, 
-          (payload) => {
-            if (payload.new.read && !payload.old.read) {
-              setUnreadCount(prev => Math.max(0, prev - 1));
-            }
-          }
-        )
-        .subscribe();
+    // Subscribe to new messages
+    const subscription = supabase
+      .channel('messages_count')
+      .on('postgres_changes', 
+        { 
+          event: 'INSERT', 
+          schema: 'public', 
+          table: 'messages',
+          filter: `receiver_id=eq.${userId}`
+        }, 
+        () => {
+          setUnreadCount(prev => prev + 1);
+        }
+      )
+      .on('postgres_changes', 
+        { 
+          event: 'UPDATE', 
+          schema: 'public', 
+          table: 'messages',
+          filter: `receiver_id=eq.${userId} AND read=eq.true`
+        }, 
+        () => {
+          setUnreadCount(prev => Math.max(0, prev - 1));
+        }
+      )
+      .subscribe();
 
-      return () => {
-        supabase.removeChannel(subscription);
-        supabase.removeChannel(updateSubscription);
-      };
-    }
+    return () => {
+      supabase.removeChannel(subscription);
+    };
   }, [userId, supabase]);
 
   return (
     <Link href="/messages" className="relative">
       <Bell size={20} className="text-gray-400 hover:text-white transition-colors" />
       {unreadCount > 0 && (
-        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-          <span className="text-xs font-bold text-white">
-            {unreadCount > 9 ? '9+' : unreadCount}
-          </span>
-        </div>
+        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+          {unreadCount > 9 ? '9+' : unreadCount}
+        </span>
       )}
     </Link>
   );
