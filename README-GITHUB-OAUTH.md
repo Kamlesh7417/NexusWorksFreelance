@@ -56,6 +56,9 @@ For your production domain `nexusworks.in`:
 2. In your Supabase project, add your domain to the Site URL:
    - Go to **Authentication** → **URL Configuration**
    - Set **Site URL** to `https://nexusworks.in`
+   - Add **Redirect URLs**:
+     - `https://nexusworks.in/auth/callback`
+     - `http://localhost:3000/auth/callback` (for development)
 
 ## 6. Testing the Authentication
 

@@ -188,10 +188,15 @@ export function AuthButton() {
           <div className="border-t border-white/10 p-2">
             <button 
               onClick={handleSignOut}
+              disabled={signingOut}
               className="flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-red-500/10 w-full text-left rounded-lg transition-colors"
             >
-              <LogOut size={16} />
-              Sign Out
+              {signingOut ? (
+                <Loader2 size={16} className="animate-spin" />
+              ) : (
+                <LogOut size={16} />
+              )}
+              {signingOut ? 'Signing Out...' : 'Sign Out'}
             </button>
           </div>
         </div>
