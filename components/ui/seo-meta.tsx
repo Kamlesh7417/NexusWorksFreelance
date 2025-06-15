@@ -1,3 +1,5 @@
+'use client';
+
 import Head from 'next/head';
 
 interface SEOMetaProps {
@@ -23,36 +25,33 @@ export function SEOMeta({
   noIndex = false,
   children
 }: SEOMetaProps) {
-  const fullTitle = title.includes('NexusWorks') ? title : `${title} | NexusWorks`;
-  
   return (
     <Head>
-      {/* Basic Meta Tags */}
-      <title>{fullTitle}</title>
+      <title>{title}</title>
       <meta name="description" content={description} />
       <meta name="keywords" content={keywords} />
       
       {/* Open Graph / Facebook */}
       <meta property="og:type" content={ogType} />
       <meta property="og:url" content={ogUrl} />
-      <meta property="og:title" content={fullTitle} />
+      <meta property="og:title" content={title} />
       <meta property="og:description" content={description} />
       <meta property="og:image" content={ogImage} />
       
       {/* Twitter */}
       <meta name="twitter:card" content={twitterCard} />
       <meta name="twitter:url" content={ogUrl} />
-      <meta name="twitter:title" content={fullTitle} />
+      <meta name="twitter:title" content={title} />
       <meta name="twitter:description" content={description} />
       <meta name="twitter:image" content={ogImage} />
       
       {/* Canonical URL */}
       <link rel="canonical" href={ogUrl} />
       
-      {/* No Index if specified */}
+      {/* No index if specified */}
       {noIndex && <meta name="robots" content="noindex, nofollow" />}
       
-      {/* Additional Meta Tags */}
+      {/* Additional meta tags */}
       {children}
     </Head>
   );
