@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { 
@@ -23,6 +21,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { MessageList } from '../ui/message-list';
+import { Logo } from '@/components/ui/logo';
 
 interface ClientDashboardProps {
   user: any;
