@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NexusWorks - Offline</title>
+  <style>
+    body {
+      font-family: 'Inter', 'Poppins', -apple-system, sans-serif;
+      background: linear-gradient(135deg, #080810, #0f0f14, #151520);
+      color: #ffffff;
+      min-height: 100vh;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .container {
+      max-width: 500px;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 1rem;
+      backdrop-filter: blur(10px);
+    }
+    .logo {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #00e6ff, #0066ff);
+      border-radius: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0 auto 2rem;
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+      color: #00e6ff;
+    }
+    p {
+      color: #e5e5e5;
+      line-height: 1.6;
+      margin-bottom: 2rem;
+    }
+    .button {
+      background: linear-gradient(135deg, #00e6ff, #0066ff);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 230, 255, 0.4);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="logo">N</div>
+    <h1>You're Offline</h1>
+    <p>
+      It looks like you've lost your internet connection. NexusWorks requires an active connection to access the platform's features.
+    </p>
+    <p>
+      Please check your connection and try again.
+    </p>
+    <button class="button" onclick="window.location.reload()">
+      Retry Connection
+    </button>
+  </div>
+</body>
+</html>
