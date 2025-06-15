@@ -12,20 +12,23 @@ import {
   Briefcase,
   Tag,
   MessageSquare,
-  Loader2,
-  CheckCircle,
-  AlertCircle,
-  Star,
-  User,
   Eye,
+  Edit,
+  Trash2,
+  CheckCircle,
+  XCircle,
+  AlertCircle,
+  Loader2,
+  User,
   Flag,
   Zap,
-  Edit,
-  Trash2
+  Star,
+  MapPin
 } from 'lucide-react';
 import Link from 'next/link';
 import { BidForm } from '@/components/ui/bid-form';
 import { ProjectMilestone } from '@/components/ui/project-milestone';
+import { MessageButton } from '@/components/ui/message-button';
 
 export default function ProjectDetailPage({ params }: { params: { id: string } }) {
   const [project, setProject] = useState<any>(null);
@@ -162,44 +165,6 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
     }
   };
 
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case 'high': return 'text-red-400 bg-red-500/20 border-red-500/40';
-      case 'medium': return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/40';
-      case 'low': return 'text-green-400 bg-green-500/20 border-green-500/40';
-      default: return 'text-gray-400 bg-gray-500/20 border-gray-500/40';
-    }
-  };
-
-  const getComplexityColor = (complexity: string) => {
-    switch (complexity) {
-      case 'expert': return 'text-red-400 bg-red-500/20 border-red-500/40';
-      case 'complex': return 'text-orange-400 bg-orange-500/20 border-orange-500/40';
-      case 'moderate': return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/40';
-      case 'simple': return 'text-green-400 bg-green-500/20 border-green-500/40';
-      default: return 'text-gray-400 bg-gray-500/20 border-gray-500/40';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'completed': return 'text-green-400 bg-green-500/20 border-green-500/40';
-      case 'in_progress': return 'text-blue-400 bg-blue-500/20 border-blue-500/40';
-      case 'active': return 'text-cyan-400 bg-cyan-500/20 border-cyan-500/40';
-      case 'draft': return 'text-gray-400 bg-gray-500/20 border-gray-500/40';
-      case 'cancelled': return 'text-red-400 bg-red-500/20 border-red-500/40';
-      default: return 'text-gray-400 bg-gray-500/20 border-gray-500/40';
-    }
-  };
-
-  const getBidStatusColor = (status: string) => {
-    switch (status) {
-      case 'accepted': return 'text-green-400 bg-green-500/20 border-green-500/40';
-      case 'rejected': return 'text-red-400 bg-red-500/20 border-red-500/40';
-      default: return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/40';
-    }
-  };
-
   const handleAcceptBid = async (bidId: string, developerId: string) => {
     try {
       // Update bid status
@@ -247,9 +212,92 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
         .eq('project_id', params.id);
       
       setBids(updatedBids || []);
+      
+      // Send a message to the developer
+      await supabase
+        .from('messages')
+        .insert({
+          sender_id: user.id,
+          receiver_id: developerId,
+          project_id: project.id,
+          content: `Congratulations! Your bid for the project "${project.title}" has been accepted. Let's get started!`,
+          read: false
+        });
     } catch (error) {
       console.error('Error accepting bid:', error);
       alert('Failed to accept bid. Please try again.');
+    }
+  };
+
+  const handleRejectBid = async (bidId: string, developerId: string) => {
+    try {
+      await supabase
+        .from('project_bids')
+        .update({ status: 'rejected' })
+        .eq('id', bidId);
+      
+      // Refresh bids
+      const { data: updatedBids } = await supabase
+        .from('project_bids')
+        .select(`
+          *,
+          freelancer:user_profiles(id, full_name, avatar_url, role, hourly_rate, skills)
+        `)
+        .eq('project_id', params.id);
+      
+      setBids(updatedBids || []);
+      
+      // Send a message to the developer
+      await supabase
+        .from('messages')
+        .insert({
+          sender_id: user.id,
+          receiver_id: developerId,
+          project_id: project.id,
+          content: `Thank you for your interest in the project "${project.title}". Unfortunately, we've decided to go with another developer for this project.`,
+          read: false
+        });
+    } catch (error) {
+      console.error('Error rejecting bid:', error);
+      alert('Failed to reject bid. Please try again.');
+    }
+  };
+
+  const getUrgencyColor = (urgency: string) => {
+    switch (urgency) {
+      case 'high': return 'text-red-400 bg-red-500/20 border-red-500/40';
+      case 'medium': return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/40';
+      case 'low': return 'text-green-400 bg-green-500/20 border-green-500/40';
+      default: return 'text-gray-400 bg-gray-500/20 border-gray-500/40';
+    }
+  };
+
+  const getComplexityColor = (complexity: string) => {
+    switch (complexity) {
+      case 'expert': return 'text-red-400 bg-red-500/20 border-red-500/40';
+      case 'complex': return 'text-orange-400 bg-orange-500/20 border-orange-500/40';
+      case 'moderate': return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/40';
+      case 'simple': return 'text-green-400 bg-green-500/20 border-green-500/40';
+      default: return 'text-gray-400 bg-gray-500/20 border-gray-500/40';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'completed': return 'text-green-400 bg-green-500/20 border-green-500/40';
+      case 'in_progress': return 'text-blue-400 bg-blue-500/20 border-blue-500/40';
+      case 'active': return 'text-cyan-400 bg-cyan-500/20 border-cyan-500/40';
+      case 'draft': return 'text-gray-400 bg-gray-500/20 border-gray-500/40';
+      case 'cancelled': return 'text-red-400 bg-red-500/20 border-red-500/40';
+      default: return 'text-gray-400 bg-gray-500/20 border-gray-500/40';
+    }
+  };
+
+  const getBidStatusColor = (status: string) => {
+    switch (status) {
+      case 'accepted': return 'text-green-400 bg-green-500/20 border-green-500/40';
+      case 'rejected': return 'text-red-400 bg-red-500/20 border-red-500/40';
+      default: return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/40';
     }
   };
 
@@ -420,6 +468,20 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                         {userBid.message}
                       </div>
                     </div>
+                    
+                    {/* Message Client Button */}
+                    {user && project.client && (
+                      <div className="mt-4">
+                        <MessageButton 
+                          userId={user.id}
+                          recipientId={project.client.id}
+                          recipientName={project.client.full_name}
+                          recipientAvatar={project.client.avatar_url}
+                          projectId={project.id}
+                          className="w-full"
+                        />
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <BidForm 
@@ -460,7 +522,7 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 <div className="space-y-4">
                   {bids.slice(0, showAllBids ? undefined : 3).map(bid => (
                     <div key={bid.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
-                      <div className="flex items-start justify-between mb-3">
+                      <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-3">
                           {bid.freelancer?.avatar_url ? (
                             <img 
@@ -499,28 +561,46 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                         ))}
                       </div>
                       
-                      {project.status === 'active' && (
+                      <div className="flex items-center justify-between">
+                        <div className={`text-xs px-2 py-1 rounded-full ${getBidStatusColor(bid.status)}`}>
+                          {bid.status}
+                        </div>
+                        
                         <div className="flex gap-2">
-                          <button 
-                            onClick={() => handleAcceptBid(bid.id, bid.freelancer.id)}
-                            className="flex-1 bg-gradient-to-r from-green-500/20 to-emerald-500/20 hover:from-green-500/30 hover:to-emerald-500/30 border border-green-500/40 text-green-400 font-medium py-2 px-4 rounded-lg transition-all duration-200"
-                          >
-                            Accept Bid
-                          </button>
-                          <button className="flex-1 bg-white/5 hover:bg-white/10 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200">
-                            Message
-                          </button>
+                          {project.status === 'active' && bid.status === 'pending' && (
+                            <>
+                              <button 
+                                onClick={() => handleAcceptBid(bid.id, bid.freelancer.id)}
+                                className="bg-green-500/20 hover:bg-green-500/30 border border-green-500/40 text-green-400 font-medium py-2 px-3 rounded-lg transition-all duration-200"
+                              >
+                                Accept
+                              </button>
+                              <button 
+                                onClick={() => handleRejectBid(bid.id, bid.freelancer.id)}
+                                className="bg-red-500/20 hover:bg-red-500/30 border border-red-500/40 text-red-400 font-medium py-2 px-3 rounded-lg transition-all duration-200"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                          
+                          {/* Message Button */}
+                          {user && bid.freelancer && (
+                            <MessageButton 
+                              userId={user.id}
+                              recipientId={bid.freelancer.id}
+                              recipientName={bid.freelancer.full_name}
+                              recipientAvatar={bid.freelancer.avatar_url}
+                              projectId={project.id}
+                              variant="icon"
+                            />
+                          )}
+                          
                           <button className="bg-white/5 hover:bg-white/10 border border-white/20 text-white font-medium py-2 px-3 rounded-lg transition-all duration-200">
                             <Eye size={16} />
                           </button>
                         </div>
-                      )}
-                      
-                      {bid.status !== 'pending' && (
-                        <div className={`mt-2 text-xs px-2 py-1 rounded-full inline-block ${getBidStatusColor(bid.status)}`}>
-                          {bid.status}
-                        </div>
-                      )}
+                      </div>
                     </div>
                   ))}
                   
@@ -653,7 +733,10 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 {project.client.location && (
                   <div className="mb-4">
                     <div className="text-sm text-gray-400 mb-1">Location</div>
-                    <div className="text-white">{project.client.location}</div>
+                    <div className="flex items-center gap-1 text-white">
+                      <MapPin size={14} className="text-gray-400" />
+                      {project.client.location}
+                    </div>
                   </div>
                 )}
                 
@@ -667,10 +750,14 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 </div>
                 
                 {user && user.id !== project.client.id && (
-                  <button className="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
-                    <MessageSquare size={16} />
-                    Contact Client
-                  </button>
+                  <MessageButton 
+                    userId={user.id}
+                    recipientId={project.client.id}
+                    recipientName={project.client.full_name}
+                    recipientAvatar={project.client.avatar_url}
+                    projectId={project.id}
+                    className="w-full"
+                  />
                 )}
               </div>
             )}
@@ -708,7 +795,10 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 {project.developer.location && (
                   <div className="mb-4">
                     <div className="text-sm text-gray-400 mb-1">Location</div>
-                    <div className="text-white">{project.developer.location}</div>
+                    <div className="flex items-center gap-1 text-white">
+                      <MapPin size={14} className="text-gray-400" />
+                      {project.developer.location}
+                    </div>
                   </div>
                 )}
                 
@@ -722,10 +812,14 @@ export default function ProjectDetailPage({ params }: { params: { id: string } }
                 </div>
                 
                 {user && user.id !== project.developer.id && (
-                  <button className="w-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2">
-                    <MessageSquare size={16} />
-                    Contact Developer
-                  </button>
+                  <MessageButton 
+                    userId={user.id}
+                    recipientId={project.developer.id}
+                    recipientName={project.developer.full_name}
+                    recipientAvatar={project.developer.avatar_url}
+                    projectId={project.id}
+                    className="w-full"
+                  />
                 )}
               </div>
             )}

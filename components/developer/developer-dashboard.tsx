@@ -23,6 +23,7 @@ import {
   Send
 } from 'lucide-react';
 import Link from 'next/link';
+import { MessageList } from '../ui/message-list';
 
 interface DeveloperDashboardProps {
   user: any;
@@ -157,6 +158,15 @@ export function DeveloperDashboard({ user, profile }: DeveloperDashboardProps) {
     if (score >= 70) return 'text-yellow-400';
     if (score >= 50) return 'text-orange-400';
     return 'text-red-400';
+  };
+
+  const getAvailabilityColor = (availability: string) => {
+    switch (availability) {
+      case 'available': return 'text-green-400 bg-green-500/20';
+      case 'busy': return 'text-yellow-400 bg-yellow-500/20';
+      case 'unavailable': return 'text-red-400 bg-red-500/20';
+      default: return 'text-gray-400 bg-gray-500/20';
+    }
   };
 
   return (
@@ -388,6 +398,18 @@ export function DeveloperDashboard({ user, profile }: DeveloperDashboardProps) {
                 </div>
               )}
             </div>
+            
+            {/* Recent Messages */}
+            <div className="nexus-card">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-cyan-400">Recent Messages</h3>
+                <Link href="/messages" className="text-sm text-cyan-400 hover:text-cyan-300">
+                  View All
+                </Link>
+              </div>
+              
+              <MessageList userId={user.id} limit={3} showViewAll={false} />
+            </div>
           </div>
         )}
 
@@ -512,6 +534,18 @@ export function DeveloperDashboard({ user, profile }: DeveloperDashboardProps) {
                           Update
                         </Link>
                       )}
+                      
+                      {/* Message Client Button */}
+                      {user && project.client && (
+                        <MessageButton 
+                          userId={user.id}
+                          recipientId={project.client.id}
+                          recipientName={project.client.full_name}
+                          recipientAvatar={project.client.avatar_url}
+                          projectId={project.id}
+                          variant="icon"
+                        />
+                      )}
                     </div>
                   </div>
                 ))}
@@ -599,6 +633,17 @@ export function DeveloperDashboard({ user, profile }: DeveloperDashboardProps) {
                           Rejected
                         </div>
                       )}
+                      
+                      {/* Message Client Button */}
+                      {user && bid.project?.client_id && (
+                        <MessageButton 
+                          userId={user.id}
+                          recipientId={bid.project.client_id}
+                          recipientName={bid.project.client?.full_name || 'Client'}
+                          projectId={bid.project.id}
+                          variant="icon"
+                        />
+                      )}
                     </div>
                   </div>
                 ))}
@@ -650,12 +695,14 @@ export function DeveloperDashboard({ user, profile }: DeveloperDashboardProps) {
         {/* Messages Tab */}
         {activeTab === 'messages' && (
           <div className="nexus-card">
-            <h3 className="text-xl font-semibold text-cyan-400 mb-6">Messages</h3>
-            <div className="text-center py-12 text-gray-400">
-              <MessageSquare size={48} className="mx-auto mb-4 opacity-50" />
-              <p>No messages yet</p>
-              <p className="text-sm">Your conversations with clients will appear here</p>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-cyan-400">Messages</h3>
+              <Link href="/messages" className="text-sm text-cyan-400 hover:text-cyan-300">
+                View All Messages
+              </Link>
             </div>
+            
+            <MessageList userId={user.id} limit={10} />
           </div>
         )}
       </div>

@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { User, LogOut, Settings, Github, Loader2 } from 'lucide-react';
+import { User, LogOut, Settings, Github, Loader2, Bell, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
+import { NotificationBadge } from '../ui/notification-badge';
 
 export function AuthButton() {
   const [user, setUser] = useState<any>(null);
@@ -118,30 +119,41 @@ export function AuthButton() {
 
   return (
     <div className="relative">
-      <button
-        onClick={() => setShowMenu(!showMenu)}
-        className="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/20 rounded-lg px-3 py-2 transition-all"
-      >
-        {profile?.avatar_url ? (
-          <img 
-            src={profile.avatar_url} 
-            alt={profile.full_name}
-            className="w-8 h-8 rounded-full"
-          />
-        ) : (
-          <div className="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center">
-            <User size={16} className="text-cyan-400" />
+      <div className="flex items-center gap-4">
+        {/* Notifications */}
+        {user && <NotificationBadge userId={user.id} />}
+        
+        {/* Messages */}
+        <Link href="/messages" className="relative">
+          <MessageSquare size={20} className="text-gray-400 hover:text-white transition-colors" />
+        </Link>
+        
+        {/* User Menu */}
+        <button
+          onClick={() => setShowMenu(!showMenu)}
+          className="flex items-center gap-3 bg-white/5 hover:bg-white/10 border border-white/20 rounded-lg px-3 py-2 transition-all"
+        >
+          {profile?.avatar_url ? (
+            <img 
+              src={profile.avatar_url} 
+              alt={profile.full_name}
+              className="w-8 h-8 rounded-full"
+            />
+          ) : (
+            <div className="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center">
+              <User size={16} className="text-cyan-400" />
+            </div>
+          )}
+          <div className="text-left hidden sm:block">
+            <div className="text-sm font-medium text-white">
+              {profile?.full_name || user.email?.split('@')[0]}
+            </div>
+            <div className="text-xs text-gray-400 capitalize">
+              {profile?.role || 'User'}
+            </div>
           </div>
-        )}
-        <div className="text-left hidden sm:block">
-          <div className="text-sm font-medium text-white">
-            {profile?.full_name || user.email?.split('@')[0]}
-          </div>
-          <div className="text-xs text-gray-400 capitalize">
-            {profile?.role || 'User'}
-          </div>
-        </div>
-      </button>
+        </button>
+      </div>
 
       {showMenu && (
         <div className="absolute right-0 top-full mt-2 w-48 bg-black/90 border border-white/20 rounded-xl shadow-xl backdrop-blur-lg z-50 overflow-hidden animate-fadeIn">
@@ -175,6 +187,13 @@ export function AuthButton() {
               className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
               Profile
+            </a>
+            <a 
+              href="/messages" 
+              className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+            >
+              <MessageSquare size={16} />
+              Messages
             </a>
             <a 
               href="/settings" 

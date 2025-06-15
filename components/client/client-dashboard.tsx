@@ -22,6 +22,7 @@ import {
   Loader2
 } from 'lucide-react';
 import Link from 'next/link';
+import { MessageList } from '../ui/message-list';
 
 interface ClientDashboardProps {
   user: any;
@@ -131,13 +132,24 @@ export function ClientDashboard({ user, profile }: ClientDashboardProps) {
         .eq('client_id', user.id);
       
       setProjects(updatedProjects || []);
+      
+      // Send a message to the developer
+      await supabase
+        .from('messages')
+        .insert({
+          sender_id: user.id,
+          receiver_id: developerId,
+          project_id: projectId,
+          content: `Congratulations! Your bid has been accepted for the project. Let's get started!`,
+          read: false
+        });
     } catch (error) {
       console.error('Error accepting bid:', error);
       alert('Failed to accept bid. Please try again.');
     }
   };
 
-  const handleRejectBid = async (bidId: string) => {
+  const handleRejectBid = async (bidId: string, developerId: string, projectId: string) => {
     try {
       await supabase
         .from('project_bids')
@@ -155,6 +167,17 @@ export function ClientDashboard({ user, profile }: ClientDashboardProps) {
         .in('project_id', projects.map(p => p.id));
       
       setBids(updatedBids || []);
+      
+      // Send a message to the developer
+      await supabase
+        .from('messages')
+        .insert({
+          sender_id: user.id,
+          receiver_id: developerId,
+          project_id: projectId,
+          content: `Thank you for your interest in my project. Unfortunately, I've decided to go with another developer.`,
+          read: false
+        });
     } catch (error) {
       console.error('Error rejecting bid:', error);
       alert('Failed to reject bid. Please try again.');
@@ -433,7 +456,7 @@ export function ClientDashboard({ user, profile }: ClientDashboardProps) {
                                 Accept
                               </button>
                               <button 
-                                onClick={() => handleRejectBid(bid.id)}
+                                onClick={() => handleRejectBid(bid.id, bid.freelancer.id, bid.project_id)}
                                 className="text-xs bg-red-500/20 hover:bg-red-500/30 px-2 py-1 rounded text-red-400"
                               >
                                 Reject
@@ -446,6 +469,18 @@ export function ClientDashboard({ user, profile }: ClientDashboardProps) {
                   ))}
                 </div>
               )}
+            </div>
+            
+            {/* Recent Messages */}
+            <div className="nexus-card">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-cyan-400">Recent Messages</h3>
+                <Link href="/messages" className="text-sm text-cyan-400 hover:text-cyan-300">
+                  View All
+                </Link>
+              </div>
+              
+              <MessageList userId={user.id} limit={3} showViewAll={false} />
             </div>
           </div>
         )}
@@ -616,12 +651,14 @@ export function ClientDashboard({ user, profile }: ClientDashboardProps) {
         {/* Messages Tab */}
         {activeTab === 'messages' && (
           <div className="nexus-card">
-            <h3 className="text-xl font-semibold text-cyan-400 mb-6">Messages</h3>
-            <div className="text-center py-12 text-gray-400">
-              <MessageSquare size={48} className="mx-auto mb-4 opacity-50" />
-              <p>No messages yet</p>
-              <p className="text-sm">Your conversations with developers will appear here</p>
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-xl font-semibold text-cyan-400">Messages</h3>
+              <Link href="/messages" className="text-sm text-cyan-400 hover:text-cyan-300">
+                View All Messages
+              </Link>
             </div>
+            
+            <MessageList userId={user.id} limit={10} />
           </div>
         )}
       </div>
