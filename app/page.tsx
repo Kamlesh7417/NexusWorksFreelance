@@ -8,7 +8,9 @@ import { MarketplacePage } from '@/components/pages/marketplace-page';
 import { EnhancedLearningPage } from '@/components/pages/enhanced-learning-page';
 import { CommunityPage } from '@/components/pages/community-page';
 import { EnhancedAIAssistant } from '@/components/ai/enhanced-ai-assistant';
+import { NotificationBar } from '@/components/notifications/notification-bar';
 import { LoadingOverlay } from '@/components/ui/loading-overlay';
+import { Logo } from '@/components/ui/logo';
 
 export type PageType = 'home' | 'marketplace' | 'learning' | 'community';
 
@@ -49,10 +51,7 @@ export default function Home() {
       {/* Header with Enhanced Navigation */}
       <header className="nexus-header">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center">
-            <span className="text-white font-bold text-xl">N</span>
-          </div>
-          <h1>NexusWorks</h1>
+          <Logo size="medium" withText={true} />
         </div>
         
         <nav className="nexus-nav">
@@ -113,6 +112,7 @@ export default function Home() {
         </div>
       </header>
 
+      <NotificationBar />
       <EnhancedAIAssistant />
       
       <main className="nexus-container">
@@ -123,7 +123,7 @@ export default function Home() {
       </main>
       
       <footer className="nexus-footer">
-        <p>&copy; 2024 NexusWorks. Where Talent Meets Opportunity.</p>
+        <p>&copy; 2024 NexusWorks. Where Innovation Meets Opportunity.</p>
         <div>
           <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a> | <a href="#">Support</a>
         </div>

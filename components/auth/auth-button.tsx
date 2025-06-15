@@ -2,9 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { User, LogOut, Settings, Github, Loader2, Bell, MessageSquare, Briefcase, Home } from 'lucide-react';
+import { User, LogOut, Settings, Github, Loader2, Bell, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { NotificationBadge } from '../ui/notification-badge';
+import { Logo } from '@/components/ui/logo';
 
 export function AuthButton() {
   const [user, setUser] = useState<any>(null);
@@ -127,11 +128,6 @@ export function AuthButton() {
         <Link href="/messages" className="relative">
           <MessageSquare size={20} className="text-gray-400 hover:text-white transition-colors" />
         </Link>
-
-        {/* Dashboard */}
-        <Link href="/dashboard" className="relative">
-          <Briefcase size={20} className="text-gray-400 hover:text-white transition-colors" />
-        </Link>
         
         {/* User Menu */}
         <button
@@ -181,41 +177,32 @@ export function AuthButton() {
           </div>
 
           <div className="py-2">
-            <Link 
-              href="/" 
-              className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
-            >
-              <Home size={16} />
-              Home
-            </Link>
-            <Link 
+            <a 
               href="/dashboard" 
               className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
-              <Briefcase size={16} />
               Dashboard
-            </Link>
-            <Link 
+            </a>
+            <a 
               href="/profile" 
               className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
-              <User size={16} />
               Profile
-            </Link>
-            <Link 
+            </a>
+            <a 
               href="/messages" 
               className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
               <MessageSquare size={16} />
               Messages
-            </Link>
-            <Link 
+            </a>
+            <a 
               href="/settings" 
               className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
               <Settings size={16} />
               Settings
-            </Link>
+            </a>
           </div>
 
           <div className="border-t border-white/10 p-2">
