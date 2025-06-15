@@ -19,7 +19,8 @@ import {
   TrendingUp,
   Award,
   Clock,
-  Star
+  Star,
+  CheckCircle
 } from 'lucide-react';
 
 interface EnhancedLearningPageProps {

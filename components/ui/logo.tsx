@@ -9,8 +9,8 @@ interface LogoProps {
   className?: string;
 }
 
-export function Logo({ size = 'medium', withText = true, className = '' }: LogoProps) {
-  // Size mapping
+export function Logo({ size = 'medium', withText = false, className = '' }: LogoProps) {
+  // Size mappings
   const sizeMap = {
     small: { width: 32, height: 32, textClass: 'text-lg' },
     medium: { width: 48, height: 48, textClass: 'text-2xl' },
@@ -33,7 +33,7 @@ export function Logo({ size = 'medium', withText = true, className = '' }: LogoP
       </div>
       
       {withText && (
-        <h1 className={`font-bold ${textClass} text-white`}>
+        <h1 className={`font-bold text-cyan-400 ${textClass}`}>
           NexusWorks
         </h1>
       )}
