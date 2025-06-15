@@ -13,7 +13,7 @@ import { EnhancedAIAssistant } from '@/components/ai/enhanced-ai-assistant';
 import { BCIPanel } from '@/components/bci/bci-panel';
 import { NotificationBar } from '@/components/notifications/notification-bar';
 import { LoadingOverlay } from '@/components/ui/loading-overlay';
-import { LogOut, User as UserIcon, Home } from 'lucide-react';
+import { LogOut, User as UserIcon, Home as HomeIcon } from 'lucide-react';
 
 export type PageType = 'home' | 'marketplace' | 'learning' | 'community';
 
