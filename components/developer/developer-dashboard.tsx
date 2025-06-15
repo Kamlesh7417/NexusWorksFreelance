@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { AuthService, User, DeveloperProfile } from '@/lib/auth';
+import { useSession } from 'next-auth/react';
 import { 
   Search, 
   Filter, 
@@ -12,7 +12,7 @@ import {
   TrendingUp,
   MessageSquare,
   Eye,
-  User as UserIcon,
+  UserIcon,
   Award,
   Target,
   LogOut,
@@ -22,22 +22,26 @@ import {
 } from 'lucide-react';
 
 export function DeveloperDashboard() {
-  const [user, setUser] = useState<User | null>(null);
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'portfolio' | 'learning' | 'community' | 'messages'>('overview');
 
-  useEffect(() => {
-    const currentUser = AuthService.getCurrentUser();
-    setUser(currentUser);
-  }, []);
-
-  const handleLogout = () => {
-    AuthService.logout();
-    window.location.reload();
+  const handleLogout = async () => {
+    // Logout logic will be handled by the UserMenu component
   };
 
-  if (!user || user.role !== 'developer') return null;
+  if (!session?.user) return null;
 
-  const profile = user.profile as DeveloperProfile;
+  const profile = session.user.profile || {
+    skills: [],
+    hourlyRate: 0,
+    experience: 'junior',
+    specializations: [],
+    availability: 'available',
+    rating: 4.5,
+    completedProjects: 0,
+    totalEarnings: 0,
+    portfolio: []
+  };
 
   const mockProjects = [
     {
@@ -127,7 +131,7 @@ export function DeveloperDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-cyan-400">Developer Dashboard</h1>
-            <p className="text-gray-300">Welcome back, {user.name}</p>
+            <p className="text-gray-300">Welcome back, {session.user.name}</p>
           </div>
           <div className="flex items-center gap-4">
             <span className={`px-3 py-1 rounded-full text-sm ${
@@ -146,13 +150,6 @@ export function DeveloperDashboard() {
             </button>
             <button className="nexus-action-btn">
               Update Availability
-            </button>
-            <button 
-              onClick={handleLogout}
-              className="nexus-back-btn flex items-center gap-2"
-            >
-              <LogOut size={16} />
-              Logout
             </button>
           </div>
         </div>
@@ -205,7 +202,7 @@ export function DeveloperDashboard() {
                   <DollarSign size={24} className="text-green-400" />
                   <div>
                     <h3 className="font-semibold text-green-400">Total Earnings</h3>
-                    <p className="text-2xl font-bold">${profile.totalEarnings.toLocaleString()}</p>
+                    <p className="text-2xl font-bold">${profile.totalEarnings?.toLocaleString() || 0}</p>
                   </div>
                 </div>
               </div>
