@@ -337,7 +337,7 @@ export function HomePage() {
 
         <div className="max-w-4xl mx-auto relative z-10">
           <h1 className="text-5xl md:text-6xl font-bold mb-6 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent animate-fadeIn">
-            The Future of Freelancing
+            The Global Workplace
           </h1>
           <p className="text-xl md:text-2xl mb-8 text-gray-300 leading-relaxed">
             Where quantum AI meets human creativity. Connect with elite developers, 
