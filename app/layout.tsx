@@ -3,7 +3,9 @@ import type { Metadata } from 'next';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { ToastProvider } from '@/components/ui/toast-provider';
 import { Analytics } from '@/components/analytics/analytics';
-import { SpeedInsights } from '@vercel/speed-insights/next';
+import { ServiceWorkerRegistration } from '@/components/ui/service-worker';
+import { HelpCenter } from '@/components/ui/help-center';
+import { ErrorBoundary } from '@/components/ui/error-boundary';
 
 export const metadata: Metadata = {
   title: 'NexusWorks - Futuristic Freelance Platform',
@@ -52,13 +54,16 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/icon-192x192.png" />
       </head>
       <body>
-        <AuthProvider>
-          <ToastProvider>
-            {children}
-          </ToastProvider>
-        </AuthProvider>
-        <Analytics />
-        <SpeedInsights />
+        <ErrorBoundary>
+          <AuthProvider>
+            <ToastProvider>
+              {children}
+              <HelpCenter />
+            </ToastProvider>
+          </AuthProvider>
+          <ServiceWorkerRegistration />
+          <Analytics />
+        </ErrorBoundary>
       </body>
     </html>
   );

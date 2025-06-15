@@ -14,23 +14,28 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    const loadUnreadMessages = async () => {
+    const loadUnreadCount = async () => {
       try {
-        const { count, error } = await supabase
+        // Count unread messages
+        const { count: messageCount, error: messageError } = await supabase
           .from('messages')
           .select('id', { count: 'exact', head: true })
           .eq('receiver_id', userId)
           .eq('read', false);
 
-        if (error) throw error;
-        setUnreadCount(count || 0);
+        if (messageError) throw messageError;
+        
+        // Count unread notifications (project bids, etc.)
+        // This would be expanded based on your notification system
+        const totalUnread = messageCount || 0;
+        setUnreadCount(totalUnread);
       } catch (error) {
-        console.error('Error loading unread messages:', error);
+        console.error('Error loading notifications:', error);
       }
     };
 
     if (userId) {
-      loadUnreadMessages();
+      loadUnreadCount();
       
       // Subscribe to new messages
       const subscription = supabase
@@ -43,7 +48,6 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
             filter: `receiver_id=eq.${userId}`
           }, 
           () => {
-            // Increment unread count
             setUnreadCount(prev => prev + 1);
           }
         )
@@ -59,8 +63,8 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
     <Link href="/messages" className="relative">
       <Bell size={20} className="text-gray-400 hover:text-white transition-colors" />
       {unreadCount > 0 && (
-        <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
-          <span className="text-xs text-white font-bold">
+        <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+          <span className="text-xs font-bold text-white">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
         </div>
