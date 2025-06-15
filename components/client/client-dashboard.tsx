@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { AuthService, User, ClientProfile } from '@/lib/auth';
+import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { 
   Plus, 
   Search, 
@@ -14,28 +14,24 @@ import {
   TrendingUp,
   MessageSquare,
   Eye,
-  LogOut,
-  User as UserIcon,
+  UserIcon,
   Home
 } from 'lucide-react';
 
 export function ClientDashboard() {
-  const [user, setUser] = useState<User | null>(null);
+  const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'developers' | 'messages'>('overview');
 
-  useEffect(() => {
-    const currentUser = AuthService.getCurrentUser();
-    setUser(currentUser);
-  }, []);
+  if (!session?.user) return null;
 
-  const handleLogout = () => {
-    AuthService.logout();
-    window.location.reload();
+  const profile = session.user.profile || {
+    company: '',
+    industry: '',
+    projectsPosted: 0,
+    totalSpent: 0,
+    preferredBudget: { min: 0, max: 0 },
+    requirements: []
   };
-
-  if (!user || user.role !== 'client') return null;
-
-  const profile = user.profile as ClientProfile;
 
   const mockProjects = [
     {
@@ -128,7 +124,7 @@ export function ClientDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-cyan-400">Client Dashboard</h1>
-            <p className="text-gray-300">Welcome back, {user.name}</p>
+            <p className="text-gray-300">Welcome back, {session.user.name}</p>
           </div>
           <div className="flex items-center gap-4">
             <button 
@@ -141,13 +137,6 @@ export function ClientDashboard() {
             <button className="nexus-action-btn flex items-center gap-2">
               <Plus size={16} />
               Post New Project
-            </button>
-            <button 
-              onClick={handleLogout}
-              className="nexus-back-btn flex items-center gap-2"
-            >
-              <LogOut size={16} />
-              Logout
             </button>
           </div>
         </div>
