@@ -1,22 +1,30 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Hardcoded credentials for Bolt.new compatibility
-// In production, these should be moved to environment variables
-const supabaseUrl = 'https://fvmytlubzjifwtvwfdpi.supabase.co';
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bXl0bHViemppZnd0dndmZHBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1ODM3NjMsImV4cCI6MjA2NDE1OTc2M30.26K2Ezli1v5bUhTaAYQyuCEji4hmR7HcddeP6MMmG8E';
+// Get environment variables
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+
+// Validate environment variables
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('Supabase environment variables are missing. Using fallback values for development.');
+}
 
 // Create Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-  },
-  realtime: {
-    params: {
-      eventsPerSecond: 10,
+export const supabase = createClient(
+  supabaseUrl || 'https://fvmytlubzjifwtvwfdpi.supabase.co',
+  supabaseAnonKey || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bXl0bHViemppZnd0dndmZHBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1ODM3NjMsImV4cCI6MjA2NDE1OTc2M30.26K2Ezli1v5bUhTaAYQyuCEji4hmR7HcddeP6MMmG8E',
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
     },
-  },
-});
+    realtime: {
+      params: {
+        eventsPerSecond: 10,
+      },
+    },
+  }
+);
 
 // Database Types
 export interface UserProfile {

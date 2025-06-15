@@ -14,26 +14,28 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    const loadUnreadCount = async () => {
-      try {
-        const { count, error } = await supabase
-          .from('messages')
-          .select('*', { count: 'exact', head: true })
-          .eq('receiver_id', userId)
-          .eq('read', false);
+    if (!userId) return;
 
-        if (error) throw error;
+    // Get initial unread count
+    const getUnreadCount = async () => {
+      const { count, error } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('receiver_id', userId)
+        .eq('read', false);
+      
+      if (error) {
+        console.error('Error fetching unread count:', error);
+      } else {
         setUnreadCount(count || 0);
-      } catch (error) {
-        console.error('Error loading unread count:', error);
       }
     };
 
-    loadUnreadCount();
+    getUnreadCount();
 
     // Subscribe to new messages
     const subscription = supabase
-      .channel('messages_count')
+      .channel('messages')
       .on('postgres_changes', 
         { 
           event: 'INSERT', 
@@ -41,25 +43,40 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
           table: 'messages',
           filter: `receiver_id=eq.${userId}`
         }, 
-        () => {
-          setUnreadCount(prev => prev + 1);
+        (payload) => {
+          const newMessage = payload.new as any;
+          if (!newMessage.read) {
+            setUnreadCount(prev => prev + 1);
+          }
         }
       )
+      .subscribe();
+
+    // Subscribe to message updates (read status changes)
+    const updateSubscription = supabase
+      .channel('message-updates')
       .on('postgres_changes', 
         { 
           event: 'UPDATE', 
           schema: 'public', 
           table: 'messages',
-          filter: `receiver_id=eq.${userId} AND read=eq.true`
+          filter: `receiver_id=eq.${userId}`
         }, 
-        () => {
-          setUnreadCount(prev => Math.max(0, prev - 1));
+        (payload) => {
+          const updatedMessage = payload.new as any;
+          const oldMessage = payload.old as any;
+          
+          // If message was marked as read
+          if (!oldMessage.read && updatedMessage.read) {
+            setUnreadCount(prev => Math.max(0, prev - 1));
+          }
         }
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(subscription);
+      supabase.removeChannel(updateSubscription);
     };
   }, [userId, supabase]);
 
@@ -67,9 +84,11 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
     <Link href="/messages" className="relative">
       <Bell size={20} className="text-gray-400 hover:text-white transition-colors" />
       {unreadCount > 0 && (
-        <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-          {unreadCount > 9 ? '9+' : unreadCount}
-        </span>
+        <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
+          <span className="text-xs font-bold text-white">
+            {unreadCount > 99 ? '99+' : unreadCount}
+          </span>
+        </div>
       )}
     </Link>
   );

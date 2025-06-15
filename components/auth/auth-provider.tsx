@@ -24,7 +24,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient();
+  
+  // Create Supabase client with fallback values if env vars are missing
+  const supabase = createClientComponentClient({
+    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://fvmytlubzjifwtvwfdpi.supabase.co',
+    supabaseKey: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ2bXl0bHViemppZnd0dndmZHBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDg1ODM3NjMsImV4cCI6MjA2NDE1OTc2M30.26K2Ezli1v5bUhTaAYQyuCEji4hmR7HcddeP6MMmG8E'
+  });
 
   useEffect(() => {
     const getUser = async () => {

@@ -8,8 +8,6 @@ import { MarketplacePage } from '@/components/pages/marketplace-page';
 import { EnhancedLearningPage } from '@/components/pages/enhanced-learning-page';
 import { CommunityPage } from '@/components/pages/community-page';
 import { EnhancedAIAssistant } from '@/components/ai/enhanced-ai-assistant';
-import { BCIPanel } from '@/components/bci/bci-panel';
-import { NotificationBar } from '@/components/notifications/notification-bar';
 import { LoadingOverlay } from '@/components/ui/loading-overlay';
 
 export type PageType = 'home' | 'marketplace' | 'learning' | 'community';
@@ -107,16 +105,6 @@ export default function Home() {
                 Developer Community
               </a>
             </li>
-            <li>
-              <a href="/project-management" className="text-purple-400 hover:text-purple-300">
-                Project Manager
-              </a>
-            </li>
-            <li>
-              <a href="/supabase-demo" className="text-green-400 hover:text-green-300">
-                Supabase Demo
-              </a>
-            </li>
           </ul>
         </nav>
 
@@ -125,8 +113,6 @@ export default function Home() {
         </div>
       </header>
 
-      <BCIPanel />
-      <NotificationBar />
       <EnhancedAIAssistant />
       
       <main className="nexus-container">

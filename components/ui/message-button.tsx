@@ -1,76 +1,96 @@
 'use client';
 
 import { useState } from 'react';
-import { MessageSquare } from 'lucide-react';
-import { MessagePreview } from './message-preview';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { MessageSquare, Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface MessageButtonProps {
   userId: string;
   recipientId: string;
-  recipientName: string;
+  recipientName?: string;
   recipientAvatar?: string;
   projectId?: string;
-  variant?: 'icon' | 'button' | 'link';
   className?: string;
+  variant?: 'default' | 'icon';
 }
 
-export function MessageButton({ 
-  userId, 
-  recipientId, 
-  recipientName, 
+export function MessageButton({
+  userId,
+  recipientId,
+  recipientName,
   recipientAvatar,
   projectId,
-  variant = 'button',
-  className = ''
+  className = '',
+  variant = 'default'
 }: MessageButtonProps) {
-  const [showMessagePreview, setShowMessagePreview] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const supabase = createClientComponentClient();
 
-  if (userId === recipientId) {
-    return null; // Don't show message button for yourself
+  const handleClick = async () => {
+    if (userId === recipientId) return;
+    
+    setLoading(true);
+    
+    try {
+      // First, check if there's an existing conversation
+      const { data: existingMessages } = await supabase
+        .from('messages')
+        .select('id')
+        .or(`and(sender_id.eq.${userId},receiver_id.eq.${recipientId}),and(sender_id.eq.${recipientId},receiver_id.eq.${userId})`)
+        .limit(1);
+      
+      // If no existing conversation, create an initial message
+      if (!existingMessages || existingMessages.length === 0) {
+        const initialMessage = {
+          sender_id: userId,
+          receiver_id: recipientId,
+          project_id: projectId || null,
+          content: `Hello! I'd like to discuss ${projectId ? 'this project' : 'a potential collaboration'} with you.`,
+          read: false
+        };
+        
+        await supabase.from('messages').insert(initialMessage);
+      }
+      
+      // Navigate to messages page
+      router.push('/messages');
+    } catch (error) {
+      console.error('Error starting conversation:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (variant === 'icon') {
+    return (
+      <button
+        onClick={handleClick}
+        disabled={loading}
+        className={`p-2 bg-white/5 hover:bg-white/10 border border-white/20 text-white font-medium rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+      >
+        {loading ? (
+          <Loader2 size={16} className="animate-spin" />
+        ) : (
+          <MessageSquare size={16} />
+        )}
+      </button>
+    );
   }
 
   return (
-    <>
-      {variant === 'icon' && (
-        <button
-          onClick={() => setShowMessagePreview(true)}
-          className={`p-2 bg-white/10 hover:bg-white/20 border border-white/20 rounded-lg transition-colors ${className}`}
-        >
-          <MessageSquare size={16} className="text-cyan-400" />
-        </button>
+    <button
+      onClick={handleClick}
+      disabled={loading}
+      className={`bg-white/5 hover:bg-white/10 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ${className}`}
+    >
+      {loading ? (
+        <Loader2 size={16} className="animate-spin" />
+      ) : (
+        <MessageSquare size={16} />
       )}
-      
-      {variant === 'button' && (
-        <button
-          onClick={() => setShowMessagePreview(true)}
-          className={`flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-medium py-2 px-4 rounded-lg transition-all duration-200 ${className}`}
-        >
-          <MessageSquare size={16} className="text-cyan-400" />
-          Message
-        </button>
-      )}
-      
-      {variant === 'link' && (
-        <button
-          onClick={() => setShowMessagePreview(true)}
-          className={`text-cyan-400 hover:text-cyan-300 font-medium ${className}`}
-        >
-          Send Message
-        </button>
-      )}
-      
-      {showMessagePreview && (
-        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm">
-          <MessagePreview
-            userId={userId}
-            projectId={projectId}
-            recipientId={recipientId}
-            recipientName={recipientName}
-            recipientAvatar={recipientAvatar}
-            onClose={() => setShowMessagePreview(false)}
-          />
-        </div>
-      )}
-    </>
+      Message {recipientName || 'User'}
+    </button>
   );
 }
