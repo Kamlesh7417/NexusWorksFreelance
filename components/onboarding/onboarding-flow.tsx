@@ -57,7 +57,7 @@ export function OnboardingFlow() {
     {
       id: 'role',
       title: 'Choose Your Role',
-      description: 'Select the role that best describes how you'll use NexusWorks'
+      description: 'Select the role that best describes how you\'ll use NexusWorks'
     },
     {
       id: 'profile',
