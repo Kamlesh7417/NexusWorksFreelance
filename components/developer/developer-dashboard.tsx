@@ -24,6 +24,7 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 import { MessageList } from '../ui/message-list';
+import { Logo } from '@/components/ui/logo';
 
 interface DeveloperDashboardProps {
   user: any;
