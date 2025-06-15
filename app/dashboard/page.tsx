@@ -6,6 +6,7 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { ClientDashboard } from '@/components/client/client-dashboard';
 import { DeveloperDashboard } from '@/components/developer/developer-dashboard';
 import { Loader2 } from 'lucide-react';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
@@ -68,13 +69,25 @@ export default function DashboardPage() {
   }
 
   if (!user || !profile) {
-    return null;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-400 mb-4">Unable to load your profile</p>
+          <Link 
+            href="/auth/signin"
+            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200"
+          >
+            Sign In
+          </Link>
+        </div>
+      </div>
+    );
   }
 
   // Render role-specific dashboard
   if (profile.role === 'client') {
-    return <ClientDashboard />;
+    return <ClientDashboard user={user} profile={profile} />;
   } else {
-    return <DeveloperDashboard />;
+    return <DeveloperDashboard user={user} profile={profile} />;
   }
 }

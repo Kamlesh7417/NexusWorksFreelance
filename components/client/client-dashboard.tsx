@@ -1,7 +1,7 @@
 'use client';
 
-import { useState } from 'react';
-import { useSession } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { 
   Plus, 
   Search, 
@@ -14,106 +14,204 @@ import {
   TrendingUp,
   MessageSquare,
   Eye,
-  UserIcon,
-  Home
+  Home,
+  Edit,
+  Trash2,
+  CheckCircle,
+  XCircle,
+  Loader2
 } from 'lucide-react';
+import Link from 'next/link';
 
-export function ClientDashboard() {
-  const { data: session } = useSession();
+interface ClientDashboardProps {
+  user: any;
+  profile: any;
+}
+
+export function ClientDashboard({ user, profile }: ClientDashboardProps) {
   const [activeTab, setActiveTab] = useState<'overview' | 'projects' | 'developers' | 'messages'>('overview');
+  const [projects, setProjects] = useState<any[]>([]);
+  const [bids, setBids] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const supabase = createClientComponentClient();
 
-  if (!session?.user) return null;
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        // Fetch client's projects
+        let query = supabase
+          .from('projects')
+          .select(`
+            *,
+            developer:user_profiles!projects_developer_id_fkey(id, full_name, avatar_url)
+          `)
+          .eq('client_id', user.id);
+        
+        if (statusFilter !== 'all') {
+          query = query.eq('status', statusFilter);
+        }
+        
+        const { data: projectsData, error: projectsError } = await query;
+        
+        if (projectsError) throw projectsError;
+        setProjects(projectsData || []);
 
-  const profile = session.user.profile || {
-    company: '',
-    industry: '',
-    projectsPosted: 0,
-    totalSpent: 0,
-    preferredBudget: { min: 0, max: 0 },
-    requirements: []
+        // Fetch bids for client's projects
+        const projectIds = projectsData?.map(p => p.id) || [];
+        
+        if (projectIds.length > 0) {
+          const { data: bidsData, error: bidsError } = await supabase
+            .from('project_bids')
+            .select(`
+              *,
+              project:projects(*),
+              freelancer:user_profiles(*)
+            `)
+            .in('project_id', projectIds);
+          
+          if (bidsError) throw bidsError;
+          setBids(bidsData || []);
+        }
+      } catch (error) {
+        console.error('Error fetching client data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [user.id, statusFilter, supabase]);
+
+  const handleAcceptBid = async (bidId: string, projectId: string, developerId: string) => {
+    try {
+      // Update bid status
+      await supabase
+        .from('project_bids')
+        .update({ status: 'accepted' })
+        .eq('id', bidId);
+      
+      // Update project status and assign developer
+      await supabase
+        .from('projects')
+        .update({ 
+          status: 'in_progress',
+          developer_id: developerId
+        })
+        .eq('id', projectId);
+      
+      // Reject all other bids for this project
+      await supabase
+        .from('project_bids')
+        .update({ status: 'rejected' })
+        .eq('project_id', projectId)
+        .neq('id', bidId);
+      
+      // Refresh data
+      const { data: updatedBids } = await supabase
+        .from('project_bids')
+        .select(`
+          *,
+          project:projects(*),
+          freelancer:user_profiles(*)
+        `)
+        .in('project_id', projects.map(p => p.id));
+      
+      setBids(updatedBids || []);
+      
+      // Update projects
+      const { data: updatedProjects } = await supabase
+        .from('projects')
+        .select(`
+          *,
+          developer:user_profiles!projects_developer_id_fkey(id, full_name, avatar_url)
+        `)
+        .eq('client_id', user.id);
+      
+      setProjects(updatedProjects || []);
+    } catch (error) {
+      console.error('Error accepting bid:', error);
+      alert('Failed to accept bid. Please try again.');
+    }
   };
 
-  const mockProjects = [
-    {
-      id: 'proj_1',
-      title: 'AI Healthcare Dashboard',
-      description: 'Comprehensive AI-powered dashboard for healthcare providers',
-      budget: 5000,
-      status: 'active',
-      applicants: 12,
-      deadline: '2024-02-15',
-      skills: ['React', 'Node.js', 'AI/ML', 'Healthcare']
-    },
-    {
-      id: 'proj_2',
-      title: 'Mobile Banking App',
-      description: 'Secure mobile banking application with biometric authentication',
-      budget: 8000,
-      status: 'in-review',
-      applicants: 8,
-      deadline: '2024-03-01',
-      skills: ['React Native', 'Security', 'Fintech', 'UI/UX']
-    },
-    {
-      id: 'proj_3',
-      title: 'E-commerce Analytics Platform',
-      description: 'Real-time analytics platform for e-commerce businesses',
-      budget: 3500,
-      status: 'completed',
-      applicants: 15,
-      deadline: '2024-01-20',
-      skills: ['Python', 'Data Science', 'React', 'APIs']
+  const handleRejectBid = async (bidId: string) => {
+    try {
+      await supabase
+        .from('project_bids')
+        .update({ status: 'rejected' })
+        .eq('id', bidId);
+      
+      // Refresh bids
+      const { data: updatedBids } = await supabase
+        .from('project_bids')
+        .select(`
+          *,
+          project:projects(*),
+          freelancer:user_profiles(*)
+        `)
+        .in('project_id', projects.map(p => p.id));
+      
+      setBids(updatedBids || []);
+    } catch (error) {
+      console.error('Error rejecting bid:', error);
+      alert('Failed to reject bid. Please try again.');
     }
-  ];
+  };
 
-  const mockDevelopers = [
-    {
-      id: 'dev_1',
-      name: 'Alexandra Reed',
-      specialization: 'Full Stack & AI',
-      rating: 4.9,
-      hourlyRate: 85,
-      completedProjects: 32,
-      skills: ['React', 'Node.js', 'AI/ML', 'Python'],
-      availability: 'available'
-    },
-    {
-      id: 'dev_2',
-      name: 'Marcus Tan',
-      specialization: 'UI/UX & AR/VR',
-      rating: 4.7,
-      hourlyRate: 75,
-      completedProjects: 28,
-      skills: ['UI/UX', 'React', 'AR/VR', 'Figma'],
-      availability: 'available'
-    },
-    {
-      id: 'dev_3',
-      name: 'Sofia Mendes',
-      specialization: 'Blockchain & DeFi',
-      rating: 5.0,
-      hourlyRate: 90,
-      completedProjects: 45,
-      skills: ['Blockchain', 'Solidity', 'Web3', 'DeFi'],
-      availability: 'busy'
+  const handleDeleteProject = async (projectId: string) => {
+    if (!confirm('Are you sure you want to delete this project?')) return;
+    
+    try {
+      await supabase
+        .from('projects')
+        .delete()
+        .eq('id', projectId);
+      
+      // Remove project from state
+      setProjects(prev => prev.filter(p => p.id !== projectId));
+      
+      // Remove associated bids
+      setBids(prev => prev.filter(b => b.project_id !== projectId));
+    } catch (error) {
+      console.error('Error deleting project:', error);
+      alert('Failed to delete project. Please try again.');
     }
-  ];
+  };
+
+  // Filter projects by search term
+  const filteredProjects = projects.filter(project => {
+    if (!searchTerm) return true;
+    
+    const searchLower = searchTerm.toLowerCase();
+    return (
+      project.title.toLowerCase().includes(searchLower) ||
+      project.description.toLowerCase().includes(searchLower)
+    );
+  });
+
+  // Get bids for a specific project
+  const getProjectBids = (projectId: string) => {
+    return bids.filter(bid => bid.project_id === projectId);
+  };
 
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'text-green-400 bg-green-500/20';
-      case 'in-review': return 'text-yellow-400 bg-yellow-500/20';
-      case 'completed': return 'text-blue-400 bg-blue-500/20';
+      case 'in_progress': return 'text-blue-400 bg-blue-500/20';
+      case 'completed': return 'text-purple-400 bg-purple-500/20';
+      case 'cancelled': return 'text-red-400 bg-red-500/20';
       default: return 'text-gray-400 bg-gray-500/20';
     }
   };
 
-  const getAvailabilityColor = (availability: string) => {
-    switch (availability) {
-      case 'available': return 'text-green-400 bg-green-500/20';
-      case 'busy': return 'text-yellow-400 bg-yellow-500/20';
-      case 'unavailable': return 'text-red-400 bg-red-500/20';
-      default: return 'text-gray-400 bg-gray-500/20';
+  const getBidStatusColor = (status: string) => {
+    switch (status) {
+      case 'accepted': return 'text-green-400 bg-green-500/20';
+      case 'rejected': return 'text-red-400 bg-red-500/20';
+      default: return 'text-yellow-400 bg-yellow-500/20';
     }
   };
 
@@ -124,20 +222,23 @@ export function ClientDashboard() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-cyan-400">Client Dashboard</h1>
-            <p className="text-gray-300">Welcome back, {session.user.name}</p>
+            <p className="text-gray-300">Welcome back, {profile.full_name}</p>
           </div>
           <div className="flex items-center gap-4">
-            <button 
-              onClick={() => window.location.href = '/'}
+            <Link 
+              href="/"
               className="nexus-action-btn flex items-center gap-2"
             >
               <Home size={16} />
               Public Site
-            </button>
-            <button className="nexus-action-btn flex items-center gap-2">
+            </Link>
+            <Link 
+              href="/projects/create"
+              className="nexus-action-btn flex items-center gap-2"
+            >
               <Plus size={16} />
               Post New Project
-            </button>
+            </Link>
           </div>
         </div>
 
@@ -177,7 +278,7 @@ export function ClientDashboard() {
                   <Briefcase size={24} className="text-cyan-400" />
                   <div>
                     <h3 className="font-semibold text-cyan-400">Active Projects</h3>
-                    <p className="text-2xl font-bold">{mockProjects.filter(p => p.status === 'active').length}</p>
+                    <p className="text-2xl font-bold">{projects.filter(p => p.status === 'active' || p.status === 'in_progress').length}</p>
                   </div>
                 </div>
               </div>
@@ -186,8 +287,8 @@ export function ClientDashboard() {
                 <div className="flex items-center gap-3 mb-4">
                   <DollarSign size={24} className="text-green-400" />
                   <div>
-                    <h3 className="font-semibold text-green-400">Total Spent</h3>
-                    <p className="text-2xl font-bold">${profile.totalSpent.toLocaleString()}</p>
+                    <h3 className="font-semibold text-green-400">Total Budget</h3>
+                    <p className="text-2xl font-bold">${projects.reduce((sum, p) => sum + p.budget_max, 0).toLocaleString()}</p>
                   </div>
                 </div>
               </div>
@@ -196,8 +297,8 @@ export function ClientDashboard() {
                 <div className="flex items-center gap-3 mb-4">
                   <Users size={24} className="text-purple-400" />
                   <div>
-                    <h3 className="font-semibold text-purple-400">Projects Posted</h3>
-                    <p className="text-2xl font-bold">{profile.projectsPosted}</p>
+                    <h3 className="font-semibold text-purple-400">Total Bids</h3>
+                    <p className="text-2xl font-bold">{bids.length}</p>
                   </div>
                 </div>
               </div>
@@ -206,8 +307,8 @@ export function ClientDashboard() {
                 <div className="flex items-center gap-3 mb-4">
                   <Star size={24} className="text-yellow-400" />
                   <div>
-                    <h3 className="font-semibold text-yellow-400">Success Rate</h3>
-                    <p className="text-2xl font-bold">94%</p>
+                    <h3 className="font-semibold text-yellow-400">Completed</h3>
+                    <p className="text-2xl font-bold">{projects.filter(p => p.status === 'completed').length}</p>
                   </div>
                 </div>
               </div>
@@ -215,24 +316,136 @@ export function ClientDashboard() {
 
             {/* Recent Projects */}
             <div className="nexus-card">
-              <h3 className="text-xl font-semibold text-cyan-400 mb-6">Recent Projects</h3>
-              <div className="space-y-4">
-                {mockProjects.slice(0, 3).map(project => (
-                  <div key={project.id} className="bg-white/5 rounded-lg p-4 border border-cyan-500/20">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-medium text-cyan-400">{project.title}</h4>
-                      <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(project.status)}`}>
-                        {project.status}
-                      </span>
-                    </div>
-                    <p className="text-sm opacity-80 mb-3">{project.description}</p>
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-green-400">${project.budget.toLocaleString()}</span>
-                      <span className="text-gray-400">{project.applicants} applicants</span>
-                    </div>
-                  </div>
-                ))}
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-cyan-400">Recent Projects</h3>
+                <Link href="/projects/create" className="text-sm text-cyan-400 hover:text-cyan-300">
+                  + New Project
+                </Link>
               </div>
+              
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 size={30} className="animate-spin text-cyan-400" />
+                </div>
+              ) : projects.length === 0 ? (
+                <div className="text-center py-12">
+                  <Briefcase size={48} className="mx-auto mb-4 text-gray-400 opacity-50" />
+                  <p className="text-gray-400 mb-2">No projects yet</p>
+                  <p className="text-sm text-gray-500 mb-4">
+                    Create your first project to get started
+                  </p>
+                  <Link 
+                    href="/projects/create"
+                    className="nexus-action-btn inline-flex items-center gap-2"
+                  >
+                    <Plus size={16} />
+                    Post New Project
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {projects.slice(0, 3).map(project => (
+                    <div key={project.id} className="bg-white/5 rounded-lg p-4 border border-cyan-500/20">
+                      <div className="flex items-center justify-between mb-3">
+                        <Link href={`/projects/${project.id}`} className="font-medium text-cyan-400 hover:underline">
+                          {project.title}
+                        </Link>
+                        <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(project.status)}`}>
+                          {project.status.replace('_', ' ')}
+                        </span>
+                      </div>
+                      <p className="text-sm opacity-80 mb-3 line-clamp-2">{project.description}</p>
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-green-400">${project.budget_min.toLocaleString()} - ${project.budget_max.toLocaleString()}</span>
+                        <span className="text-gray-400">{getProjectBids(project.id).length} bids</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Recent Bids */}
+            <div className="nexus-card">
+              <h3 className="text-xl font-semibold text-cyan-400 mb-6">Recent Bids</h3>
+              
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 size={30} className="animate-spin text-cyan-400" />
+                </div>
+              ) : bids.length === 0 ? (
+                <div className="text-center py-12">
+                  <Users size={48} className="mx-auto mb-4 text-gray-400 opacity-50" />
+                  <p className="text-gray-400 mb-2">No bids yet</p>
+                  <p className="text-sm text-gray-500">
+                    When developers submit bids on your projects, they'll appear here
+                  </p>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {bids.slice(0, 3).map(bid => (
+                    <div key={bid.id} className="bg-white/5 rounded-lg p-4 border border-white/10">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          {bid.freelancer?.avatar_url ? (
+                            <img 
+                              src={bid.freelancer.avatar_url} 
+                              alt={bid.freelancer.full_name}
+                              className="w-8 h-8 rounded-full"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 bg-cyan-500/20 rounded-full flex items-center justify-center">
+                              <Users size={14} className="text-cyan-400" />
+                            </div>
+                          )}
+                          <div>
+                            <div className="font-medium text-white">{bid.freelancer?.full_name}</div>
+                            <div className="text-xs text-gray-400">
+                              for <Link href={`/projects/${bid.project_id}`} className="text-cyan-400 hover:underline">{bid.project?.title}</Link>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right">
+                          <div className="font-semibold text-green-400">${bid.amount.toLocaleString()}</div>
+                          <div className="text-xs text-gray-400">{new Date(bid.created_at).toLocaleDateString()}</div>
+                        </div>
+                      </div>
+                      
+                      <div className="flex justify-between items-center">
+                        <span className={`text-xs px-2 py-1 rounded-full ${getBidStatusColor(bid.status)}`}>
+                          {bid.status}
+                        </span>
+                        
+                        <div className="flex gap-2">
+                          <Link 
+                            href={`/projects/${bid.project_id}`}
+                            className="text-xs bg-white/10 hover:bg-white/20 px-2 py-1 rounded text-white"
+                          >
+                            View
+                          </Link>
+                          
+                          {bid.status === 'pending' && (
+                            <>
+                              <button 
+                                onClick={() => handleAcceptBid(bid.id, bid.project_id, bid.freelancer.id)}
+                                className="text-xs bg-green-500/20 hover:bg-green-500/30 px-2 py-1 rounded text-green-400"
+                              >
+                                Accept
+                              </button>
+                              <button 
+                                onClick={() => handleRejectBid(bid.id)}
+                                className="text-xs bg-red-500/20 hover:bg-red-500/30 px-2 py-1 rounded text-red-400"
+                              >
+                                Reject
+                              </button>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -248,146 +461,154 @@ export function ClientDashboard() {
                   <input
                     type="text"
                     placeholder="Search projects..."
-                    className="bg-white/10 border border-cyan-500/30 rounded-lg pl-10 pr-3 py-2 text-white outline-none"
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="bg-white/10 border border-white/20 rounded-lg pl-10 pr-3 py-2 text-white outline-none"
                   />
                 </div>
-                <button className="flex items-center gap-2 bg-white/10 border border-cyan-500/30 rounded-lg px-3 py-2">
-                  <Filter size={16} />
-                  Filter
-                </button>
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
+                  className="bg-white/10 border border-white/20 rounded-lg px-3 py-2 text-white outline-none"
+                >
+                  <option value="all" className="bg-gray-900">All Status</option>
+                  <option value="active" className="bg-gray-900">Active</option>
+                  <option value="in_progress" className="bg-gray-900">In Progress</option>
+                  <option value="completed" className="bg-gray-900">Completed</option>
+                  <option value="cancelled" className="bg-gray-900">Cancelled</option>
+                </select>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {mockProjects.map(project => (
-                <div key={project.id} className="nexus-card">
-                  <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-cyan-400">{project.title}</h4>
-                    <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(project.status)}`}>
-                      {project.status}
-                    </span>
-                  </div>
-                  
-                  <p className="text-sm opacity-80 mb-4">{project.description}</p>
-                  
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.skills.map((skill, index) => (
-                      <span key={index} className="px-2 py-1 bg-cyan-500/20 border border-cyan-500/40 rounded-full text-xs">
-                        {skill}
+            {loading ? (
+              <div className="flex items-center justify-center py-12">
+                <Loader2 size={40} className="animate-spin text-cyan-400" />
+              </div>
+            ) : filteredProjects.length === 0 ? (
+              <div className="nexus-card text-center py-12">
+                <Briefcase size={48} className="mx-auto mb-4 text-gray-400 opacity-50" />
+                <p className="text-gray-400 mb-2">No projects found</p>
+                <p className="text-sm text-gray-500 mb-4">
+                  {searchTerm || statusFilter !== 'all' 
+                    ? 'Try adjusting your search or filters' 
+                    : 'Create your first project to get started'}
+                </p>
+                <Link 
+                  href="/projects/create"
+                  className="nexus-action-btn inline-flex items-center gap-2"
+                >
+                  <Plus size={16} />
+                  Post New Project
+                </Link>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {filteredProjects.map(project => (
+                  <div key={project.id} className="nexus-card">
+                    <div className="flex items-center justify-between mb-4">
+                      <h4 className="font-semibold text-cyan-400">{project.title}</h4>
+                      <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(project.status)}`}>
+                        {project.status.replace('_', ' ')}
                       </span>
-                    ))}
-                  </div>
-                  
-                  <div className="grid grid-cols-3 gap-4 mb-4 text-sm">
-                    <div>
-                      <span className="text-gray-400">Budget:</span>
-                      <div className="font-semibold text-green-400">${project.budget.toLocaleString()}</div>
                     </div>
-                    <div>
-                      <span className="text-gray-400">Applicants:</span>
-                      <div className="font-semibold">{project.applicants}</div>
+                    
+                    <p className="text-sm opacity-80 mb-4 line-clamp-2">{project.description}</p>
+                    
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {project.skills_required && project.skills_required.slice(0, 3).map((skill: string, index: number) => (
+                        <span key={index} className="px-2 py-1 bg-cyan-500/20 border border-cyan-500/40 rounded-full text-xs">
+                          {skill}
+                        </span>
+                      ))}
+                      {project.skills_required && project.skills_required.length > 3 && (
+                        <span className="px-2 py-1 bg-gray-500/20 border border-gray-500/40 rounded-full text-xs">
+                          +{project.skills_required.length - 3}
+                        </span>
+                      )}
                     </div>
-                    <div>
-                      <span className="text-gray-400">Deadline:</span>
-                      <div className="font-semibold">{new Date(project.deadline).toLocaleDateString()}</div>
+                    
+                    <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
+                      <div>
+                        <span className="text-gray-400">Budget:</span>
+                        <div className="font-semibold text-green-400">
+                          ${project.budget_min.toLocaleString()} - ${project.budget_max.toLocaleString()}
+                        </div>
+                      </div>
+                      <div>
+                        <span className="text-gray-400">Bids:</span>
+                        <div className="font-semibold">{getProjectBids(project.id).length}</div>
+                      </div>
+                    </div>
+                    
+                    {project.developer && (
+                      <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-3 mb-4">
+                        <div className="text-sm text-gray-400 mb-1">Assigned Developer:</div>
+                        <div className="flex items-center gap-2">
+                          {project.developer.avatar_url ? (
+                            <img 
+                              src={project.developer.avatar_url} 
+                              alt={project.developer.full_name}
+                              className="w-6 h-6 rounded-full"
+                            />
+                          ) : (
+                            <div className="w-6 h-6 bg-blue-500/20 rounded-full flex items-center justify-center">
+                              <Users size={12} className="text-blue-400" />
+                            </div>
+                          )}
+                          <span className="text-white">{project.developer.full_name}</span>
+                        </div>
+                      </div>
+                    )}
+                    
+                    <div className="flex gap-2">
+                      <Link 
+                        href={`/projects/${project.id}`}
+                        className="nexus-action-btn flex-1 text-sm py-2 flex items-center justify-center gap-1"
+                      >
+                        <Eye size={14} />
+                        View Details
+                      </Link>
+                      
+                      {project.status === 'active' && (
+                        <>
+                          <Link 
+                            href={`/projects/${project.id}/edit`}
+                            className="nexus-action-btn text-sm py-2 px-3"
+                          >
+                            <Edit size={14} />
+                          </Link>
+                          <button 
+                            onClick={() => handleDeleteProject(project.id)}
+                            className="nexus-back-btn text-sm py-2 px-3"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </>
+                      )}
                     </div>
                   </div>
-                  
-                  <div className="flex gap-2">
-                    <button className="nexus-action-btn flex-1 text-sm py-2">
-                      <Eye size={14} className="mr-1" />
-                      View Details
-                    </button>
-                    <button className="nexus-action-btn text-sm py-2 px-4">
-                      Edit
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
         {/* Developers Tab */}
         {activeTab === 'developers' && (
-          <div className="space-y-6">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xl font-semibold text-cyan-400">Find Developers</h3>
-              <div className="flex items-center gap-4">
-                <div className="relative">
-                  <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search by skills..."
-                    className="bg-white/10 border border-cyan-500/30 rounded-lg pl-10 pr-3 py-2 text-white outline-none"
-                  />
-                </div>
-                <select className="bg-white/10 border border-cyan-500/30 rounded-lg px-3 py-2 text-white outline-none">
-                  <option value="">All Specializations</option>
-                  <option value="fullstack">Full Stack</option>
-                  <option value="frontend">Frontend</option>
-                  <option value="backend">Backend</option>
-                  <option value="mobile">Mobile</option>
-                  <option value="blockchain">Blockchain</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-              {mockDevelopers.map(developer => (
-                <div key={developer.id} className="nexus-card">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-cyan-500/20 rounded-full flex items-center justify-center">
-                      <Users size={20} className="text-cyan-400" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-cyan-400">{developer.name}</h4>
-                      <p className="text-sm text-gray-400">{developer.specialization}</p>
-                    </div>
-                  </div>
-                  
-                  <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                    <div>
-                      <span className="text-gray-400">Rating:</span>
-                      <div className="flex items-center gap-1">
-                        <Star size={14} className="text-yellow-400" />
-                        <span className="font-semibold">{developer.rating}</span>
-                      </div>
-                    </div>
-                    <div>
-                      <span className="text-gray-400">Rate:</span>
-                      <div className="font-semibold text-green-400">${developer.hourlyRate}/hr</div>
-                    </div>
-                    <div>
-                      <span className="text-gray-400">Projects:</span>
-                      <div className="font-semibold">{developer.completedProjects}</div>
-                    </div>
-                    <div>
-                      <span className="text-gray-400">Status:</span>
-                      <span className={`text-xs px-2 py-1 rounded-full ${getAvailabilityColor(developer.availability)}`}>
-                        {developer.availability}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  <div className="flex flex-wrap gap-1 mb-4">
-                    {developer.skills.slice(0, 4).map((skill, index) => (
-                      <span key={index} className="px-2 py-1 bg-purple-500/20 border border-purple-500/40 rounded-full text-xs">
-                        {skill}
-                      </span>
-                    ))}
-                  </div>
-                  
-                  <div className="flex gap-2">
-                    <button className="nexus-action-btn flex-1 text-sm py-2">
-                      View Profile
-                    </button>
-                    <button className="nexus-action-btn text-sm py-2 px-4">
-                      Invite
-                    </button>
-                  </div>
-                </div>
-              ))}
+          <div className="nexus-card">
+            <h3 className="text-xl font-semibold text-cyan-400 mb-6">Find Developers</h3>
+            <div className="text-center py-12">
+              <Users size={48} className="mx-auto mb-4 text-gray-400 opacity-50" />
+              <p className="text-gray-400 mb-2">Developer search coming soon</p>
+              <p className="text-sm text-gray-500 mb-4">
+                Browse our marketplace to find skilled developers for your projects
+              </p>
+              <Link 
+                href="/projects"
+                className="nexus-action-btn inline-flex items-center gap-2"
+              >
+                Go to Marketplace
+              </Link>
             </div>
           </div>
         )}

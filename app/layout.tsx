@@ -1,6 +1,7 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import { AuthProvider } from '@/components/auth/auth-provider';
+import { ToastProvider } from '@/components/ui/toast-provider';
 
 export const metadata: Metadata = {
   title: 'NexusWorks - Futuristic Freelance Platform',
@@ -21,7 +22,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <ToastProvider>
+            {children}
+          </ToastProvider>
+        </AuthProvider>
       </body>
     </html>
   );
