@@ -3,14 +3,12 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { ProtectedRoute } from '@/components/auth/protected-route';
-import { UserProfile } from '@/lib/supabase';
 import { User, Save, Loader2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
-function ProfileContent() {
+export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState({
@@ -28,7 +26,10 @@ function ProfileContent() {
     const getProfile = async () => {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) return;
+        if (!user) {
+          router.push('/auth/signin');
+          return;
+        }
 
         setUser(user);
 
@@ -40,6 +41,7 @@ function ProfileContent() {
 
         if (error) {
           console.error('Profile fetch error:', error);
+          router.push('/onboarding');
           return;
         }
 
@@ -53,13 +55,14 @@ function ProfileContent() {
         });
       } catch (error) {
         console.error('Profile error:', error);
+        router.push('/auth/signin');
       } finally {
         setLoading(false);
       }
     };
 
     getProfile();
-  }, [supabase]);
+  }, [router, supabase]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -197,7 +200,7 @@ function ProfileContent() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {profile.role === 'developer' && (
+              {(profile.role === 'developer' || profile.role === 'student') && (
                 <div>
                   <label className="block text-sm font-medium text-cyan-400 mb-2">
                     Hourly Rate (USD)
@@ -251,13 +254,5 @@ function ProfileContent() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function ProfilePage() {
-  return (
-    <ProtectedRoute>
-      <ProfileContent />
-    </ProtectedRoute>
   );
 }

@@ -1,16 +1,37 @@
 'use client';
 
-import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { ShieldAlert, Home, LogOut } from 'lucide-react';
-import { signOut } from 'next-auth/react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useState, useEffect } from 'react';
 
 export default function Unauthorized() {
-  const { data: session } = useSession();
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
   const router = useRouter();
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
+
+      if (user) {
+        const { data } = await supabase
+          .from('user_profiles')
+          .select('*')
+          .eq('id', user.id)
+          .single();
+        setProfile(data);
+      }
+    };
+
+    getUser();
+  }, [supabase]);
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' });
+    await supabase.auth.signOut();
+    router.push('/');
   };
 
   return (
@@ -29,8 +50,8 @@ export default function Unauthorized() {
             </h1>
             <p className="text-gray-400">
               You don't have permission to access this page.
-              {session?.user?.role && (
-                <span> Your current role is <strong className="text-white">{session.user.role}</strong>.</span>
+              {profile?.role && (
+                <span> Your current role is <strong className="text-white">{profile.role}</strong>.</span>
               )}
             </p>
           </div>

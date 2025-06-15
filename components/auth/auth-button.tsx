@@ -144,36 +144,54 @@ export function AuthButton() {
       </button>
 
       {showMenu && (
-        <div className="absolute right-0 top-full mt-2 w-48 bg-white/5 backdrop-blur-lg border border-white/20 rounded-lg shadow-xl z-50">
-          <div className="p-2">
-            <Link
-              href="/dashboard"
-              className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-md transition-colors"
-              onClick={() => setShowMenu(false)}
+        <div className="absolute right-0 top-full mt-2 w-48 bg-black/90 border border-white/20 rounded-xl shadow-xl backdrop-blur-lg z-50 overflow-hidden animate-fadeIn">
+          <div className="p-4 border-b border-white/10">
+            <div className="flex items-center gap-3">
+              {profile?.avatar_url ? (
+                <div className="w-10 h-10 rounded-full overflow-hidden">
+                  <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
+                </div>
+              ) : (
+                <div className="w-10 h-10 bg-cyan-500/20 rounded-full flex items-center justify-center">
+                  <User size={20} className="text-cyan-400" />
+                </div>
+              )}
+              <div>
+                <div className="font-medium text-white">{profile?.full_name || user.email?.split('@')[0]}</div>
+                <div className="text-xs text-gray-400">{user.email}</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="py-2">
+            <a 
+              href="/dashboard" 
+              className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
-              <User size={16} />
               Dashboard
-            </Link>
-            <Link
-              href="/profile"
-              className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/10 rounded-md transition-colors"
-              onClick={() => setShowMenu(false)}
+            </a>
+            <a 
+              href="/profile" 
+              className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
+            >
+              Profile
+            </a>
+            <a 
+              href="/settings" 
+              className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
               <Settings size={16} />
-              Profile Settings
-            </Link>
-            <hr className="my-2 border-white/10" />
-            <button
+              Settings
+            </a>
+          </div>
+
+          <div className="border-t border-white/10 p-2">
+            <button 
               onClick={handleSignOut}
-              disabled={signingOut}
-              className="flex items-center gap-2 w-full text-left px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-md transition-colors disabled:opacity-50"
+              className="flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-red-500/10 w-full text-left rounded-lg transition-colors"
             >
-              {signingOut ? (
-                <Loader2 size={16} className="animate-spin" />
-              ) : (
-                <LogOut size={16} />
-              )}
-              {signingOut ? 'Signing out...' : 'Sign Out'}
+              <LogOut size={16} />
+              Sign Out
             </button>
           </div>
         </div>

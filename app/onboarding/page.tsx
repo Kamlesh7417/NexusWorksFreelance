@@ -57,6 +57,7 @@ export default function OnboardingPage() {
           skills: skillsArray,
           hourly_rate: formData.role === 'developer' ? parseInt(formData.hourly_rate) || null : null,
           bio: formData.bio,
+          experience_level: formData.experience_level,
           updated_at: new Date().toISOString()
         })
         .eq('id', user.id);
@@ -118,7 +119,7 @@ export default function OnboardingPage() {
               </button>
 
               <button
-                onClick={() => handleRoleSelect('developer')}
+                onClick={() => handleRoleSelect('student')}
                 className="p-6 bg-white/5 hover:bg-white/10 border border-white/20 rounded-xl transition-all duration-200 text-center group"
               >
                 <GraduationCap size={48} className="mx-auto mb-4 text-purple-400 group-hover:scale-110 transition-transform" />
@@ -147,7 +148,7 @@ export default function OnboardingPage() {
               />
             </div>
 
-            {formData.role === 'developer' && (
+            {(formData.role === 'developer' || formData.role === 'student') && (
               <>
                 <div>
                   <label className="block text-sm font-medium text-cyan-400 mb-2">

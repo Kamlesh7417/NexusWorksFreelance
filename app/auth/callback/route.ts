@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
           .single();
 
         // If no profile exists, create one with GitHub data
-        if (!profile && !profileError) {
+        if ((!profile && profileError?.code === 'PGRST116') || !profile) {
           const githubData = data.user.user_metadata;
           
           const { error: insertError } = await supabase
@@ -58,6 +58,9 @@ export async function GET(request: NextRequest) {
           if (insertError) {
             console.error('Profile creation error:', insertError);
           }
+          
+          // Redirect to onboarding for new users
+          return NextResponse.redirect(new URL('/onboarding', requestUrl.origin));
         }
 
         // Redirect to dashboard or onboarding based on profile completeness

@@ -3,14 +3,13 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { UserProfile } from '@/lib/supabase';
 import { ClientDashboard } from '@/components/client/client-dashboard';
 import { DeveloperDashboard } from '@/components/developer/developer-dashboard';
 import { Loader2 } from 'lucide-react';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const supabase = createClientComponentClient();

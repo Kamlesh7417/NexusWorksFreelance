@@ -7,7 +7,7 @@ import { Loader2 } from 'lucide-react';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
-  requiredRole?: 'client' | 'developer' | 'admin';
+  requiredRole?: 'client' | 'developer' | 'student' | 'admin';
   redirectTo?: string;
 }
 
@@ -44,8 +44,8 @@ export function ProtectedRoute({
             return;
           }
 
-          if (profile.role !== requiredRole && requiredRole !== 'admin') {
-            router.push('/dashboard'); // Redirect to appropriate dashboard
+          if (profile.role !== requiredRole && profile.role !== 'admin') {
+            router.push('/unauthorized');
             return;
           }
         }
