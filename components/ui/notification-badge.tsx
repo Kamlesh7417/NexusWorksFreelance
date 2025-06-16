@@ -28,7 +28,7 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
         
         setUnreadCount(count || 0);
       } catch (error) {
-        console.error('Error in fetchUnreadCount:', error);
+        console.error('Error fetching unread count:', error);
       }
     };
 
@@ -53,10 +53,12 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
           event: 'UPDATE', 
           schema: 'public', 
           table: 'messages',
-          filter: `receiver_id=eq.${userId} AND read=eq.true`
+          filter: `receiver_id=eq.${userId}`
         }, 
-        () => {
-          setUnreadCount(prev => Math.max(0, prev - 1));
+        (payload) => {
+          if (payload.new.read && !payload.old.read) {
+            setUnreadCount(prev => Math.max(0, prev - 1));
+          }
         }
       )
       .subscribe();

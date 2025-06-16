@@ -5,21 +5,27 @@ import Link from 'next/link';
 
 interface LogoProps {
   size?: 'small' | 'medium' | 'large';
+  variant?: 'default' | 'light';
 }
 
-export function Logo({ size = 'medium' }: LogoProps) {
+export function Logo({ size = 'medium', variant = 'default' }: LogoProps) {
   const sizeClasses = {
     small: 'text-xl',
     medium: 'text-2xl',
-    large: 'text-4xl'
+    large: 'text-3xl'
+  };
+
+  const colorClasses = {
+    default: 'text-cyan-400',
+    light: 'text-white'
   };
 
   return (
     <Link href="/" className="flex items-center gap-2">
-      <div className="bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg p-2 flex items-center justify-center">
-        <Zap className={`text-white ${size === 'small' ? 'w-4 h-4' : size === 'medium' ? 'w-5 h-5' : 'w-8 h-8'}`} />
+      <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
+        <Zap size={24} className="text-white" />
       </div>
-      <span className={`font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600 ${sizeClasses[size]}`}>
+      <span className={`font-bold ${sizeClasses[size]} ${colorClasses[variant]}`}>
         NexusWorks
       </span>
     </Link>

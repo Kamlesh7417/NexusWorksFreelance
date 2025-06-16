@@ -75,7 +75,9 @@ export function SupabaseAuthProvider({ children }: { children: React.ReactNode }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
   }, []);
 
   const loadUserProfile = async (userId: string) => {
