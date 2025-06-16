@@ -14,15 +14,10 @@ import {
   Target,
   TrendingUp,
   Award,
-  Bot,
   Sparkles,
-  Crown,
-  Trophy,
-  Flame,
   Eye,
   Heart,
   MessageSquare,
-  AlertCircle,
   CheckCircle,
   ArrowRight,
   Globe,
@@ -45,8 +40,8 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
   const [activeDeveloper, setActiveDeveloper] = useState(0);
   const [matchingProgress, setMatchingProgress] = useState(0);
 
-  const aiMarketplaceAssistant = {
-    name: "Marketplace Assistant",
+  const marketplaceAssistant = {
+    name: "Project Finder",
     role: "Marketplace Navigator",
     avatar: "🎯",
     color: "text-cyan-400",
@@ -56,7 +51,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
 
   const projectCategories = [
     { id: 'all', name: 'All Projects', icon: Globe, count: 12450, color: 'text-cyan-400' },
-    { id: 'ai', name: 'AI/ML', icon: Bot, count: 3200, color: 'text-purple-400' },
+    { id: 'ai', name: 'AI/ML', icon: Database, count: 3200, color: 'text-purple-400' },
     { id: 'blockchain', name: 'Blockchain', icon: Shield, count: 2800, color: 'text-green-400' },
     { id: 'web', name: 'Web Development', icon: Code, count: 4100, color: 'text-blue-400' },
     { id: 'mobile', name: 'Mobile Apps', icon: Users, count: 1900, color: 'text-yellow-400' },
@@ -67,11 +62,11 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
     {
       id: 'proj_1',
       title: 'Advanced Trading Algorithm',
-      description: 'Build advanced computing algorithms for high-frequency trading with machine learning optimization.',
-      client: 'QuantumFin Corp',
+      description: 'Build advanced algorithms for high-frequency trading with machine learning optimization.',
+      client: 'FinTech Corp',
       budget: { min: 15000, max: 25000 },
       deadline: '2024-03-15',
-      skills: ['Advanced Computing', 'Python', 'Machine Learning', 'Finance'],
+      skills: ['Python', 'Machine Learning', 'Finance', 'API Integration'],
       applicants: 8,
       views: 234,
       featured: true,
@@ -117,12 +112,12 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
     },
     {
       id: 'proj_4',
-      title: 'AI Healthcare Dashboard',
+      title: 'Healthcare Dashboard',
       description: 'Develop comprehensive AI-powered dashboard for healthcare providers with predictive analytics.',
       client: 'MedTech Solutions',
       budget: { min: 6000, max: 10000 },
       deadline: '2024-03-20',
-      skills: ['React', 'Node.js', 'AI/ML', 'Healthcare'],
+      skills: ['React', 'Node.js', 'Data Visualization', 'Healthcare'],
       applicants: 22,
       views: 567,
       featured: false,
@@ -138,25 +133,25 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
     {
       id: 'dev_1',
       name: 'Alexandra Reed',
-      title: 'AI Specialist',
-      avatar: '🧠',
+      title: 'Full Stack Developer',
+      avatar: '👩‍💻',
       rating: 4.9,
       hourlyRate: 95,
       completedProjects: 42,
-      skills: ['Advanced Computing', 'AI/ML', 'Python', 'TensorFlow'],
-      specializations: ['Algorithms', 'Neural Networks'],
+      skills: ['React', 'Node.js', 'Python', 'TypeScript'],
+      specializations: ['Full Stack Development', 'API Integration'],
       location: 'San Francisco, CA',
       availability: 'available',
       responseTime: '2 hours',
       successRate: 98,
       earnings: 245000,
-      badges: ['Top Rated', 'Expert', 'AI Pioneer'],
+      badges: ['Top Rated', 'Expert', 'Fast Responder'],
       recentWork: 'Trading System for FinTech'
     },
     {
       id: 'dev_2',
       name: 'Marcus Chen',
-      title: 'Blockchain Security Expert',
+      title: 'Security Expert',
       avatar: '🛡️',
       rating: 5.0,
       hourlyRate: 110,
@@ -169,18 +164,18 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
       successRate: 100,
       earnings: 320000,
       badges: ['Security Master', 'DeFi Expert', 'Top Performer'],
-      recentWork: 'Multi-Million Dollar DeFi Protocol Audit'
+      recentWork: 'DeFi Protocol Audit'
     },
     {
       id: 'dev_3',
       name: 'Sofia Rodriguez',
-      title: 'AR/VR Innovation Lead',
+      title: 'AR/VR Developer',
       avatar: '🥽',
       rating: 4.8,
       hourlyRate: 85,
       completedProjects: 29,
       skills: ['AR/VR', 'Unity', 'React Native', 'UI/UX'],
-      specializations: ['Immersive Experiences', 'Spatial Computing'],
+      specializations: ['Immersive Experiences', '3D Development'],
       location: 'Barcelona, Spain',
       availability: 'busy',
       responseTime: '4 hours',
@@ -245,8 +240,8 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
 
   if (!isLoaded) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="w-12 h-12 border-4 border-t-transparent border-cyan-400 rounded-full animate-spin"></div>
+      <div className="nexus-loading-overlay flex">
+        <div className="nexus-spinner"></div>
       </div>
     );
   }
@@ -254,23 +249,23 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
   return (
     <div>
       {/* Hero Section with AI Assistant */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Project Marketplace</h1>
-        <p className="text-xl text-gray-300 mb-6">Connect with elite developers and cutting-edge projects powered by AI matching algorithms</p>
+      <div className="nexus-welcome-section">
+        <h1>Project Marketplace</h1>
+        <p className="mb-6">Connect with elite developers and cutting-edge projects powered by AI matching algorithms</p>
         
-        {/* AI Marketplace Assistant */}
-        <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 mb-8 max-w-4xl mx-auto p-6 rounded-xl">
+        {/* Marketplace Assistant */}
+        <div className="nexus-card bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-500/30 mb-8 max-w-4xl mx-auto">
           <div className="flex items-center gap-4">
-            <div className="text-4xl animate-pulse">{aiMarketplaceAssistant.avatar}</div>
+            <div className="text-4xl animate-pulse">{marketplaceAssistant.avatar}</div>
             <div className="flex-1">
-              <h3 className={`font-bold ${aiMarketplaceAssistant.color} mb-2`}>
-                {aiMarketplaceAssistant.name} - {aiMarketplaceAssistant.role}
+              <h3 className={`font-bold ${marketplaceAssistant.color} mb-2`}>
+                {marketplaceAssistant.name} - {marketplaceAssistant.role}
               </h3>
-              <p className="text-gray-300 mb-3">{aiMarketplaceAssistant.message}</p>
+              <p className="text-gray-300 mb-3">{marketplaceAssistant.message}</p>
               <div className="grid grid-cols-3 gap-4 text-sm">
-                {Object.entries(aiMarketplaceAssistant.stats).map(([key, value], index) => (
+                {Object.entries(marketplaceAssistant.stats).map(([key, value], index) => (
                   <div key={index} className="bg-white/5 rounded p-2 text-center">
-                    <div className={`font-bold ${aiMarketplaceAssistant.color}`}>{value}</div>
+                    <div className={`font-bold ${marketplaceAssistant.color}`}>{value}</div>
                     <div className="text-gray-400 capitalize">{key}</div>
                   </div>
                 ))}
@@ -297,7 +292,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
         </div>
         
         <button 
-          className="btn-secondary" 
+          className="nexus-back-btn" 
           onClick={() => onPageChange('home')}
         >
           Back to Home
@@ -305,8 +300,8 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
       </div>
 
       {/* Search and Filter Section */}
-      <div className="mb-8">
-        <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6">
+      <div className="nexus-container mb-8">
+        <div className="nexus-card">
           <h2 className="text-xl font-bold text-cyan-400 mb-6">Advanced Search & Filters</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div className="relative">
@@ -338,7 +333,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
               <option value="5000-15000">$5,000 - $15,000</option>
               <option value="15000+">$15,000+</option>
             </select>
-            <button className="btn-secondary flex items-center gap-2">
+            <button className="nexus-action-btn flex items-center gap-2">
               <Filter size={16} />
               Advanced Filters
             </button>
@@ -347,7 +342,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
       </div>
 
       {/* Tab Navigation */}
-      <div className="mb-8">
+      <div className="nexus-container mb-8">
         <div className="flex gap-1 bg-white/5 rounded-lg p-1 max-w-2xl mx-auto">
           {[
             { id: 'projects', label: 'Featured Projects', icon: Target },
@@ -359,9 +354,9 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-md text-sm font-medium transition-all ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-md text-sm font-medium transition-all transform hover:scale-105 ${
                   activeTab === tab.id 
-                    ? 'bg-cyan-500/20 text-cyan-400' 
+                    ? 'bg-cyan-500/20 text-cyan-400 scale-105' 
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -375,7 +370,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
 
       {/* Projects Tab */}
       {activeTab === 'projects' && (
-        <div className="space-y-8">
+        <div className="nexus-container space-y-8">
           {/* Project Categories */}
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
             {projectCategories.map((category, index) => {
@@ -383,10 +378,10 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
               return (
                 <div 
                   key={category.id}
-                  className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-4 text-center cursor-pointer hover:bg-white/10 transition-all duration-300"
+                  className="nexus-card text-center cursor-pointer group transition-all duration-500"
                   onClick={() => setSelectedCategory(category.id)}
                 >
-                  <Icon size={32} className={`${category.color} mx-auto mb-3`} />
+                  <Icon size={32} className={`${category.color} mx-auto mb-3 group-hover:animate-bounce`} />
                   <h3 className={`font-semibold ${category.color} mb-1`}>{category.name}</h3>
                   <p className="text-sm text-gray-400">{category.count.toLocaleString()}</p>
                 </div>
@@ -395,13 +390,13 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
           </div>
 
           {/* Featured Projects Showcase */}
-          <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6">
+          <div className="nexus-card">
             <h3 className="text-2xl font-bold text-cyan-400 mb-6">Featured Projects</h3>
             
             {/* Active Project Spotlight */}
-            <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg p-6 mb-6 border border-purple-500/30 hover:bg-purple-500/30 transition-all duration-300">
+            <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg p-6 mb-6 border border-purple-500/30 transition-all duration-500">
               <div className="flex items-center gap-2 mb-4">
-                <Crown size={20} className="text-yellow-400" />
+                <Award size={20} className="text-yellow-400" />
                 <span className="text-yellow-400 font-semibold">Project Spotlight</span>
                 <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full">Featured</span>
               </div>
@@ -476,10 +471,10 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
                   </div>
                   
                   <div className="flex gap-2">
-                    <button className="btn-secondary flex-1 text-sm py-2">
+                    <button className="nexus-action-btn flex-1 text-sm py-2">
                       Apply Now
                     </button>
-                    <button className="btn-secondary text-sm py-2 px-3">
+                    <button className="nexus-action-btn text-sm py-2 px-3">
                       <Heart size={14} />
                     </button>
                   </div>
@@ -492,13 +487,13 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
               {featuredProjects.map((project, index) => (
                 <div 
                   key={project.id} 
-                  className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6 cursor-pointer hover:bg-white/10 transition-all duration-300"
+                  className="nexus-card group cursor-pointer transition-all duration-500"
                   onClick={() => setActiveProject(index)}
                 >
                   <div className="flex items-center justify-between mb-4">
-                    <h4 className="font-semibold text-cyan-400">{project.title}</h4>
+                    <h4 className="font-semibold text-cyan-400 group-hover:text-white transition-colors">{project.title}</h4>
                     <div className="flex items-center gap-2">
-                      {project.featured && <Crown size={16} className="text-yellow-400" />}
+                      {project.featured && <Award size={16} className="text-yellow-400" />}
                       <span className={`text-xs px-2 py-1 rounded-full ${getUrgencyColor(project.urgency)}`}>
                         {project.urgency}
                       </span>
@@ -546,7 +541,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
                         <span>{project.views}</span>
                       </div>
                     </div>
-                    <button className="btn-secondary text-xs px-3 py-1">
+                    <button className="nexus-action-btn text-xs px-3 py-1">
                       View Details
                     </button>
                   </div>
@@ -559,14 +554,14 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
 
       {/* Developers Tab */}
       {activeTab === 'developers' && (
-        <div className="space-y-8">
+        <div className="nexus-container space-y-8">
           {/* Developer Spotlight */}
-          <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6">
+          <div className="nexus-card">
             <h3 className="text-2xl font-bold text-cyan-400 mb-6">Developer Spotlight</h3>
             
-            <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg p-6 border border-green-500/30 hover:bg-green-500/30 transition-all duration-300">
+            <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg p-6 border border-green-500/30 transition-all duration-500">
               <div className="flex items-center gap-2 mb-4">
-                <Trophy size={20} className="text-yellow-400" />
+                <Award size={20} className="text-yellow-400" />
                 <span className="text-yellow-400 font-semibold">Top Performer</span>
                 <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full">Featured</span>
               </div>
@@ -646,10 +641,10 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
                   </div>
                   
                   <div className="flex gap-2">
-                    <button className="btn-secondary flex-1 text-sm py-2">
+                    <button className="nexus-action-btn flex-1 text-sm py-2">
                       Hire Now
                     </button>
-                    <button className="btn-secondary text-sm py-2 px-3">
+                    <button className="nexus-action-btn text-sm py-2 px-3">
                       <MessageSquare size={14} />
                     </button>
                   </div>
@@ -663,13 +658,13 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
             {topDevelopers.map((developer, index) => (
               <div 
                 key={developer.id}
-                className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6 cursor-pointer hover:bg-white/10 transition-all duration-300"
+                className="nexus-card group cursor-pointer transition-all duration-500"
                 onClick={() => setActiveDeveloper(index)}
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="text-3xl">{developer.avatar}</div>
+                  <div className="text-3xl group-hover:scale-125 transition-all duration-300">{developer.avatar}</div>
                   <div>
-                    <h4 className="font-semibold text-cyan-400">{developer.name}</h4>
+                    <h4 className="font-semibold text-cyan-400 group-hover:text-white transition-colors">{developer.name}</h4>
                     <p className="text-sm text-gray-400">{developer.title}</p>
                     <div className="flex items-center gap-2 mt-1">
                       <div className="flex items-center gap-1">
@@ -709,7 +704,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
                       <span>{developer.location.split(',')[0]}</span>
                     </div>
                   </div>
-                  <button className="btn-secondary text-xs px-3 py-1">
+                  <button className="nexus-action-btn text-xs px-3 py-1">
                     View Profile
                   </button>
                 </div>
@@ -721,28 +716,28 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
 
       {/* Analytics Tab */}
       {activeTab === 'analytics' && (
-        <div className="space-y-8">
-          <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6">
+        <div className="nexus-container space-y-8">
+          <div className="nexus-card">
             <h3 className="text-2xl font-bold text-cyan-400 mb-6">Market Analytics</h3>
             
             {/* Market Overview */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-              <div className="bg-white/5 rounded-lg p-4 text-center hover:bg-white/10 transition-all duration-300">
+              <div className="bg-white/5 rounded-lg p-4 text-center transition-all duration-300">
                 <Target size={24} className="text-cyan-400 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-cyan-400">12,450</div>
                 <div className="text-sm text-gray-400">Active Projects</div>
               </div>
-              <div className="bg-white/5 rounded-lg p-4 text-center hover:bg-white/10 transition-all duration-300">
+              <div className="bg-white/5 rounded-lg p-4 text-center transition-all duration-300">
                 <Users size={24} className="text-green-400 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-green-400">8,900</div>
                 <div className="text-sm text-gray-400">Active Developers</div>
               </div>
-              <div className="bg-white/5 rounded-lg p-4 text-center hover:bg-white/10 transition-all duration-300">
+              <div className="bg-white/5 rounded-lg p-4 text-center transition-all duration-300">
                 <DollarSign size={24} className="text-yellow-400 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-yellow-400">$2.4M</div>
                 <div className="text-sm text-gray-400">Monthly Volume</div>
               </div>
-              <div className="bg-white/5 rounded-lg p-4 text-center hover:bg-white/10 transition-all duration-300">
+              <div className="bg-white/5 rounded-lg p-4 text-center transition-all duration-300">
                 <TrendingUp size={24} className="text-purple-400 mx-auto mb-2" />
                 <div className="text-2xl font-bold text-purple-400">+23%</div>
                 <div className="text-sm text-gray-400">Growth Rate</div>
@@ -754,12 +749,12 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
               <h4 className="font-semibold text-cyan-400 mb-4">Trending Technologies</h4>
               <div className="space-y-3">
                 {[
-                  { name: 'Advanced Computing', growth: '+340%', projects: 2450, color: 'text-purple-400' },
                   { name: 'AI/Machine Learning', growth: '+180%', projects: 8900, color: 'text-cyan-400' },
                   { name: 'Blockchain & Web3', growth: '+250%', projects: 5670, color: 'text-green-400' },
-                  { name: 'AR/VR Development', growth: '+420%', projects: 3200, color: 'text-yellow-400' }
+                  { name: 'AR/VR Development', growth: '+420%', projects: 3200, color: 'text-yellow-400' },
+                  { name: 'Mobile Development', growth: '+340%', projects: 2450, color: 'text-purple-400' }
                 ].map((tech, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-all duration-300">
+                  <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
                     <div>
                       <div className={`font-semibold ${tech.color}`}>{tech.name}</div>
                       <div className="text-sm text-gray-400">{tech.projects.toLocaleString()} projects</div>
@@ -812,11 +807,11 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
                 <h4 className="font-semibold text-cyan-400 mb-4">Average Rates by Category</h4>
                 <div className="space-y-3">
                   {[
-                    { category: 'Advanced Computing', rate: 120, color: 'text-purple-400' },
-                    { category: 'Blockchain Security', rate: 110, color: 'text-green-400' },
                     { category: 'AI/ML Engineering', rate: 95, color: 'text-cyan-400' },
-                    { category: 'AR/VR Development', rate: 85, color: 'text-yellow-400' },
-                    { category: 'Web Development', rate: 75, color: 'text-blue-400' }
+                    { category: 'Blockchain Security', rate: 110, color: 'text-green-400' },
+                    { category: 'Full Stack Development', rate: 85, color: 'text-blue-400' },
+                    { category: 'AR/VR Development', rate: 90, color: 'text-yellow-400' },
+                    { category: 'Mobile Development', rate: 75, color: 'text-purple-400' }
                   ].map((item, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <span className={`text-sm ${item.color}`}>{item.category}</span>

@@ -49,95 +49,83 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       {/* Header with Enhanced Navigation */}
-      <header className="fixed top-0 left-0 right-0 bg-black/80 backdrop-blur-lg border-b border-white/10 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Logo />
-          
-          <nav className="hidden md:block">
-            <ul className="flex items-center gap-6">
-              <li>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    switchPage('home');
-                  }}
-                  className={`px-3 py-2 rounded-lg transition-colors ${currentPage === 'home' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}
-                >
-                  Home
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    switchPage('marketplace');
-                  }}
-                  className={`px-3 py-2 rounded-lg transition-colors ${currentPage === 'marketplace' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}
-                >
-                  Marketplace
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    switchPage('learning');
-                  }}
-                  className={`px-3 py-2 rounded-lg transition-colors ${currentPage === 'learning' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}
-                >
-                  Learning
-                </a>
-              </li>
-              <li>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    switchPage('community');
-                  }}
-                  className={`px-3 py-2 rounded-lg transition-colors ${currentPage === 'community' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-300 hover:text-white hover:bg-white/5'}`}
-                >
-                  Community
-                </a>
-              </li>
-            </ul>
-          </nav>
+      <header className="nexus-header">
+        <div className="flex items-center gap-4">
+          <Logo size="medium" withText={true} />
+        </div>
+        
+        <nav className="nexus-nav">
+          <ul>
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  switchPage('home');
+                }}
+                className={currentPage === 'home' ? 'active' : ''}
+              >
+                Home
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  switchPage('marketplace');
+                }}
+                className={currentPage === 'marketplace' ? 'active' : ''}
+              >
+                Marketplace
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  switchPage('learning');
+                }}
+                className={currentPage === 'learning' ? 'active' : ''}
+              >
+                Learning
+              </a>
+            </li>
+            <li>
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  switchPage('community');
+                }}
+                className={currentPage === 'community' ? 'active' : ''}
+              >
+                Community
+              </a>
+            </li>
+          </ul>
+        </nav>
 
-          <div className="flex items-center gap-4">
-            <AuthButton />
-            
-            {/* Mobile Menu Button */}
-            <button className="md:hidden p-2 rounded-lg bg-white/5 hover:bg-white/10 transition-colors">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              </svg>
-            </button>
-          </div>
+        <div className="flex items-center gap-4">
+          <AuthButton />
         </div>
       </header>
 
       <NotificationBar />
       <EnhancedAIAssistant />
       
-      <main className="container mx-auto px-4 py-8 pt-24">
+      <main className="nexus-container">
         {currentPage === 'home' && <HomePage />}
         {currentPage === 'marketplace' && <MarketplacePage onPageChange={switchPage} />}
         {currentPage === 'learning' && <EnhancedLearningPage onPageChange={switchPage} />}
         {currentPage === 'community' && <CommunityPage onPageChange={switchPage} />}
       </main>
       
-      <footer className="bg-black/80 backdrop-blur-lg border-t border-white/10 py-6 text-center">
-        <div className="container mx-auto px-4">
-          <p className="text-gray-400 mb-2">&copy; 2024 NexusWorks. Where Innovation Meets Opportunity.</p>
-          <div className="flex justify-center gap-4 text-sm">
-            <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors">Terms of Service</a>
-            <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors">Contact Us</a>
-            <a href="#" className="text-gray-400 hover:text-cyan-400 transition-colors">Support</a>
-          </div>
+      <footer className="nexus-footer">
+        <p>&copy; 2024 NexusWorks. Where Innovation Meets Opportunity.</p>
+        <div>
+          <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a> | <a href="#">Support</a>
         </div>
       </footer>
       

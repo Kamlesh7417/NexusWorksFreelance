@@ -1,11 +1,13 @@
 'use client';
 
+import { Loader2 } from 'lucide-react';
+
 export function LoadingOverlay() {
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-[9999] backdrop-blur-sm">
-      <div className="flex flex-col items-center">
-        <div className="w-16 h-16 border-4 border-t-transparent border-cyan-400 rounded-full animate-spin mb-4"></div>
-        <p className="text-cyan-400 text-lg font-medium">Loading...</p>
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm">
+      <div className="text-center">
+        <Loader2 size={48} className="animate-spin text-cyan-400 mx-auto mb-4" />
+        <p className="text-cyan-400 text-lg">Loading...</p>
       </div>
     </div>
   );
