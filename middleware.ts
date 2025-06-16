@@ -19,7 +19,9 @@ export async function middleware(req: NextRequest) {
 
     // Protected routes that require authentication
     const protectedRoutes = ['/dashboard', '/profile', '/projects/create', '/messages'];
-    const authRoutes = ['/auth/signin', '/onboarding'];
+    
+    // Auth routes that should redirect authenticated users (EXCLUDE /onboarding)
+    const authRoutes = ['/auth/signin'];
 
     const isProtectedRoute = protectedRoutes.some(route => 
       req.nextUrl.pathname.startsWith(route)
@@ -29,6 +31,8 @@ export async function middleware(req: NextRequest) {
       req.nextUrl.pathname.startsWith(route)
     );
 
+    const isOnboardingRoute = req.nextUrl.pathname.startsWith('/onboarding');
+
     // Redirect unauthenticated users from protected routes
     if (isProtectedRoute && !session) {
       const redirectUrl = new URL('/auth/signin', req.url);
@@ -36,12 +40,12 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Redirect authenticated users from auth routes
+    // Redirect authenticated users from signin route (but NOT from onboarding)
     if (isAuthRoute && session) {
       return NextResponse.redirect(new URL('/dashboard', req.url));
     }
 
-    // Check if user needs onboarding
+    // Check if user needs onboarding (only when accessing dashboard)
     if (session && req.nextUrl.pathname === '/dashboard') {
       try {
         const { data: profile } = await supabase
@@ -59,6 +63,17 @@ export async function middleware(req: NextRequest) {
         return NextResponse.redirect(new URL('/onboarding', req.url));
       }
     }
+
+    // Allow access to onboarding for authenticated users
+    if (isOnboardingRoute && session) {
+      return res;
+    }
+
+    // Redirect unauthenticated users from onboarding
+    if (isOnboardingRoute && !session) {
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
+    }
+
   } catch (error) {
     console.error('Middleware error:', error);
     // Continue without Supabase functionality if there's an error
