@@ -40,15 +40,6 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
   const [activeDeveloper, setActiveDeveloper] = useState(0);
   const [matchingProgress, setMatchingProgress] = useState(0);
 
-  const marketplaceAssistant = {
-    name: "Project Finder",
-    role: "Marketplace Navigator",
-    avatar: "🎯",
-    color: "text-cyan-400",
-    message: "I analyze thousands of projects and developers in real-time to find your perfect match with high accuracy.",
-    stats: { matches: "45K+", accuracy: "99.2%", speed: "1.8s" }
-  };
-
   const projectCategories = [
     { id: 'all', name: 'All Projects', icon: Globe, count: 12450, color: 'text-cyan-400' },
     { id: 'ai', name: 'AI/ML', icon: Database, count: 3200, color: 'text-purple-400' },
@@ -248,32 +239,11 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
 
   return (
     <div>
-      {/* Hero Section with AI Assistant */}
+      {/* Hero Section */}
       <div className="nexus-welcome-section">
         <h1>Project Marketplace</h1>
         <p className="mb-6">Connect with elite developers and cutting-edge projects powered by AI matching algorithms</p>
         
-        {/* Marketplace Assistant */}
-        <div className="nexus-card bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border-cyan-500/30 mb-8 max-w-4xl mx-auto">
-          <div className="flex items-center gap-4">
-            <div className="text-4xl animate-pulse">{marketplaceAssistant.avatar}</div>
-            <div className="flex-1">
-              <h3 className={`font-bold ${marketplaceAssistant.color} mb-2`}>
-                {marketplaceAssistant.name} - {marketplaceAssistant.role}
-              </h3>
-              <p className="text-gray-300 mb-3">{marketplaceAssistant.message}</p>
-              <div className="grid grid-cols-3 gap-4 text-sm">
-                {Object.entries(marketplaceAssistant.stats).map(([key, value], index) => (
-                  <div key={index} className="bg-white/5 rounded p-2 text-center">
-                    <div className={`font-bold ${marketplaceAssistant.color}`}>{value}</div>
-                    <div className="text-gray-400 capitalize">{key}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Real-time Matching Progress */}
         <div className="bg-white/5 border border-cyan-500/20 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
           <div className="flex items-center gap-3 mb-2">
@@ -354,7 +324,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-6 py-3 rounded-md text-sm font-medium transition-all transform hover:scale-105 ${
+                className={`flex items-center gap-2 px-6 py-3 rounded-md text-sm font-medium transition-all ${
                   activeTab === tab.id 
                     ? 'bg-cyan-500/20 text-cyan-400 scale-105' 
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
