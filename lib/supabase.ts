@@ -1,11 +1,21 @@
 import { createClient } from '@supabase/supabase-js';
 
-// Get environment variables
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
+// Hardcoded Supabase credentials as requested
+const supabaseUrl = 'https://jzkouytzmgjrqvgercav.supabase.co';
+const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp6a291eXR6bWdqcnF2Z2VyY2F2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk4MTU4MDksImV4cCI6MjA2NTM5MTgwOX0.lI8KFBxs2_wRmVydJ6w0qpty9cOFiEhuUtTdru42qwg';
 
 // Create Supabase client
-export const supabase = createClient(supabaseUrl, supabaseAnonKey);
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+  },
+  realtime: {
+    params: {
+      eventsPerSecond: 10,
+    },
+  },
+});
 
 // Database Types
 export interface UserProfile {
@@ -63,6 +73,11 @@ export interface Message {
   created_at: string;
   sender?: UserProfile;
   receiver?: UserProfile;
+}
+
+// Utility function to check if Supabase is properly configured
+export function isSupabaseConfigured(): boolean {
+  return true; // Always return true since we're using hardcoded values
 }
 
 // Authentication Service
@@ -466,6 +481,7 @@ export class RealtimeService {
   }
 
   static unsubscribe(subscription: any) {
+    if (!subscription) return;
     return supabase.removeChannel(subscription);
   }
 }
