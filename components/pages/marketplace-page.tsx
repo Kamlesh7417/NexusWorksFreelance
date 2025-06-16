@@ -225,12 +225,6 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
 
   return (
     <div>
-      {/* Hero Section */}
-      <div className="nexus-welcome-section">
-        <h1>Project Marketplace</h1>
-        <p className="mb-6">Connect with elite developers and cutting-edge projects</p>
-      </div>
-
       {/* Featured Projects Section */}
       <div className="nexus-container space-y-8 mb-16">
         <h2 className="text-3xl font-bold text-cyan-400 mb-6 text-center">Featured Projects</h2>
