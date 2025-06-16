@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react';
 import { PageType } from '@/app/page';
 import { 
-  Search, 
-  Filter, 
   Star, 
   MapPin, 
   Clock, 
@@ -32,12 +30,10 @@ interface MarketplacePageProps {
 }
 
 export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [isLoaded, setIsLoaded] = useState(false);
   const [activeProject, setActiveProject] = useState(0);
   const [activeDeveloper, setActiveDeveloper] = useState(0);
-  const [matchingProgress, setMatchingProgress] = useState(0);
 
   const projectCategories = [
     { id: 'all', name: 'All Projects', icon: Globe, count: 12450, color: 'text-cyan-400' },
@@ -179,14 +175,6 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
   useEffect(() => {
     setIsLoaded(true);
     
-    // Simulate real-time matching progress
-    const matchingTimer = setInterval(() => {
-      setMatchingProgress(prev => {
-        if (prev >= 100) return 0;
-        return prev + 2;
-      });
-    }, 100);
-
     // Cycle through featured projects
     const projectTimer = setInterval(() => {
       setActiveProject(prev => (prev + 1) % featuredProjects.length);
@@ -198,7 +186,6 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
     }, 4000);
 
     return () => {
-      clearInterval(matchingTimer);
       clearInterval(projectTimer);
       clearInterval(developerTimer);
     };
@@ -241,38 +228,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
       {/* Hero Section */}
       <div className="nexus-welcome-section">
         <h1>Project Marketplace</h1>
-        <p className="mb-6">Connect with elite developers and cutting-edge projects powered by AI matching algorithms</p>
-        
-        {/* Real-time Matching Progress */}
-        <div className="bg-white/5 border border-cyan-500/20 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
-          <div className="flex items-center gap-3 mb-2">
-            <Zap size={16} className="text-cyan-400 animate-pulse" />
-            <span className="font-medium text-cyan-400">Matching Engine</span>
-          </div>
-          <div className="w-full bg-white/10 rounded-full h-2 mb-2">
-            <div 
-              className="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${matchingProgress}%` }}
-            ></div>
-          </div>
-          <div className="text-xs text-gray-400">
-            Analyzing {matchingProgress < 50 ? 'projects' : 'developers'} • {matchingProgress}% complete
-          </div>
-        </div>
-      </div>
-
-      {/* Simple Search */}
-      <div className="nexus-container mb-8">
-        <div className="relative max-w-2xl mx-auto">
-          <Search size={20} className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
-          <input 
-            type="text" 
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-white/10 border border-cyan-500/30 rounded-lg pl-12 pr-4 py-3 text-white outline-none focus:border-cyan-400"
-            placeholder="Search projects or developers..."
-          />
-        </div>
+        <p className="mb-6">Connect with elite developers and cutting-edge projects</p>
       </div>
 
       {/* Featured Projects Section */}
