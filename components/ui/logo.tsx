@@ -9,33 +9,38 @@ interface LogoProps {
   className?: string;
 }
 
-export function Logo({ size = 'medium', withText = false, className = '' }: LogoProps) {
-  // Size mappings
-  const sizeMap = {
-    small: { width: 32, height: 32, textClass: 'text-lg' },
-    medium: { width: 48, height: 48, textClass: 'text-2xl' },
-    large: { width: 64, height: 64, textClass: 'text-3xl' }
+export function Logo({ size = 'medium', withText = true, className = '' }: LogoProps) {
+  // Define logo dimensions based on size
+  const dimensions = {
+    small: { width: 32, height: 32 },
+    medium: { width: 48, height: 48 },
+    large: { width: 64, height: 64 }
   };
 
-  const { width, height, textClass } = sizeMap[size];
+  // Define text size based on logo size
+  const textSize = {
+    small: 'text-lg',
+    medium: 'text-2xl',
+    large: 'text-3xl'
+  };
 
   return (
     <Link href="/" className={`flex items-center gap-3 ${className}`}>
       <div className="relative">
-        <Image 
-          src="/images/nexusworks-logo.png" 
-          alt="NexusWorks Logo" 
-          width={width} 
-          height={height}
-          className="rounded-full"
+        <Image
+          src="/images/nexusworks-logo.png"
+          alt="NexusWorks Logo"
+          width={dimensions[size].width}
+          height={dimensions[size].height}
+          className="rounded-lg"
           priority
         />
       </div>
       
       {withText && (
-        <h1 className={`font-bold text-cyan-400 ${textClass}`}>
+        <span className={`font-bold ${textSize[size]} text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-600`}>
           NexusWorks
-        </h1>
+        </span>
       )}
     </Link>
   );

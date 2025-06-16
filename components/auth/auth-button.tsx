@@ -101,18 +101,12 @@ export function AuthButton() {
   if (!user) {
     return (
       <div className="flex items-center gap-4">
-        <Link 
-          href="/auth/signin"
-          className="text-gray-300 hover:text-white transition-colors"
-        >
-          Sign In
-        </Link>
         <button
           onClick={handleSignIn}
           className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-all duration-200 flex items-center gap-2"
         >
           <Github size={16} />
-          Get Started
+          Sign In
         </button>
       </div>
     );

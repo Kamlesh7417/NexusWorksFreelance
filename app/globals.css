@@ -479,74 +479,6 @@
   font-weight: 800;
 }
 
-/* Holographic effect for 3D portfolio */
-.nexus-hologram {
-  width: 100%;
-  height: 200px;
-  background: linear-gradient(45deg, #00e6ff, #ff00cc);
-  margin: 1rem 0;
-  border-radius: 10px;
-  position: relative;
-  transform-style: preserve-3d;
-  transform: rotateX(20deg) rotateY(20deg);
-  animation: hologramPulse 4s infinite;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 1.2rem;
-  text-align: center;
-  box-shadow: 0 0 30px rgba(0, 230, 255, 0.5);
-  font-family: 'Poppins', sans-serif;
-  font-weight: 600;
-}
-
-.nexus-profile-list {
-  margin-top: 1rem;
-  max-height: 200px;
-  overflow-y: auto;
-}
-
-.nexus-profile-item {
-  background: rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(0, 230, 255, 0.2);
-  padding: 0.6rem;
-  margin-bottom: 0.5rem;
-  border-radius: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  transition: transform 0.3s ease, background 0.3s ease;
-}
-
-.nexus-profile-item:hover {
-  transform: translateX(5px) scale(1.02);
-  background: rgba(0, 0, 0, 0.5);
-}
-
-.nexus-profile-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.nexus-profile-name {
-  font-weight: bold;
-  color: #00e6ff;
-  font-family: 'Poppins', sans-serif;
-}
-
-.nexus-profile-skills {
-  font-size: 0.8rem;
-  color: #e5e5e5;
-  font-family: 'Inter', sans-serif;
-}
-
-.nexus-profile-rating {
-  font-size: 0.8rem;
-  color: #00ff99;
-  font-family: 'Inter', sans-serif;
-}
-
 /* Social Impact Progress Bars */
 .nexus-progress-container {
   margin-top: 1rem;
@@ -581,7 +513,7 @@
   left: 20px;
   width: 60px;
   height: 60px;
-  background: linear-gradient(135deg, #00e6ff, #ff00cc);
+  background: linear-gradient(135deg, #00e6ff, #0066ff);
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -639,7 +571,7 @@
 }
 
 .nexus-user-message {
-  background: rgba(255, 0, 204, 0.2);
+  background: rgba(0, 102, 255, 0.2);
   align-self: flex-end;
   margin-left: auto;
   color: #e5e5e5;
@@ -688,7 +620,7 @@
 
 .nexus-skill-progress {
   height: 100%;
-  background: linear-gradient(to right, #00e6ff, #ff00cc);
+  background: linear-gradient(to right, #00e6ff, #0066ff);
   width: 0;
   transition: width 1.5s ease;
 }
@@ -723,7 +655,7 @@
 
 .nexus-bar {
   width: 100%;
-  background: linear-gradient(to top, #00e6ff, #00cc99);
+  background: linear-gradient(to top, #00e6ff, #0066ff);
   transition: height 1.5s ease, transform 0.3s ease;
   border-radius: 2px 2px 0 0;
 }
