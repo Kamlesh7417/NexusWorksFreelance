@@ -12,6 +12,10 @@ const nextConfig = {
     if (dev) {
       config.cache = false;
     }
+    
+    // Suppress critical dependency warnings from third-party libraries
+    config.module.exprContextCritical = false;
+    
     return config;
   },
 };
