@@ -8,7 +8,7 @@ import { MarketplacePage } from '@/components/pages/marketplace-page';
 import { EnhancedLearningPage } from '@/components/pages/enhanced-learning-page';
 import { CommunityPage } from '@/components/pages/community-page';
 import { EnhancedAIAssistant } from '@/components/ai/enhanced-ai-assistant';
-import { NotificationBar } from '@/components/notifications/notification-bar';
+import { BCIPanel } from '@/components/bci/bci-panel';
 import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import { Logo } from '@/components/ui/logo';
 
@@ -51,7 +51,7 @@ export default function Home() {
       {/* Header with Enhanced Navigation */}
       <header className="nexus-header">
         <div className="flex items-center gap-4">
-          <Logo size="medium" withText={true} />
+          <Logo size="medium" />
         </div>
         
         <nav className="nexus-nav">
@@ -89,7 +89,7 @@ export default function Home() {
                 }}
                 className={currentPage === 'learning' ? 'active' : ''}
               >
-                Learning
+                Developer Learning
               </a>
             </li>
             <li>
@@ -101,7 +101,17 @@ export default function Home() {
                 }}
                 className={currentPage === 'community' ? 'active' : ''}
               >
-                Community
+                Developer Community
+              </a>
+            </li>
+            <li>
+              <a href="/project-management" className="text-purple-400 hover:text-purple-300">
+                Project Manager
+              </a>
+            </li>
+            <li>
+              <a href="/supabase-demo" className="text-green-400 hover:text-green-300">
+                Supabase Demo
               </a>
             </li>
           </ul>
@@ -112,7 +122,7 @@ export default function Home() {
         </div>
       </header>
 
-      <NotificationBar />
+      <BCIPanel />
       <EnhancedAIAssistant />
       
       <main className="nexus-container">
@@ -123,7 +133,7 @@ export default function Home() {
       </main>
       
       <footer className="nexus-footer">
-        <p>&copy; 2024 NexusWorks. Where Innovation Meets Opportunity.</p>
+        <p>&copy; 2024 NexusWorks. The Future of Freelancing.</p>
         <div>
           <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a> | <a href="#">Contact Us</a> | <a href="#">Support</a>
         </div>
