@@ -4,38 +4,36 @@ import Image from 'next/image';
 import Link from 'next/link';
 
 interface LogoProps {
-  size?: 'small' | 'medium' | 'large';
+  size?: 'sm' | 'md' | 'lg';
   withText?: boolean;
-  className?: string;
 }
 
-export function Logo({ size = 'medium', withText = false, className = '' }: LogoProps) {
-  // Size mappings
-  const sizeMap = {
-    small: { width: 32, height: 32, textClass: 'text-lg' },
-    medium: { width: 48, height: 48, textClass: 'text-2xl' },
-    large: { width: 64, height: 64, textClass: 'text-3xl' }
+export function Logo({ size = 'md', withText = true }: LogoProps) {
+  const dimensions = {
+    sm: { width: 32, height: 32 },
+    md: { width: 48, height: 48 },
+    lg: { width: 64, height: 64 }
   };
 
-  const { width, height, textClass } = sizeMap[size];
+  const { width, height } = dimensions[size];
 
   return (
-    <Link href="/" className={`flex items-center gap-3 ${className}`}>
-      <div className="relative">
+    <Link href="/" className="flex items-center gap-3">
+      <div className="relative" style={{ width, height }}>
         <Image 
-          src="/images/nexusworks-logo.png" 
+          src="/logo.png" 
           alt="NexusWorks Logo" 
           width={width} 
           height={height}
-          className="rounded-full"
-          priority
+          className="rounded-lg"
         />
       </div>
       
       {withText && (
-        <h1 className={`font-bold text-cyan-400 ${textClass}`}>
-          NexusWorks
-        </h1>
+        <div className="flex flex-col">
+          <span className="text-xl font-bold text-white">NexusWorks</span>
+          <span className="text-xs text-gray-400">Where Innovation Meets Opportunity</span>
+        </div>
       )}
     </Link>
   );

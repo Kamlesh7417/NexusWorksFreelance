@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Clock, Send, Zap } from 'lucide-react';
+import { MessageSquare, Send, Zap } from 'lucide-react';
 
 interface Message {
   id: string;
@@ -16,7 +16,7 @@ export function EnhancedAIAssistant() {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: "Hi there! I'm your AI assistant ready to help with project planning, skill development, and freelancing advice. How can I help you today?",
+      text: "Hi there! I'm your AI assistant with access to real-time project analysis and skill optimization algorithms. How can I help with your freelancing journey today?",
       isUser: false,
       timestamp: new Date()
     }
@@ -76,7 +76,7 @@ export function EnhancedAIAssistant() {
         const filtered = prev.filter(msg => !msg.isTyping);
         return [...filtered, {
           id: (Date.now() + 2).toString(),
-          text: data.response || 'I apologize, but I encountered an issue processing your request. Please try again.',
+          text: data.response || 'I encountered an issue processing your request. Please try again.',
           isUser: false,
           timestamp: new Date()
         }];
@@ -87,7 +87,7 @@ export function EnhancedAIAssistant() {
         const filtered = prev.filter(msg => !msg.isTyping);
         return [...filtered, {
           id: (Date.now() + 2).toString(),
-          text: 'I apologize, but I encountered an issue processing your request. Please try again.',
+          text: 'Sorry, I encountered an error. Please try your query again.',
           isUser: false,
           timestamp: new Date()
         }];
@@ -125,32 +125,29 @@ export function EnhancedAIAssistant() {
   return (
     <>
       <div 
-        className="nexus-ai-assistant group cursor-pointer" 
+        className="fixed bottom-4 left-4 w-12 h-12 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg cursor-pointer z-50 hover:scale-110 transition-transform"
         onClick={() => setIsOpen(!isOpen)}
       >
-        <div className="relative">
-          <Clock size={30} color="#ffffff" className="transition-transform group-hover:scale-110" />
-          <div className="absolute -top-1 -right-1 w-3 h-3 bg-cyan-400 rounded-full animate-pulse"></div>
-        </div>
+        <MessageSquare size={20} className="text-white" />
       </div>
 
       {isOpen && (
-        <div className="nexus-ai-assistant-chat">
-          <div className="nexus-chat-header">
+        <div className="fixed bottom-20 left-4 w-80 bg-black/90 border border-cyan-500/30 rounded-xl shadow-2xl z-50 overflow-hidden">
+          <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 p-3 border-b border-cyan-500/30">
             <div className="flex items-center justify-between">
-              <span>AI Assistant</span>
+              <span className="font-semibold text-cyan-400">AI Assistant</span>
               <div className="flex items-center gap-1">
-                <Zap size={16} className="text-cyan-400" />
+                <Zap size={14} className="text-cyan-400" />
                 <span className="text-xs text-cyan-400">Active</span>
               </div>
             </div>
           </div>
           
-          <div className="nexus-chat-messages">
+          <div className="h-80 overflow-y-auto p-4 space-y-4">
             {messages.map((message) => (
               <div 
                 key={message.id}
-                className={`nexus-message ${message.isUser ? 'nexus-user-message' : 'nexus-ai-message'}`}
+                className={`max-w-[90%] rounded-lg p-3 ${message.isUser ? 'bg-blue-500/20 ml-auto' : 'bg-white/10'}`}
               >
                 {message.isTyping ? (
                   <div className="flex items-center gap-2">
@@ -162,7 +159,7 @@ export function EnhancedAIAssistant() {
                     <span className="text-sm opacity-70">{message.text}</span>
                   </div>
                 ) : (
-                  message.text
+                  <p className="text-sm text-gray-200">{message.text}</p>
                 )}
               </div>
             ))}
@@ -184,20 +181,20 @@ export function EnhancedAIAssistant() {
             </div>
           </div>
           
-          <div className="nexus-chat-input">
+          <div className="p-3 border-t border-white/10 flex items-center gap-2">
             <textarea 
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask about projects, skills, or career guidance..."
-              className="flex-1 bg-white/10 border border-cyan-500/30 rounded-lg px-3 py-2 text-white resize-none outline-none min-h-[40px] max-h-[80px]"
+              className="flex-1 bg-white/10 border border-cyan-500/30 rounded-lg px-3 py-2 text-white resize-none outline-none min-h-[40px] max-h-[80px] text-sm"
               rows={1}
               disabled={isLoading}
             />
             <button 
               onClick={sendMessage}
               disabled={isLoading || !inputValue.trim()}
-              className="ml-2 p-2 bg-cyan-500/20 border border-cyan-500/40 rounded-lg hover:bg-cyan-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="p-2 bg-cyan-500/20 border border-cyan-500/40 rounded-lg hover:bg-cyan-500/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Send size={16} className="text-cyan-400" />
             </button>

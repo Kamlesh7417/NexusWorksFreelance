@@ -20,6 +20,14 @@ import {
   Award,
   Clock,
   Star,
+  Flame,
+  Crown,
+  Medal,
+  Sparkles,
+  Bot,
+  Rocket,
+  Globe,
+  Shield,
   CheckCircle
 } from 'lucide-react';
 
@@ -35,30 +43,30 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
   const [userLevel, setUserLevel] = useState(12);
   const [userXP, setUserXP] = useState(3450);
 
-  const learningAssistant = {
-    name: "SAGE",
+  const aiLearningMentor = {
+    name: "Learning Assistant",
     role: "Learning Architect",
     avatar: "🧠",
     color: "text-purple-400",
-    message: "I've analyzed thousands of learning patterns to create your personalized education pathway with high success rate.",
+    message: "I've analyzed learning patterns to create your personalized education pathway with a high success rate.",
     stats: { paths: "50K+", success: "97%", speed: "3x faster" }
   };
 
   const learningPaths = [
     {
-      id: 'web',
-      name: 'Web Development Mastery',
-      icon: '🌐',
+      id: 'advanced-dev',
+      name: 'Advanced Development',
+      icon: '🌌',
       level: 'Advanced',
       duration: '12 weeks',
       modules: 24,
       students: 2450,
       rating: 4.9,
       progress: 65,
-      color: 'text-blue-400',
-      description: 'Master modern web development with React, Node.js, and cloud deployment',
-      skills: ['React', 'Node.js', 'TypeScript', 'AWS'],
-      nextMilestone: 'Advanced State Management'
+      color: 'text-purple-400',
+      description: 'Master advanced algorithms, machine learning, and cryptography',
+      skills: ['Algorithms', 'Machine Learning', 'Cryptography'],
+      nextMilestone: 'Advanced Algorithm Implementation'
     },
     {
       id: 'ai',
@@ -91,9 +99,9 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
       nextMilestone: 'Deploy Multi-Million Dollar Protocol'
     },
     {
-      id: 'mobile',
-      name: 'Mobile App Development',
-      icon: '📱',
+      id: 'arvr',
+      name: 'AR/VR Development',
+      icon: '🥽',
       level: 'Intermediate',
       duration: '14 weeks',
       modules: 28,
@@ -101,29 +109,29 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
       rating: 4.6,
       progress: 23,
       color: 'text-yellow-400',
-      description: 'Build cross-platform mobile applications with React Native and Flutter',
-      skills: ['React Native', 'Flutter', 'Firebase', 'Mobile UI'],
-      nextMilestone: 'Create Production App'
+      description: 'Build immersive experiences with spatial computing and mixed reality',
+      skills: ['Unity', 'Unreal Engine', 'WebXR', 'Spatial Computing'],
+      nextMilestone: 'Create Virtual Showroom'
     }
   ];
 
   const achievements = [
     {
-      title: "Code Master",
-      description: "Complete programming fundamentals",
-      icon: "💻",
+      title: "Advanced Pioneer",
+      description: "Complete advanced computing fundamentals",
+      icon: "🌌",
       rarity: "legendary",
       progress: 85,
-      reward: "1000 XP + Code Badge",
+      reward: "1000 XP + Advanced Badge",
       unlocked: false
     },
     {
-      title: "Problem Solver",
-      description: "Build 5 applications from scratch",
-      icon: "🧩",
+      title: "AI Architect",
+      description: "Build 5 neural networks from scratch",
+      icon: "🧠",
       rarity: "epic",
       progress: 60,
-      reward: "750 XP + Expert Badge",
+      reward: "750 XP + AI Expert Badge",
       unlocked: false
     },
     {
@@ -148,30 +156,30 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
 
   const skillCategories = [
     {
-      name: 'Web Technologies',
-      icon: '🌐',
-      skills: ['JavaScript', 'React', 'Node.js'],
+      name: 'Advanced Technologies',
+      icon: '🌌',
+      skills: ['Advanced Computing', 'ML', 'Cryptography'],
       progress: 65,
-      color: 'text-blue-400'
+      color: 'text-purple-400'
     },
     {
       name: 'Artificial Intelligence',
       icon: '🤖',
-      skills: ['Python', 'TensorFlow', 'NLP'],
+      skills: ['Neural Networks', 'Computer Vision', 'NLP'],
       progress: 78,
       color: 'text-cyan-400'
     },
     {
       name: 'Blockchain & Web3',
       icon: '⛓️',
-      skills: ['Solidity', 'Smart Contracts', 'DeFi'],
+      skills: ['Smart Contracts', 'DeFi', 'NFTs'],
       progress: 52,
       color: 'text-green-400'
     },
     {
-      name: 'Mobile Development',
-      icon: '📱',
-      skills: ['React Native', 'Flutter', 'Swift'],
+      name: 'Extended Reality',
+      icon: '🥽',
+      skills: ['AR Development', 'VR Experiences', 'Mixed Reality'],
       progress: 34,
       color: 'text-yellow-400'
     }
@@ -229,18 +237,18 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
 
   if (!isLoaded) {
     return (
-      <div className="nexus-loading-overlay flex">
-        <div className="nexus-spinner"></div>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="w-12 h-12 border-4 border-t-transparent border-cyan-400 rounded-full animate-spin"></div>
       </div>
     );
   }
 
   return (
     <div>
-      {/* Hero Section with Learning Assistant */}
-      <div className="nexus-welcome-section">
-        <h1>Learning Platform</h1>
-        <p className="mb-6">Master in-demand technologies with expert-led education and real-world mentorship</p>
+      {/* Enhanced Hero Section with AI Learning Mentor */}
+      <div className="text-center mb-12">
+        <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">Learning Platform</h1>
+        <p className="text-xl text-gray-300 mb-6 max-w-3xl mx-auto">Master cutting-edge technologies with AI-powered education and real-world mentorship</p>
         
         {/* Developer-Only Notice */}
         <div className="bg-blue-500/20 border border-blue-500/30 rounded-lg p-4 mb-6 max-w-2xl mx-auto">
@@ -254,19 +262,19 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
           </p>
         </div>
 
-        {/* Learning Assistant */}
-        <div className="nexus-card bg-gradient-to-r from-purple-500/20 to-blue-500/20 border-purple-500/30 mb-8 max-w-4xl mx-auto">
+        {/* AI Learning Mentor */}
+        <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 mb-8 max-w-4xl mx-auto p-6 rounded-xl">
           <div className="flex items-center gap-4">
-            <div className="text-4xl animate-pulse">{learningAssistant.avatar}</div>
+            <div className="text-4xl animate-pulse">{aiLearningMentor.avatar}</div>
             <div className="flex-1">
-              <h3 className={`font-bold ${learningAssistant.color} mb-2`}>
-                {learningAssistant.name} - {learningAssistant.role}
+              <h3 className={`font-bold ${aiLearningMentor.color} mb-2`}>
+                {aiLearningMentor.name} - {aiLearningMentor.role}
               </h3>
-              <p className="text-gray-300 mb-3">{learningAssistant.message}</p>
+              <p className="text-gray-300 mb-3">{aiLearningMentor.message}</p>
               <div className="grid grid-cols-3 gap-4 text-sm">
-                {Object.entries(learningAssistant.stats).map(([key, value], index) => (
+                {Object.entries(aiLearningMentor.stats).map(([key, value], index) => (
                   <div key={index} className="bg-white/5 rounded p-2 text-center">
-                    <div className={`font-bold ${learningAssistant.color}`}>{value}</div>
+                    <div className={`font-bold ${aiLearningMentor.color}`}>{value}</div>
                     <div className="text-gray-400 capitalize">{key}</div>
                   </div>
                 ))}
@@ -281,7 +289,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
             <Brain size={16} className="text-purple-400 animate-pulse" />
             <span className="font-medium text-purple-400">Learning Engine</span>
             <div className="flex items-center gap-1">
-              <Award size={14} className="text-yellow-400" />
+              <Crown size={14} className="text-yellow-400" />
               <span className="text-yellow-400 font-bold">Level {userLevel}</span>
             </div>
           </div>
@@ -298,7 +306,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
         </div>
         
         <button 
-          className="nexus-back-btn" 
+          className="btn-secondary" 
           onClick={() => onPageChange('home')}
         >
           Back to Home
@@ -306,7 +314,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
       </div>
 
       {/* Learning Paths Overview */}
-      <div className="nexus-container mb-8">
+      <div className="mb-12">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-cyan-400 mb-4">Personalized Learning Paths</h2>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
@@ -318,7 +326,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
           {learningPaths.map((path, index) => (
             <div 
               key={path.id}
-              className="nexus-card group transition-all duration-500"
+              className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300"
             >
               <div className="flex items-center gap-4 mb-4">
                 <div className="text-4xl group-hover:scale-125 transition-all duration-500">
@@ -372,7 +380,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
                 </div>
                 <div className="w-full bg-white/10 rounded-full h-2">
                   <div 
-                    className={`bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-1000`}
+                    className="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-1000"
                     style={{ width: `${path.progress}%` }}
                   ></div>
                 </div>
@@ -383,7 +391,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
                 <div className="font-medium text-cyan-400">{path.nextMilestone}</div>
               </div>
               
-              <button className="nexus-action-btn w-full">
+              <button className="btn-secondary w-full">
                 Continue Learning
               </button>
             </div>
@@ -391,9 +399,9 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
         </div>
       </div>
 
-      {/* Skill Categories */}
-      <div className="nexus-container mb-8">
-        <div className="nexus-card">
+      {/* Skill Categories with 3D Visualization */}
+      <div className="mb-12">
+        <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6">
           <h3 className="text-2xl font-bold text-cyan-400 mb-6">Skill Mastery Tracker</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -403,7 +411,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
                 <div 
                   key={index}
                   className={`bg-white/5 rounded-lg p-4 transition-all duration-700 ${
-                    isActive ? 'scale-110 shadow-2xl shadow-cyan-500/20' : 'hover:scale-105'
+                    isActive ? 'scale-105 shadow-lg shadow-cyan-500/20' : 'hover:scale-105'
                   }`}
                 >
                   <div className="text-center">
@@ -429,7 +437,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
                       </div>
                       <div className="w-full bg-white/10 rounded-full h-2">
                         <div 
-                          className={`bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-1000`}
+                          className="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-1000"
                           style={{ width: `${category.progress}%` }}
                         ></div>
                       </div>
@@ -442,9 +450,9 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div className="nexus-container mb-8">
-        <div className="flex gap-1 bg-white/5 rounded-lg p-1 max-w-4xl mx-auto">
+      {/* Tab Navigation with Enhanced 3D Effects */}
+      <div className="mb-8">
+        <div className="flex gap-1 bg-white/5 rounded-lg p-1 max-w-4xl mx-auto overflow-x-auto">
           {tabs.map(tab => {
             const Icon = tab.icon;
             return (
@@ -453,7 +461,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center gap-2 px-4 py-3 rounded-md text-sm font-medium transition-all ${
                   activeTab === tab.id 
-                    ? 'bg-cyan-500/20 text-cyan-400 scale-105' 
+                    ? 'bg-cyan-500/20 text-cyan-400' 
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -466,7 +474,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
       </div>
 
       {/* Tab Content */}
-      <div className="nexus-container">
+      <div>
         {activeTab === 'courses' && <CoursePlayer />}
         {activeTab === 'coding' && <CodingEnvironment />}
         {activeTab === 'shadowing' && <ShadowingSystem />}
@@ -476,8 +484,8 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
 
       {/* Achievement Showcase */}
       {activeTab === 'courses' && (
-        <div className="nexus-container mt-8">
-          <div className="nexus-card">
+        <div className="mt-8">
+          <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6">
             <h3 className="text-2xl font-bold text-cyan-400 mb-6">Recent Achievements</h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -524,9 +532,9 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
       )}
 
       {/* Developer Learning Benefits */}
-      <div className="nexus-container mt-8">
+      <div className="mt-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="nexus-card transition-all duration-500">
+          <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center gap-3 mb-4">
               <Brain size={24} className="text-cyan-400" />
               <h3 className="font-semibold text-cyan-400">AI-Powered Learning</h3>
@@ -536,7 +544,7 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
             </p>
           </div>
           
-          <div className="nexus-card transition-all duration-500">
+          <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center gap-3 mb-4">
               <Users size={24} className="text-green-400" />
               <h3 className="font-semibold text-green-400">Expert Mentorship</h3>
@@ -546,21 +554,21 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
             </p>
           </div>
           
-          <div className="nexus-card transition-all duration-500">
+          <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6 hover:bg-white/10 transition-all duration-300">
             <div className="flex items-center gap-3 mb-4">
               <Trophy size={24} className="text-yellow-400" />
               <h3 className="font-semibold text-yellow-400">Earn While Learning</h3>
             </div>
             <p className="text-sm opacity-80">
-              Gain rewards for completing courses, achieving milestones, and contributing to the developer community.
+              Gain tokens for completing courses, achieving milestones, and contributing to the developer community.
             </p>
           </div>
         </div>
       </div>
 
       {/* Learning Status */}
-      <div className="nexus-container mt-6">
-        <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-6 border border-purple-500/30 transition-all duration-500">
+      <div className="mt-6">
+        <div className="bg-gradient-to-r from-purple-500/20 to-pink-500/20 rounded-lg p-6 border border-purple-500/30 transition-all duration-300 hover:bg-purple-500/30">
           <div className="flex items-center gap-3 mb-4">
             <Zap size={24} className="text-purple-400 animate-pulse" />
             <div>
@@ -570,19 +578,19 @@ export function EnhancedLearningPage({ onPageChange }: EnhancedLearningPageProps
           </div>
           
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-            <div className="bg-white/5 rounded-lg p-3 text-center transition-all duration-300">
+            <div className="bg-white/5 rounded-lg p-3 text-center hover:bg-white/10 transition-all duration-300">
               <div className="text-cyan-400 font-bold text-lg">127</div>
               <div className="text-gray-400">Courses Available</div>
             </div>
-            <div className="bg-white/5 rounded-lg p-3 text-center transition-all duration-300">
+            <div className="bg-white/5 rounded-lg p-3 text-center hover:bg-white/10 transition-all duration-300">
               <div className="text-green-400 font-bold text-lg">45</div>
               <div className="text-gray-400">Live Mentors</div>
             </div>
-            <div className="bg-white/5 rounded-lg p-3 text-center transition-all duration-300">
+            <div className="bg-white/5 rounded-lg p-3 text-center hover:bg-white/10 transition-all duration-300">
               <div className="text-yellow-400 font-bold text-lg">8.9k</div>
               <div className="text-gray-400">Active Learners</div>
             </div>
-            <div className="bg-white/5 rounded-lg p-3 text-center transition-all duration-300">
+            <div className="bg-white/5 rounded-lg p-3 text-center hover:bg-white/10 transition-all duration-300">
               <div className="text-purple-400 font-bold text-lg">99.2%</div>
               <div className="text-gray-400">Success Rate</div>
             </div>

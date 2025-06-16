@@ -5,7 +5,6 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { User, LogOut, Settings, Github, Loader2, Bell, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { NotificationBadge } from '../ui/notification-badge';
-import { Logo } from '@/components/ui/logo';
 
 export function AuthButton() {
   const [user, setUser] = useState<any>(null);
