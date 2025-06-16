@@ -34,8 +34,6 @@ export async function middleware(req: NextRequest) {
       req.nextUrl.pathname.startsWith(route)
     );
 
-    const isOnboardingRoute = req.nextUrl.pathname.startsWith('/onboarding');
-
     // Redirect unauthenticated users from protected routes
     if (isProtectedRoute && !session) {
       const redirectUrl = new URL('/auth/signin', req.url);
