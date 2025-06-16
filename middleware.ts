@@ -20,8 +20,11 @@ export async function middleware(req: NextRequest) {
     // Protected routes that require authentication
     const protectedRoutes = ['/dashboard', '/profile', '/projects/create', '/messages'];
     
-    // Auth routes that should redirect authenticated users (EXCLUDE /onboarding)
+    // Auth routes that should redirect authenticated users to dashboard
     const authRoutes = ['/auth/signin'];
+    
+    // Onboarding is separate - authenticated users should be able to access it
+    const isOnboardingRoute = req.nextUrl.pathname.startsWith('/onboarding');
 
     const isProtectedRoute = protectedRoutes.some(route => 
       req.nextUrl.pathname.startsWith(route)
@@ -40,9 +43,19 @@ export async function middleware(req: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Redirect authenticated users from signin route (but NOT from onboarding)
+    // Redirect authenticated users from signin route only (not onboarding)
     if (isAuthRoute && session) {
       return NextResponse.redirect(new URL('/dashboard', req.url));
+    }
+
+    // Allow authenticated users to access onboarding
+    if (isOnboardingRoute && session) {
+      return res;
+    }
+
+    // Redirect unauthenticated users from onboarding to signin
+    if (isOnboardingRoute && !session) {
+      return NextResponse.redirect(new URL('/auth/signin', req.url));
     }
 
     // Check if user needs onboarding (only when accessing dashboard)
@@ -62,16 +75,6 @@ export async function middleware(req: NextRequest) {
         // If profile doesn't exist, redirect to onboarding
         return NextResponse.redirect(new URL('/onboarding', req.url));
       }
-    }
-
-    // Allow access to onboarding for authenticated users
-    if (isOnboardingRoute && session) {
-      return res;
-    }
-
-    // Redirect unauthenticated users from onboarding
-    if (isOnboardingRoute && !session) {
-      return NextResponse.redirect(new URL('/auth/signin', req.url));
     }
 
   } catch (error) {
