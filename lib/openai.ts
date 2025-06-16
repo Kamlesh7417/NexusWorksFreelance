@@ -15,7 +15,7 @@ function getOpenAIClient(): OpenAI {
 }
 
 export interface ProjectAnalysis {
-  complexity: 'low' | 'medium' | 'high';
+  complexity: 'simple' | 'moderate' | 'complex' | 'expert';
   estimatedHours: number;
   suggestedPrice: number;
   requiredSkills: string[];
@@ -69,7 +69,7 @@ export class QuantumAI {
         
         Provide analysis in this JSON format:
         {
-          "complexity": "low|medium|high",
+          "complexity": "simple|moderate|complex|expert",
           "estimatedHours": number,
           "suggestedPrice": number,
           "requiredSkills": ["skill1", "skill2"],
@@ -103,7 +103,7 @@ export class QuantumAI {
       console.error('Project analysis error:', error);
       // Fallback response
       return {
-        complexity: 'medium',
+        complexity: 'moderate',
         estimatedHours: 40,
         suggestedPrice: 2000,
         requiredSkills: ['JavaScript', 'React', 'Node.js'],

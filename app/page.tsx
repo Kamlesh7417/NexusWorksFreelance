@@ -21,8 +21,12 @@ export default function Home() {
 
   useEffect(() => {
     const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        setUser(user);
+      } catch (error) {
+        console.error('Error getting user:', error);
+      }
     };
 
     getUser();
