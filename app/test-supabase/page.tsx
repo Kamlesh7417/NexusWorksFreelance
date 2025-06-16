@@ -160,9 +160,9 @@ export default function SupabaseTestPage() {
             (payload) => console.log('Real-time test:', payload)
           );
         
-        const subscription = await channel.subscribe();
+        await channel.subscribe();
         
-        if (subscription === 'SUBSCRIBED') {
+        if (channel.state === 'SUBSCRIBED') {
           updateTest('Real-time Subscriptions', 'success', 'Real-time subscriptions are working');
           supabase.removeChannel(channel);
         } else {
