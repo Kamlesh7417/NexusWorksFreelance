@@ -21,7 +21,8 @@ import {
   User,
   Users,
   AlertCircle,
-  X
+  X,
+  MessageSquare
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -35,6 +36,7 @@ interface Message {
   created_at: string;
   sender?: any;
   receiver?: any;
+  project?: any;
 }
 
 interface Conversation {
