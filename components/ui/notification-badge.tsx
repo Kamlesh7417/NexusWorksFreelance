@@ -1,9 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import { Bell } from 'lucide-react';
-import Link from 'next/link';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 
 interface NotificationBadgeProps {
   userId: string;
@@ -14,24 +13,26 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
   const supabase = createClientComponentClient();
 
   useEffect(() => {
-    if (!userId) return;
-
-    // Get initial unread count
-    const getUnreadCount = async () => {
-      const { count, error } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('receiver_id', userId)
-        .eq('read', false);
-      
-      if (error) {
-        console.error('Error fetching unread count:', error);
-      } else {
+    const fetchUnreadCount = async () => {
+      try {
+        const { count, error } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('receiver_id', userId)
+          .eq('read', false);
+        
+        if (error) {
+          console.error('Error fetching unread count:', error);
+          return;
+        }
+        
         setUnreadCount(count || 0);
+      } catch (error) {
+        console.error('Error in fetchUnreadCount:', error);
       }
     };
 
-    getUnreadCount();
+    fetchUnreadCount();
 
     // Subscribe to new messages
     const subscription = supabase
@@ -43,40 +44,30 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
           table: 'messages',
           filter: `receiver_id=eq.${userId}`
         }, 
-        (payload) => {
-          // Increment unread count
+        () => {
           setUnreadCount(prev => prev + 1);
         }
       )
-      .subscribe();
-
-    // Subscribe to message updates (read status)
-    const readSubscription = supabase
-      .channel('message-updates')
       .on('postgres_changes', 
         { 
           event: 'UPDATE', 
           schema: 'public', 
           table: 'messages',
-          filter: `receiver_id=eq.${userId}`
+          filter: `receiver_id=eq.${userId} AND read=eq.true`
         }, 
-        (payload) => {
-          // If message was marked as read, decrement count
-          if (payload.new.read && !payload.old.read) {
-            setUnreadCount(prev => Math.max(0, prev - 1));
-          }
+        () => {
+          setUnreadCount(prev => Math.max(0, prev - 1));
         }
       )
       .subscribe();
 
     return () => {
       supabase.removeChannel(subscription);
-      supabase.removeChannel(readSubscription);
     };
   }, [userId, supabase]);
 
   return (
-    <Link href="/messages" className="relative">
+    <div className="relative">
       <Bell size={20} className="text-gray-400 hover:text-white transition-colors" />
       {unreadCount > 0 && (
         <div className="absolute -top-2 -right-2 w-5 h-5 bg-red-500 rounded-full flex items-center justify-center">
@@ -85,6 +76,6 @@ export function NotificationBadge({ userId }: NotificationBadgeProps) {
           </span>
         </div>
       )}
-    </Link>
+    </div>
   );
 }
