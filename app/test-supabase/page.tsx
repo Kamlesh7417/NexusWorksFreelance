@@ -162,7 +162,7 @@ export default function SupabaseTestPage() {
         
         await channel.subscribe();
         
-        if (channel.state === 'SUBSCRIBED') {
+        if (channel.state === 'joined') {
           updateTest('Real-time Subscriptions', 'success', 'Real-time subscriptions are working');
           supabase.removeChannel(channel);
         } else {
