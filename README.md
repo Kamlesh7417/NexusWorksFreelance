@@ -184,16 +184,16 @@ Make sure to configure your web server (e.g., **Nginx** or **Apache**) to proxy 
 - **Review Developer Profiles**: Browse and assess freelancer profiles with AI matching scores.
 - **Real-time Project Tracking**: Monitor the status and updates on your projects.
 - **Secure Milestone Payments**: Escrow-based payments with Stripe.
-- **Dynamic Senior Developer Role**: Grant freelancers advanced permissions per project.
+
 
 ### For Freelancers
 
 - **Browse and Bid on Projects**: Discover projects tailored to your skills.
 - **Real-time Collaboration**: Engage in live chats and manage team roles.
 - **Skill-based Matching**: Intelligent matching engine connects you with ideal projects.
-- **Portfolio Management**: Display your work and expertise.
 - **Earn While Learning**: Get paid in WORK tokens as you learn.
 - **Earn Project-Based Authority**: Gain trusted roles from clients.
+- **Dynamic Senior Developer Role**: Granted freelancers advanced permissions only of them per project to manage the project tasks and intial drats.
 
 ### For Students
 
