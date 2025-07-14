@@ -1,169 +1,271 @@
-# NexusWorks - The Future of Freelancing
+That's an excellent point. You're suggesting a more dynamic and merit-based system, where a freelancer can earn "senior developer" status on a project-by-project basis. This makes the platform more flexible and rewards skilled freelancers with greater responsibility and authority.
 
-NexusWorks is a revolutionary work-to-earn freelancing platform that combines AI enhancement, blockchain payments, and educational opportunities for developers and students.
+Here is an updated version of the README. I have integrated this concept into the relevant sections, clarifying how a freelancer can transition into a senior role for a specific project.
 
-## 🚀 Features
+NexusWorks - The Future of Freelancing
+NexusWorks is a revolutionary work-to-earn freelancing platform that combines AI enhancement, blockchain payments, and educational opportunities for developers and students. We're building a seamless, secure, and intelligent ecosystem for the modern freelancer.
 
-### Authentication & User Management
-- **GitHub OAuth Integration**: Seamless sign-in with GitHub
-- **Role-based Access**: Support for clients, developers, and students
-- **Automatic Profile Creation**: GitHub data integration with custom onboarding
-- **Protected Routes**: Secure access to authenticated features
+🚀 Features
+Authentication & User Management
+GitHub OAuth Integration: Seamless sign-in with GitHub.
 
-### Core Platform Features
-- **AI-Powered Matching**: Quantum algorithms for project-developer matching
-- **Real-time Collaboration**: Live project updates and messaging
-- **Blockchain Payments**: Secure, transparent payment system
-- **Learning Platform**: Comprehensive developer education with earn-while-learning
-- **Project Management**: Advanced tools for project tracking and collaboration
+Role-based Access: Support for clients, freelancers, and administrators. A key feature is the ability for a freelancer to be granted a Senior Developer role on a project-by-project basis.
 
-### Technology Stack
-- **Frontend**: Next.js 13, React, TypeScript, Tailwind CSS
-- **Backend**: Supabase (PostgreSQL, Auth, Real-time, Storage)
-- **Authentication**: Supabase Auth with GitHub OAuth
-- **Payments**: Blockchain integration (Ethereum/Polygon)
-- **AI**: OpenAI GPT-4 for intelligent features
+Automatic Profile Creation: GitHub data integration with custom onboarding for all user roles.
 
-## 🛠️ Setup Instructions
+Protected Routes: Secure access to authenticated features and role-specific dashboards.
 
-### Prerequisites
-- Node.js 18+ 
-- npm or yarn
-- Supabase account
-- GitHub OAuth App
+Registration & Sign-in: Users can easily register for new accounts or sign in to existing ones.
 
-### 1. Clone and Install
-```bash
-git clone <repository-url>
-cd nexusworks
-npm install
-```
+Core Platform Features
+AI-Powered Project Analysis: Utilize Gemini AI to analyze project requirements, generate detailed roadmaps, and break down projects into specific tasks.
 
-### 2. Environment Configuration
-Create `.env.local` with your credentials:
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-NEXT_PUBLIC_SITE_URL=https://nexusworks.in
-OPENAI_API_KEY=your_openai_api_key
-```
+Smart Matching System: Intelligent algorithms analyze GitHub profiles to match freelancers to projects based on skill compatibility and availability.
 
-### 3. Supabase Setup
-1. Create a new Supabase project
-2. Run the migration scripts in order (see `supabase/migrations/`)
-3. Configure GitHub OAuth in Supabase Auth settings:
-   - **Site URL**: `https://nexusworks.in`
-   - **Redirect URLs**: `https://nexusworks.in/auth/callback`
+Comprehensive Task Management: Create detailed task cards with priority levels, subtasks, acceptance criteria, and track progress.
 
-### 4. GitHub OAuth Setup
-1. Go to GitHub Settings > Developer settings > OAuth Apps
-2. Create a new OAuth App:
-   - **Application name**: NexusWorks
-   - **Homepage URL**: `https://nexusworks.in`
-   - **Authorization callback URL**: `https://nexusworks.in/auth/callback`
-3. Copy Client ID and Client Secret to Supabase Auth settings
+Team Collaboration: Real-time chat, team member management with role-based permissions, and GitHub repository integration.
 
-### 5. Run Development Server
-```bash
-npm run dev
-```
+Secure Payment & Escrow: Stripe-hosted checkout with an escrow system for secure fund holding and automatic payment release upon task completion.
 
-Visit `http://localhost:3000` to see the application.
+Learning Platform: Comprehensive developer education with "earn-while-learning" opportunities.
 
-## 🏗️ Architecture
+Technology Stack
+Frontend: Next.js, React, TypeScript, Tailwind CSS
 
-### Authentication Flow
-1. User clicks "Sign in with GitHub"
-2. Redirected to GitHub OAuth
-3. GitHub redirects to `/auth/callback`
-4. Supabase exchanges code for session
-5. Auto-create user profile from GitHub data
-6. Redirect to onboarding or dashboard
+Backend: Django with PostgreSQL (via Neon)
 
-### Database Schema
-- **user_profiles**: User information and roles
-- **projects**: Project listings and details
-- **project_bids**: Developer bids on projects
-- **messages**: Real-time messaging system
-- **reviews**: Rating and review system
+Authentication: Django-Login with GitHub OAuth
 
-### Key Routes
-- `/` - Public homepage
-- `/auth/signin` - GitHub OAuth sign-in
-- `/auth/callback` - OAuth callback handler
-- `/onboarding` - New user setup
-- `/dashboard` - Role-specific dashboard
-- `/profile` - User profile management
-- `/supabase-demo` - Database demo
+Payments: Stripe (for secure transactions and escrow)
 
-## 🔐 Security Features
+AI: Google Gemini AI (for intelligent features with fallback systems)
 
-- **Row Level Security (RLS)**: Database-level access control
-- **Protected Routes**: Middleware-based route protection
-- **Role-based Access**: Different permissions for clients/developers
-- **Secure File Storage**: User-scoped file access
-- **Real-time Security**: Authenticated real-time subscriptions
+Database: PostgreSQL (hosted on Neon)
 
-## 🚀 Deployment
+🛠️ Setup Instructions
+Prerequisites
+Node.js 18+
 
-### Netlify Deployment
-1. Connect your GitHub repository to Netlify
-2. Set environment variables in Netlify dashboard
-3. Deploy with build command: `npm run build`
+npm or yarn
 
-### Domain Configuration
-- **Production**: `https://nexusworks.in`
-- **Staging**: Configure as needed
+Python 3.9+
 
-### Environment Variables for Production
-```env
-NEXT_PUBLIC_SUPABASE_URL=your_production_supabase_url
-NEXT_PUBLIC_SUPABASE_ANON_KEY=your_production_supabase_anon_key
-NEXT_PUBLIC_SITE_URL=https://nexusworks.in
-```
+PostgreSQL database (e.g., via Neon)
 
-## 📱 Features Overview
+GitHub OAuth App
 
-### For Developers
-- Browse and bid on projects
-- Real-time project collaboration
-- Skill-based matching
-- Portfolio management
-- Earn while learning
+Stripe Account (for payment integration)
 
-### For Clients
-- Post projects with AI assistance
-- Review developer profiles
-- Real-time project tracking
-- Secure milestone payments
-- Quality assurance
+Google Cloud Project (for Gemini API access)
 
-### For Students
-- Learn through real projects
-- Earn cryptocurrency (WORK tokens)
-- Mentorship opportunities
-- Skill development tracking
-- Career pathway guidance
+1. Clone and Install
+2. Environment Configuration
+Create .env.local in your frontend directory and .env in your backend directory with your credentials:
 
-## 🤝 Contributing
+Frontend (.env.local):
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+Backend (.env):
 
-## 📄 License
+3. Database Setup (Backend)
+Configure your PostgreSQL database (e.g., using Neon) and update DATABASE_URL in your backend .env file.
 
+Run database migrations:
+
+4. GitHub OAuth Setup
+Go to GitHub Settings > Developer settings > OAuth Apps.
+
+Create a new OAuth App:
+
+Application name: NexusWorks
+
+Homepage URL: https://nexusworks.in (or http://localhost:3000 for local testing)
+
+Authorization callback URL: https://nexusworks.in/auth/callback (or http://localhost:3000/auth/callback for local testing)
+
+Copy the Client ID and Client Secret to your backend .env file.
+
+5. Stripe Setup
+Create a Stripe account.
+
+Obtain your Stripe Secret Key and Webhook Secret from the Stripe Dashboard and add them to your backend .env file.
+
+6. Run Development Servers
+Frontend:
+
+Visit http://localhost:3000 to see the frontend application.
+
+Backend:
+
+The backend API will be accessible at http://localhost:5000.
+
+🏗️ Architecture
+Authentication Flow
+User navigates to /auth/signin or /auth/register.
+
+Users can choose to "Sign in with GitHub" or use traditional email/password registration.
+
+If GitHub OAuth, the user is redirected to GitHub.
+
+GitHub redirects to /auth/callback.
+
+Django backend exchanges the code for a session.
+
+A user profile is auto-created or updated from GitHub data.
+
+User is redirected to the onboarding flow or their role-specific dashboard.
+
+Database Schema
+User: Base user information and authentication details.
+
+FreelancerProfile: Skills, experience, portfolio for freelancers.
+
+Project: Project listings, requirements, and status.
+
+Task: Detailed tasks with subtasks, acceptance criteria, and technical specifications.
+
+MatchingRequest: Records of AI-powered freelancer-project matches.
+
+Payment: Payment transactions, including escrow status.
+
+Notification: Real-time notifications for users.
+
+ProjectTeam: Association of users to projects with roles (client, freelancer, or senior_developer).
+
+ProjectChat: Real-time messaging within projects.
+
+TaskOffer: Freelancer bids/offers on tasks.
+
+GitHubRepository: Integration details for GitHub repos.
+
+Key Routes
+/ - Public homepage.
+
+/auth/signin - User sign-in.
+
+/auth/register - User registration.
+
+/auth/callback - OAuth callback handler.
+
+/onboarding - New user setup (role selection, profile completion).
+
+/dashboard - Role-specific dashboard (client, freelancer, admin).
+
+/profile - User profile management.
+
+/projects/create - Client-side project creation.
+
+/projects/<id> - Project details and management console.
+
+/tasks/<id> - Task details and progress tracking.
+
+🔐 Security Features
+Row Level Security (RLS): Database-level access control via PostgreSQL.
+
+Protected Routes: Middleware-based route protection for role-specific access.
+
+Role-based Access: Different permissions and views for clients, freelancers, and administrators. A freelancer's permissions can be temporarily elevated to "Senior Developer" on a per-project basis, granting them specific editing and approval rights.
+
+Secure File Storage: User-scoped file access and management.
+
+Real-time Security: Authenticated real-time subscriptions for chat and updates.
+
+Secure Session Management: Django-Login ensures robust session handling.
+
+Password Hashing: Werkzeug used for secure password storage.
+
+Input Validation: Comprehensive validation and sanitization to prevent common vulnerabilities.
+
+🚀 Deployment
+General Deployment Notes
+Deploy the frontend (Next.js) to platforms like Netlify or Vercel.
+
+Deploy the backend (Django) to platforms like Render, Heroku, or a dedicated VPS.
+
+Ensure all environment variables are correctly configured for production.
+
+Use Gunicorn (or a similar WSGI server) for serving the Django application in production.
+
+Netlify Deployment (Frontend)
+Connect your GitHub repository to Netlify.
+
+Set environment variables in the Netlify dashboard (e.g., NEXT_PUBLIC_API_URL).
+
+Deploy with build command: npm run build.
+
+Backend Deployment
+Ensure your DEBUG environment variable is set to False in production.
+
+Use a robust WSGI server like Gunicorn: gunicorn --bind 0.0.0.0:5000 nexusworks.wsgi:application
+
+Configure your web server (e.g., Nginx or Apache) to proxy requests to the Gunicorn server.
+
+Domain Configuration
+Production: https://nexusworks.in
+
+Staging: Configure as needed (e.g., https://staging.nexusworks.in)
+
+📱 Features Overview
+For Clients
+Post Projects with AI Assistance: Use Gemini AI to define project requirements and generate detailed roadmaps.
+
+Review Developer Profiles: Easily browse and review freelancer profiles and matching scores.
+
+Real-time Project Tracking: Monitor project progress and task completion in real-time.
+
+Secure Milestone Payments: Utilize the escrow system for secure, milestone-based payments.
+
+Dynamic Senior Developer Role: A client can grant a trusted freelancer the authority to edit the project draft and manage tasks directly, elevating them to a senior role for that specific project.
+
+For Freelancers
+Browse and Bid on Projects: Discover new opportunities matched to your skills and experience.
+
+Real-time Project Collaboration: Communicate and collaborate effectively with clients and teams.
+
+Skill-based Matching: Get matched with projects where your expertise is most valuable.
+
+Portfolio Management: Showcase your completed projects and skills.
+
+Earn While Learning: Participate in the learning platform and earn cryptocurrency (WORK tokens) while developing new skills.
+
+Earn Project-Based Authority: High-performing freelancers can be given extra authority by the client, allowing them to create, edit, and approve tasks.
+
+For Students
+Learn Through Real Projects: Gain practical experience by working on real-world projects.
+
+Earn Cryptocurrency (WORK tokens): Get paid for your contributions while learning.
+
+Mentorship Opportunities: Learn from experienced senior developers.
+
+Skill Development Tracking: Monitor your progress and build a strong foundation.
+
+Career Pathway Guidance: Access resources and guidance for your development career.
+
+🤝 Contributing
+We welcome contributions to NexusWorks!
+
+Fork the repository.
+
+Create a new branch for your feature or bug fix: git checkout -b feature/your-feature-name
+
+Make your changes and ensure they adhere to our coding standards.
+
+Test thoroughly to ensure no regressions and new features work as expected.
+
+Commit your changes with a clear, concise message.
+
+Push to your fork and submit a pull request to our main branch.
+
+📄 License
 This project is proprietary software. All rights reserved.
 
-## 🆘 Support
-
+🆘 Support
 For support and questions:
-- Email: support@nexusworks.in
-- Documentation: [docs.nexusworks.in](https://docs.nexusworks.in)
-- Community: [community.nexusworks.in](https://community.nexusworks.in)
 
----
+Email: support@nexusworks.in
 
-**NexusWorks** - Where Learning Meets Earning 🚀
+Documentation: docs.nexusworks.in
+
+Community: community.nexusworks.in
+
+NexusWorks - Where Learning Meets Earning 🚀
