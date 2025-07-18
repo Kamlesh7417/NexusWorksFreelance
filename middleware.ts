@@ -1,21 +1,11 @@
-import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export async function middleware(req: NextRequest) {
-  const res = NextResponse.next();
-  
-  // Check if Supabase environment variables are available
-  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
-    console.warn('Supabase environment variables are missing. Skipping Supabase middleware.');
-    return res;
-  }
-  
-  try {
-    const supabase = createMiddlewareClient({ req, res });
-
-    // Refresh session if expired - required for Server Components
-    const { data: { session } } = await supabase.auth.getSession();
+export default withAuth(
+  function middleware(req: NextRequest & { nextauth: { token: any } }) {
+    const { pathname } = req.nextUrl;
+    const token = req.nextauth?.token;
 
     // Protected routes that require authentication
     const protectedRoutes = ['/dashboard', '/profile', '/projects/create', '/messages'];
@@ -24,64 +14,63 @@ export async function middleware(req: NextRequest) {
     const authRoutes = ['/auth/signin'];
     
     // Onboarding is separate - authenticated users should be able to access it
-    const isOnboardingRoute = req.nextUrl.pathname.startsWith('/onboarding');
+    const isOnboardingRoute = pathname.startsWith('/onboarding');
 
     const isProtectedRoute = protectedRoutes.some(route => 
-      req.nextUrl.pathname.startsWith(route)
+      pathname.startsWith(route)
     );
     
     const isAuthRoute = authRoutes.some(route => 
-      req.nextUrl.pathname.startsWith(route)
+      pathname.startsWith(route)
     );
 
-    // Redirect unauthenticated users from protected routes
-    if (isProtectedRoute && !session) {
-      const redirectUrl = new URL('/auth/signin', req.url);
-      redirectUrl.searchParams.set('redirectTo', req.nextUrl.pathname);
-      return NextResponse.redirect(redirectUrl);
-    }
-
-    // Redirect authenticated users from signin route only (not onboarding)
-    if (isAuthRoute && session) {
+    // Redirect authenticated users from signin route
+    if (isAuthRoute && token) {
       return NextResponse.redirect(new URL('/dashboard', req.url));
     }
 
     // Allow authenticated users to access onboarding
-    if (isOnboardingRoute && session) {
-      return res;
+    if (isOnboardingRoute && token) {
+      return NextResponse.next();
     }
 
     // Redirect unauthenticated users from onboarding to signin
-    if (isOnboardingRoute && !session) {
+    if (isOnboardingRoute && !token) {
       return NextResponse.redirect(new URL('/auth/signin', req.url));
     }
 
     // Check if user needs onboarding (only when accessing dashboard)
-    if (session && req.nextUrl.pathname === '/dashboard') {
-      try {
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('skills, role')
-          .eq('id', session.user.id)
-          .single();
-
-        // Redirect to onboarding if profile is incomplete
-        if (!profile || !profile.skills || profile.skills.length === 0) {
-          return NextResponse.redirect(new URL('/onboarding', req.url));
-        }
-      } catch (error) {
-        // If profile doesn't exist, redirect to onboarding
+    if (token && pathname === '/dashboard') {
+      // Check if profile is complete
+      if (!token.profileCompleted) {
         return NextResponse.redirect(new URL('/onboarding', req.url));
       }
     }
 
-  } catch (error) {
-    console.error('Middleware error:', error);
-    // Continue without Supabase functionality if there's an error
-  }
+    return NextResponse.next();
+  },
+  {
+    callbacks: {
+      authorized: ({ token, req }) => {
+        const { pathname } = req.nextUrl;
+        
+        // Protected routes require authentication
+        const protectedRoutes = ['/dashboard', '/profile', '/projects/create', '/messages'];
+        const isProtectedRoute = protectedRoutes.some(route => 
+          pathname.startsWith(route)
+        );
 
-  return res;
-}
+        // Allow access to protected routes only if authenticated
+        if (isProtectedRoute) {
+          return !!token;
+        }
+
+        // Allow access to all other routes
+        return true;
+      },
+    },
+  }
+);
 
 export const config = {
   matcher: [
@@ -91,7 +80,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - api routes (handled by NextAuth)
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|api|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 };

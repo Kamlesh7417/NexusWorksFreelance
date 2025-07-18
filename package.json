@@ -6,10 +6,16 @@
     "dev": "NODE_OPTIONS=\"--max-old-space-size=4096\" next dev",
     "build": "NODE_OPTIONS=\"--max-old-space-size=4096\" next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:integration": "jest --testPathPattern=integration"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.0",
+    "@next-auth/prisma-adapter": "^1.0.7",
     "@next/swc-wasm-nodejs": "13.5.1",
     "@openzeppelin/contracts": "^4.9.3",
     "@radix-ui/react-accordion": "^1.2.0",
@@ -58,9 +64,11 @@
     "framer-motion": "^10.16.16",
     "hardhat": "^2.19.1",
     "input-otp": "^1.2.4",
+    "jose": "^6.0.12",
+    "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.446.0",
     "next": "13.5.1",
-    "next-auth": "^4.24.5",
+    "next-auth": "^4.24.11",
     "next-themes": "^0.3.0",
     "openai": "^4.20.1",
     "postcss": "8.4.30",
@@ -79,5 +87,18 @@
     "vaul": "^0.9.9",
     "zod": "^3.23.8",
     "zustand": "^4.4.7"
+  },
+  "devDependencies": {
+    "@jest/globals": "^29.7.0",
+    "@playwright/test": "^1.40.0",
+    "@testing-library/jest-dom": "^6.1.4",
+    "@testing-library/react": "^14.1.2",
+    "@testing-library/user-event": "^14.5.1",
+    "@types/jest": "^29.5.8",
+    "@types/jsonwebtoken": "^9.0.5",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0",
+    "msw": "^2.0.8",
+    "ts-jest": "^29.1.1"
   }
 }

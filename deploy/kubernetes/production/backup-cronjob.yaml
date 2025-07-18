@@ -1,0 +1,355 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: database-backup
+  namespace: freelance-platform
+  labels:
+    app: freelance-platform
+    component: backup
+spec:
+  schedule: "0 2 * * *"  # Daily at 2 AM UTC
+  timeZone: "UTC"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: freelance-platform
+            component: backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: backup
+            image: postgres:15-alpine
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              
+              # Install required tools
+              apk add --no-cache curl aws-cli gzip
+              
+              # Set variables
+              TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+              BACKUP_FILE="/tmp/database_${TIMESTAMP}.sql"
+              
+              echo "Starting database backup at $(date)"
+              
+              # Create database backup
+              pg_dump "$DATABASE_URL" \
+                --verbose --clean --no-owner --no-privileges \
+                --format=custom > "$BACKUP_FILE"
+              
+              # Compress backup
+              gzip "$BACKUP_FILE"
+              BACKUP_FILE="${BACKUP_FILE}.gz"
+              
+              # Upload to S3
+              aws s3 cp "$BACKUP_FILE" "s3://$BACKUP_S3_BUCKET/database/$(basename $BACKUP_FILE)" \
+                --storage-class STANDARD_IA \
+                --server-side-encryption AES256
+              
+              echo "Database backup completed successfully"
+              
+              # Cleanup old backups (keep last 30 days)
+              aws s3 ls "s3://$BACKUP_S3_BUCKET/database/" | \
+              while read -r line; do
+                file_date=$(echo "$line" | awk '{print $1}')
+                file_name=$(echo "$line" | awk '{print $4}')
+                
+                if [ -n "$file_date" ] && [ -n "$file_name" ]; then
+                  file_timestamp=$(date -d "$file_date" +%s)
+                  current_timestamp=$(date +%s)
+                  age_days=$(( (current_timestamp - file_timestamp) / 86400 ))
+                  
+                  if [ $age_days -gt 30 ]; then
+                    echo "Deleting old backup: $file_name (${age_days} days old)"
+                    aws s3 rm "s3://$BACKUP_S3_BUCKET/database/$file_name"
+                  fi
+                fi
+              done
+              
+              echo "Backup cleanup completed"
+            env:
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: freelance-platform-secrets
+                  key: database-url
+            - name: BACKUP_S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: freelance-platform-config
+                  key: BACKUP_S3_BUCKET
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: freelance-platform-secrets
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: freelance-platform-secrets
+                  key: aws-secret-access-key
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "200m"
+          - name: notification
+            image: curlimages/curl:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              # Wait for backup to complete
+              sleep 10
+              
+              # Send success notification
+              if [ -n "$SLACK_WEBHOOK_URL" ]; then
+                curl -X POST "$SLACK_WEBHOOK_URL" \
+                  -H 'Content-type: application/json' \
+                  --data '{
+                    "text": "✅ Database backup completed successfully",
+                    "attachments": [{
+                      "color": "good",
+                      "fields": [{
+                        "title": "Timestamp",
+                        "value": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
+                        "short": true
+                      }, {
+                        "title": "Environment",
+                        "value": "Production",
+                        "short": true
+                      }]
+                    }]
+                  }'
+              fi
+            env:
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: freelance-platform-secrets
+                  key: slack-webhook-url
+                  optional: true
+            resources:
+              requests:
+                memory: "64Mi"
+                cpu: "50m"
+              limits:
+                memory: "128Mi"
+                cpu: "100m"
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: media-backup
+  namespace: freelance-platform
+  labels:
+    app: freelance-platform
+    component: backup
+spec:
+  schedule: "0 3 * * 0"  # Weekly on Sunday at 3 AM UTC
+  timeZone: "UTC"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 2
+  failedJobsHistoryLimit: 2
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: freelance-platform
+            component: backup
+        spec:
+          restartPolicy: OnFailure
+          containers:
+          - name: media-backup
+            image: alpine:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              
+              # Install required tools
+              apk add --no-cache curl aws-cli tar gzip
+              
+              # Set variables
+              TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+              BACKUP_FILE="/tmp/media_${TIMESTAMP}.tar.gz"
+              
+              echo "Starting media backup at $(date)"
+              
+              # Create media backup if directory exists
+              if [ -d "/app/media" ] && [ "$(ls -A /app/media)" ]; then
+                tar -czf "$BACKUP_FILE" -C "/app" media/
+                
+                # Upload to S3
+                aws s3 cp "$BACKUP_FILE" "s3://$BACKUP_S3_BUCKET/media/$(basename $BACKUP_FILE)" \
+                  --storage-class STANDARD_IA \
+                  --server-side-encryption AES256
+                
+                echo "Media backup completed successfully"
+              else
+                echo "No media files to backup"
+              fi
+              
+              # Cleanup old media backups (keep last 4 weeks)
+              aws s3 ls "s3://$BACKUP_S3_BUCKET/media/" | \
+              while read -r line; do
+                file_date=$(echo "$line" | awk '{print $1}')
+                file_name=$(echo "$line" | awk '{print $4}')
+                
+                if [ -n "$file_date" ] && [ -n "$file_name" ]; then
+                  file_timestamp=$(date -d "$file_date" +%s)
+                  current_timestamp=$(date +%s)
+                  age_days=$(( (current_timestamp - file_timestamp) / 86400 ))
+                  
+                  if [ $age_days -gt 28 ]; then
+                    echo "Deleting old media backup: $file_name (${age_days} days old)"
+                    aws s3 rm "s3://$BACKUP_S3_BUCKET/media/$file_name"
+                  fi
+                fi
+              done
+            env:
+            - name: BACKUP_S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: freelance-platform-config
+                  key: BACKUP_S3_BUCKET
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: freelance-platform-secrets
+                  key: aws-access-key-id
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: freelance-platform-secrets
+                  key: aws-secret-access-key
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            volumeMounts:
+            - name: media-files
+              mountPath: /app/media
+              readOnly: true
+            resources:
+              requests:
+                memory: "256Mi"
+                cpu: "100m"
+              limits:
+                memory: "512Mi"
+                cpu: "200m"
+          volumes:
+          - name: media-files
+            persistentVolumeClaim:
+              claimName: media-files-pvc
+
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: system-health-check
+  namespace: freelance-platform
+  labels:
+    app: freelance-platform
+    component: monitoring
+spec:
+  schedule: "*/15 * * * *"  # Every 15 minutes
+  timeZone: "UTC"
+  concurrencyPolicy: Replace
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: freelance-platform
+            component: monitoring
+        spec:
+          restartPolicy: Never
+          containers:
+          - name: health-check
+            image: curlimages/curl:latest
+            command:
+            - /bin/sh
+            - -c
+            - |
+              set -e
+              
+              echo "Running system health check at $(date)"
+              
+              # Check main application health
+              if ! curl -f -s --max-time 30 "http://freelance-platform-web-service/health/"; then
+                echo "❌ Application health check failed"
+                
+                # Send alert
+                if [ -n "$SLACK_WEBHOOK_URL" ]; then
+                  curl -X POST "$SLACK_WEBHOOK_URL" \
+                    -H 'Content-type: application/json' \
+                    --data '{
+                      "text": "🚨 Application health check failed",
+                      "attachments": [{
+                        "color": "danger",
+                        "fields": [{
+                          "title": "Service",
+                          "value": "freelance-platform-web",
+                          "short": true
+                        }, {
+                          "title": "Timestamp",
+                          "value": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'",
+                          "short": true
+                        }]
+                      }]
+                    }'
+                fi
+                exit 1
+              fi
+              
+              # Check detailed health
+              HEALTH_RESPONSE=$(curl -s --max-time 30 "http://freelance-platform-web-service/health/detailed/")
+              
+              # Parse response and check for issues
+              if echo "$HEALTH_RESPONSE" | grep -q '"status":"unhealthy"'; then
+                echo "⚠️ Some services are unhealthy"
+                
+                # Send warning
+                if [ -n "$SLACK_WEBHOOK_URL" ]; then
+                  curl -X POST "$SLACK_WEBHOOK_URL" \
+                    -H 'Content-type: application/json' \
+                    --data '{
+                      "text": "⚠️ Some services are reporting unhealthy status",
+                      "attachments": [{
+                        "color": "warning",
+                        "text": "Check the monitoring dashboard for details"
+                      }]
+                    }'
+                fi
+              else
+                echo "✅ All systems healthy"
+              fi
+            env:
+            - name: SLACK_WEBHOOK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: freelance-platform-secrets
+                  key: slack-webhook-url
+                  optional: true
+            resources:
+              requests:
+                memory: "64Mi"
+                cpu: "50m"
+              limits:
+                memory: "128Mi"
+                cpu: "100m"

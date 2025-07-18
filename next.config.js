@@ -7,6 +7,11 @@ const nextConfig = {
   optimizeFonts: false,
   experimental: {
   },
+  env: {
+    // Make Django backend URLs available to the client
+    NEXT_PUBLIC_DJANGO_API_URL: process.env.NEXT_PUBLIC_DJANGO_API_URL,
+    NEXT_PUBLIC_DJANGO_WS_URL: process.env.NEXT_PUBLIC_DJANGO_WS_URL,
+  },
   webpack: (config, { dev, isServer }) => {
     // Disable webpack cache in development to prevent cache corruption
     if (dev) {

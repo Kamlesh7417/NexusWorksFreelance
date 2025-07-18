@@ -19,6 +19,11 @@ export const authOptions: NextAuthOptions = {
           email: profile.email,
           image: profile.avatar_url,
           username: profile.login,
+          role: 'developer' as const,
+          profileCompleted: false,
+          githubUsername: profile.login,
+          accessToken: '',
+          refreshToken: '',
         };
       },
     }),
@@ -93,7 +98,7 @@ export const authOptions: NextAuthOptions = {
           
         if (!error && userProfile) {
           session.user.role = userProfile.role;
-          session.user.profile = userProfile;
+          // Store profile data in session if needed
         }
       }
       return session;

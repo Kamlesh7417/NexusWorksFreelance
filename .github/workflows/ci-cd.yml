@@ -1,0 +1,415 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  PYTHON_VERSION: '3.11'
+  NODE_VERSION: '18'
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ env.PYTHON_VERSION }}
+    
+    - name: Cache pip dependencies
+      uses: actions/cache@v3
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('django-backend/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    
+    - name: Install dependencies
+      run: |
+        cd django-backend
+        pip install -r requirements.txt
+        pip install -r requirements-dev.txt
+    
+    - name: Set up environment variables
+      run: |
+        echo "DATABASE_URL=postgresql://postgres:postgres@localhost:5432/test_db" >> $GITHUB_ENV
+        echo "REDIS_URL=redis://localhost:6379/0" >> $GITHUB_ENV
+        echo "SECRET_KEY=test-secret-key-for-ci" >> $GITHUB_ENV
+        echo "DEBUG=True" >> $GITHUB_ENV
+        echo "GEMINI_API_KEY=test-key" >> $GITHUB_ENV
+        echo "GITHUB_TOKEN=test-token" >> $GITHUB_ENV
+    
+    - name: Run migrations
+      run: |
+        cd django-backend
+        python manage.py migrate
+    
+    - name: Run tests
+      run: |
+        cd django-backend
+        python -m pytest --cov=. --cov-report=xml --cov-report=html
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./django-backend/coverage.xml
+        flags: backend
+        name: backend-coverage
+
+  test-frontend:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: ${{ env.NODE_VERSION }}
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run linting
+      run: npm run lint
+    
+    - name: Run type checking
+      run: npm run type-check
+    
+    - name: Run tests
+      run: npm test -- --coverage --watchAll=false
+    
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v3
+      with:
+        file: ./coverage/lcov.info
+        flags: frontend
+        name: frontend-coverage
+
+  security-scan:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run Trivy vulnerability scanner
+      uses: aquasecurity/trivy-action@master
+      with:
+        scan-type: 'fs'
+        scan-ref: '.'
+        format: 'sarif'
+        output: 'trivy-results.sarif'
+    
+    - name: Upload Trivy scan results to GitHub Security tab
+      uses: github/codeql-action/upload-sarif@v2
+      with:
+        sarif_file: 'trivy-results.sarif'
+
+  build-and-push:
+    needs: [test-backend, test-frontend, security-scan]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+    
+    - name: Log in to Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    
+    - name: Extract metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository }}
+        tags: |
+          type=ref,event=branch
+          type=ref,event=pr
+          type=sha,prefix={{branch}}-
+          type=raw,value=latest,enable={{is_default_branch}}
+    
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./deploy/docker/Dockerfile
+        target: production
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
+
+  deploy-staging:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Deploy to staging
+      run: |
+        echo "Deploying to staging environment"
+        # Add your staging deployment commands here
+        # Example: kubectl apply -f k8s/staging/
+    
+    - name: Run smoke tests
+      run: |
+        echo "Running smoke tests against staging"
+        # Add smoke test commands here
+
+  deploy-staging:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/develop'
+    environment: staging
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    
+    - name: Update kubeconfig
+      run: |
+        aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME_STAGING }}
+    
+    - name: Deploy to staging
+      run: |
+        # Update image tag in deployment
+        sed -i "s|ghcr.io/${{ github.repository }}:latest|ghcr.io/${{ github.repository }}:${{ github.sha }}|g" deploy/kubernetes/staging/deployment.yaml
+        
+        # Apply Kubernetes manifests
+        kubectl apply -f deploy/kubernetes/staging/namespace.yaml
+        kubectl apply -f deploy/kubernetes/staging/configmap.yaml
+        kubectl apply -f deploy/kubernetes/staging/secrets.yaml
+        kubectl apply -f deploy/kubernetes/staging/deployment.yaml
+        kubectl apply -f deploy/kubernetes/staging/service.yaml
+        kubectl apply -f deploy/kubernetes/staging/ingress.yaml
+        
+        # Wait for deployment to complete
+        kubectl rollout status deployment/freelance-platform-web -n freelance-platform-staging --timeout=300s
+    
+    - name: Run smoke tests
+      run: |
+        # Wait for service to be ready
+        sleep 30
+        
+        # Run basic health checks
+        STAGING_URL="${{ secrets.STAGING_URL }}"
+        
+        # Test health endpoint
+        curl -f "$STAGING_URL/health/" || exit 1
+        
+        # Test API endpoints
+        curl -f "$STAGING_URL/api/health/" || exit 1
+        
+        echo "Smoke tests passed for staging deployment"
+    
+    - name: Run integration tests
+      run: |
+        # Set environment variables for testing
+        export API_BASE_URL="${{ secrets.STAGING_URL }}"
+        export TEST_DATABASE_URL="${{ secrets.STAGING_TEST_DB_URL }}"
+        
+        # Run integration tests against staging
+        cd django-backend
+        python -m pytest tests/test_integration_workflows.py -v
+    
+    - name: Notify deployment status
+      if: always()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: ${{ job.status }}
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+
+  deploy-production:
+    needs: [build-and-push, deploy-staging]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v3
+      with:
+        version: 'v1.28.0'
+    
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_REGION }}
+    
+    - name: Update kubeconfig
+      run: |
+        aws eks update-kubeconfig --region ${{ secrets.AWS_REGION }} --name ${{ secrets.EKS_CLUSTER_NAME_PROD }}
+    
+    - name: Pre-deployment backup
+      run: |
+        # Trigger database backup before deployment
+        kubectl create job --from=cronjob/database-backup backup-pre-deploy-$(date +%Y%m%d%H%M%S) -n freelance-platform
+        
+        # Wait for backup to complete
+        sleep 60
+    
+    - name: Deploy to production
+      run: |
+        # Update image tag in deployment
+        sed -i "s|ghcr.io/${{ github.repository }}:latest|ghcr.io/${{ github.repository }}:${{ github.sha }}|g" deploy/kubernetes/production/deployment.yaml
+        
+        # Apply database migrations first
+        kubectl apply -f deploy/kubernetes/production/migration-job.yaml
+        kubectl wait --for=condition=complete job/django-migrate -n freelance-platform --timeout=300s
+        
+        # Rolling deployment
+        kubectl apply -f deploy/kubernetes/production/deployment.yaml
+        kubectl rollout status deployment/freelance-platform-web -n freelance-platform --timeout=600s
+        
+        # Update other services
+        kubectl apply -f deploy/kubernetes/production/celery-deployment.yaml
+        kubectl rollout status deployment/freelance-platform-celery -n freelance-platform --timeout=300s
+    
+    - name: Post-deployment tasks
+      run: |
+        # Warm up cache
+        kubectl exec deployment/freelance-platform-web -n freelance-platform -- python manage.py warm_cache
+        
+        # Update search indexes
+        kubectl exec deployment/freelance-platform-web -n freelance-platform -- python manage.py update_search_index
+        
+        # Clear old cache entries
+        kubectl exec deployment/freelance-platform-web -n freelance-platform -- python manage.py clear_expired_cache
+    
+    - name: Run smoke tests
+      run: |
+        # Wait for service to be ready
+        sleep 60
+        
+        PROD_URL="${{ secrets.PRODUCTION_URL }}"
+        
+        # Test health endpoint
+        curl -f "$PROD_URL/health/" || exit 1
+        
+        # Test critical API endpoints
+        curl -f "$PROD_URL/api/health/" || exit 1
+        curl -f "$PROD_URL/api/projects/" -H "Authorization: Bearer ${{ secrets.API_TEST_TOKEN }}" || exit 1
+        
+        echo "Smoke tests passed for production deployment"
+    
+    - name: Performance tests
+      run: |
+        # Run basic performance tests
+        echo "Running performance tests..."
+        
+        # Test response times
+        RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' "${{ secrets.PRODUCTION_URL }}/health/")
+        if (( $(echo "$RESPONSE_TIME > 2.0" | bc -l) )); then
+          echo "Warning: Health check response time is high: ${RESPONSE_TIME}s"
+        fi
+    
+    - name: Update monitoring
+      run: |
+        # Update deployment tracking in monitoring system
+        curl -X POST "${{ secrets.MONITORING_WEBHOOK }}" \
+          -H "Content-Type: application/json" \
+          -d '{
+            "event": "deployment",
+            "environment": "production",
+            "version": "${{ github.sha }}",
+            "status": "success",
+            "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+          }'
+    
+    - name: Notify deployment success
+      if: success()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: success
+        channel: '#deployments'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        text: |
+          🚀 Production deployment successful!
+          Version: ${{ github.sha }}
+          Environment: Production
+          
+    - name: Notify deployment failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        channel: '#alerts'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        fields: repo,message,commit,author,action,eventName,ref,workflow
+        text: |
+          🚨 Production deployment failed!
+          Version: ${{ github.sha }}
+          Please check the logs and consider rollback if necessary.
+    
+    - name: Rollback on failure
+      if: failure()
+      run: |
+        echo "Deployment failed, initiating rollback..."
+        
+        # Get previous successful deployment
+        PREVIOUS_REVISION=$(kubectl rollout history deployment/freelance-platform-web -n freelance-platform | tail -2 | head -1 | awk '{print $1}')
+        
+        # Rollback to previous version
+        kubectl rollout undo deployment/freelance-platform-web -n freelance-platform --to-revision=$PREVIOUS_REVISION
+        kubectl rollout status deployment/freelance-platform-web -n freelance-platform --timeout=300s
+        
+        echo "Rollback completed to revision $PREVIOUS_REVISION"

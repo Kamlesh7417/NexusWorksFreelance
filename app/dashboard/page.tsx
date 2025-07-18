@@ -1,18 +1,21 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { UnifiedDashboard } from '@/components/dashboard/unified-dashboard';
 import { ClientDashboard } from '@/components/client/client-dashboard';
 import { DeveloperDashboard } from '@/components/developer/developer-dashboard';
-import { Loader2 } from 'lucide-react';
+import { Loader2, ToggleLeft, ToggleRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [useUnifiedDashboard, setUseUnifiedDashboard] = useState(true);
   const router = useRouter();
+  const searchParams = useSearchParams();
   const supabase = createClientComponentClient();
 
   useEffect(() => {
@@ -46,6 +49,12 @@ export default function DashboardPage() {
         }
 
         setProfile(profile);
+        
+        // Check URL parameter for dashboard type
+        const dashboardType = searchParams.get('type');
+        if (dashboardType === 'legacy') {
+          setUseUnifiedDashboard(false);
+        }
       } catch (error) {
         console.error('Dashboard error:', error);
         router.push('/auth/signin');
@@ -55,7 +64,21 @@ export default function DashboardPage() {
     };
 
     getUser();
-  }, [router, supabase]);
+  }, [router, supabase, searchParams]);
+
+  const toggleDashboard = () => {
+    const newType = useUnifiedDashboard ? 'legacy' : 'unified';
+    setUseUnifiedDashboard(!useUnifiedDashboard);
+    
+    // Update URL without page reload
+    const url = new URL(window.location.href);
+    if (newType === 'legacy') {
+      url.searchParams.set('type', 'legacy');
+    } else {
+      url.searchParams.delete('type');
+    }
+    window.history.replaceState({}, '', url.toString());
+  };
 
   if (loading) {
     return (
@@ -84,10 +107,41 @@ export default function DashboardPage() {
     );
   }
 
-  // Render role-specific dashboard
-  if (profile.role === 'client') {
-    return <ClientDashboard user={user} profile={profile} />;
-  } else {
-    return <DeveloperDashboard user={user} profile={profile} />;
+  // Dashboard toggle button (fixed position)
+  const DashboardToggle = () => (
+    <div className="fixed top-4 right-4 z-50">
+      <button
+        onClick={toggleDashboard}
+        className="flex items-center gap-2 bg-white/10 backdrop-blur-lg border border-white/20 rounded-lg px-4 py-2 text-white hover:bg-white/20 transition-all duration-200"
+        title={`Switch to ${useUnifiedDashboard ? 'Legacy' : 'Unified'} Dashboard`}
+      >
+        {useUnifiedDashboard ? <ToggleRight size={20} className="text-cyan-400" /> : <ToggleLeft size={20} className="text-gray-400" />}
+        <span className="text-sm">
+          {useUnifiedDashboard ? 'Unified' : 'Legacy'} Dashboard
+        </span>
+      </button>
+    </div>
+  );
+
+  // Render unified dashboard or legacy dashboard based on toggle
+  if (useUnifiedDashboard) {
+    return (
+      <>
+        <DashboardToggle />
+        <UnifiedDashboard user={user} profile={profile} />
+      </>
+    );
   }
+
+  // Render legacy role-specific dashboard
+  return (
+    <>
+      <DashboardToggle />
+      {profile.role === 'client' ? (
+        <ClientDashboard user={user} profile={profile} />
+      ) : (
+        <DeveloperDashboard user={user} profile={profile} />
+      )}
+    </>
+  );
 }

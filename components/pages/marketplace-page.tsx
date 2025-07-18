@@ -1,673 +1,740 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { PageType } from '@/app/page';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Star, 
-  MapPin, 
-  Clock, 
-  DollarSign, 
+  Heart, 
+  Search, 
+  Filter, 
+  TrendingUp, 
   Users, 
-  Zap, 
-  Target,
-  TrendingUp,
+  Briefcase, 
+  Clock, 
+  DollarSign,
+  MapPin,
   Award,
-  Sparkles,
   Eye,
-  Heart,
   MessageSquare,
-  CheckCircle,
-  ArrowRight,
-  Globe,
-  Code,
-  Palette,
-  Database,
-  Shield
+  ExternalLink,
+  Bookmark,
+  Crown
 } from 'lucide-react';
+import { marketplaceService, FeaturedProject, FeaturedDeveloper } from '@/lib/services/marketplace-service';
+import { useAuth } from '@/components/auth/auth-provider';
 
 interface MarketplacePageProps {
-  onPageChange: (page: PageType) => void;
+  onPageChange?: (page: string) => void;
 }
 
-export function MarketplacePage({ onPageChange }: MarketplacePageProps) {
-  const [selectedCategory, setSelectedCategory] = useState('all');
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [activeProject, setActiveProject] = useState(0);
-  const [activeDeveloper, setActiveDeveloper] = useState(0);
-
-  const projectCategories = [
-    { id: 'all', name: 'All Projects', icon: Globe, count: 12450, color: 'text-cyan-400' },
-    { id: 'ai', name: 'AI/ML', icon: Database, count: 3200, color: 'text-purple-400' },
-    { id: 'blockchain', name: 'Blockchain', icon: Shield, count: 2800, color: 'text-green-400' },
-    { id: 'web', name: 'Web Development', icon: Code, count: 4100, color: 'text-blue-400' },
-    { id: 'mobile', name: 'Mobile Apps', icon: Users, count: 1900, color: 'text-yellow-400' },
-    { id: 'design', name: 'UI/UX Design', icon: Palette, count: 1450, color: 'text-pink-400' }
-  ];
-
-  const featuredProjects = [
-    {
-      id: 'proj_1',
-      title: 'Advanced Trading Algorithm',
-      description: 'Build advanced algorithms for high-frequency trading with machine learning optimization.',
-      client: 'FinTech Corp',
-      budget: { min: 15000, max: 25000 },
-      deadline: '2024-03-15',
-      skills: ['Python', 'Machine Learning', 'Finance', 'API Integration'],
-      applicants: 8,
-      views: 234,
-      featured: true,
-      urgency: 'high',
-      matchScore: 95,
-      category: 'ai',
-      clientRating: 4.9,
-      projectType: 'Fixed Price'
-    },
-    {
-      id: 'proj_2',
-      title: 'AR Shopping Experience',
-      description: 'Create immersive augmented reality shopping experience for luxury retail with gesture controls.',
-      client: 'LuxuryVR Inc',
-      budget: { min: 8000, max: 12000 },
-      deadline: '2024-02-28',
-      skills: ['AR/VR', 'Unity', 'React Native', 'UI/UX'],
-      applicants: 15,
-      views: 456,
-      featured: true,
-      urgency: 'medium',
-      matchScore: 88,
-      category: 'mobile',
-      clientRating: 4.7,
-      projectType: 'Hourly'
-    },
-    {
-      id: 'proj_3',
-      title: 'DeFi Protocol Security Audit',
-      description: 'Comprehensive security audit for next-generation DeFi lending protocol with smart contract analysis.',
-      client: 'SecureDefi Labs',
-      budget: { min: 12000, max: 18000 },
-      deadline: '2024-04-01',
-      skills: ['Blockchain', 'Security', 'Solidity', 'Smart Contracts'],
-      applicants: 6,
-      views: 189,
-      featured: true,
-      urgency: 'high',
-      matchScore: 92,
-      category: 'blockchain',
-      clientRating: 5.0,
-      projectType: 'Fixed Price'
-    },
-    {
-      id: 'proj_4',
-      title: 'Healthcare Dashboard',
-      description: 'Develop comprehensive AI-powered dashboard for healthcare providers with predictive analytics.',
-      client: 'MedTech Solutions',
-      budget: { min: 6000, max: 10000 },
-      deadline: '2024-03-20',
-      skills: ['React', 'Node.js', 'Data Visualization', 'Healthcare'],
-      applicants: 22,
-      views: 567,
-      featured: false,
-      urgency: 'medium',
-      matchScore: 85,
-      category: 'web',
-      clientRating: 4.8,
-      projectType: 'Milestone'
-    }
-  ];
-
-  const topDevelopers = [
-    {
-      id: 'dev_1',
-      name: 'Alexandra Reed',
-      title: 'Full Stack Developer',
-      avatar: '👩‍💻',
-      rating: 4.9,
-      hourlyRate: 95,
-      completedProjects: 42,
-      skills: ['React', 'Node.js', 'Python', 'TypeScript'],
-      specializations: ['Full Stack Development', 'API Integration'],
-      location: 'San Francisco, CA',
-      availability: 'available',
-      responseTime: '2 hours',
-      successRate: 98,
-      earnings: 245000,
-      badges: ['Top Rated', 'Expert', 'Fast Responder'],
-      recentWork: 'Trading System for FinTech'
-    },
-    {
-      id: 'dev_2',
-      name: 'Marcus Chen',
-      title: 'Security Expert',
-      avatar: '🛡️',
-      rating: 5.0,
-      hourlyRate: 110,
-      completedProjects: 38,
-      skills: ['Blockchain', 'Security', 'Solidity', 'Web3'],
-      specializations: ['Smart Contract Auditing', 'DeFi Protocols'],
-      location: 'Singapore',
-      availability: 'available',
-      responseTime: '1 hour',
-      successRate: 100,
-      earnings: 320000,
-      badges: ['Security Master', 'DeFi Expert', 'Top Performer'],
-      recentWork: 'DeFi Protocol Audit'
-    },
-    {
-      id: 'dev_3',
-      name: 'Sofia Rodriguez',
-      title: 'AR/VR Developer',
-      avatar: '🥽',
-      rating: 4.8,
-      hourlyRate: 85,
-      completedProjects: 29,
-      skills: ['AR/VR', 'Unity', 'React Native', 'UI/UX'],
-      specializations: ['Immersive Experiences', '3D Development'],
-      location: 'Barcelona, Spain',
-      availability: 'busy',
-      responseTime: '4 hours',
-      successRate: 96,
-      earnings: 180000,
-      badges: ['AR Pioneer', 'Design Excellence', 'Innovation Leader'],
-      recentWork: 'Virtual Showroom for Luxury Brands'
-    }
-  ];
+export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
+  const { user } = useAuth();
+  const [activeTab, setActiveTab] = useState('projects');
+  const [projects, setProjects] = useState<FeaturedProject[]>([]);
+  const [developers, setDevelopers] = useState<FeaturedDeveloper[]>([]);
+  const [selectedProject, setSelectedProject] = useState<FeaturedProject | null>(null);
+  const [selectedDeveloper, setSelectedDeveloper] = useState<FeaturedDeveloper | null>(null);
+  const [trends, setTrends] = useState<any>(null);
+  const [favorites, setFavorites] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [projectFilters, setProjectFilters] = useState({
+    skills_required: '',
+    complexity_level: '',
+    budget_range: '',
+    project_type: ''
+  });
+  const [developerFilters, setDeveloperFilters] = useState({
+    skills: '',
+    experience_years: '',
+    hourly_rate_min: '',
+    hourly_rate_max: '',
+    availability_status: '',
+    rating_min: ''
+  });
 
   useEffect(() => {
-    setIsLoaded(true);
-    
-    // Cycle through featured projects
-    const projectTimer = setInterval(() => {
-      setActiveProject(prev => (prev + 1) % featuredProjects.length);
-    }, 5000);
-
-    // Cycle through top developers
-    const developerTimer = setInterval(() => {
-      setActiveDeveloper(prev => (prev + 1) % topDevelopers.length);
-    }, 4000);
-
-    return () => {
-      clearInterval(projectTimer);
-      clearInterval(developerTimer);
-    };
+    loadMarketplaceData();
   }, []);
 
-  const getUrgencyColor = (urgency: string) => {
-    switch (urgency) {
-      case 'high': return 'text-red-400 bg-red-500/20 border-red-500/40';
-      case 'medium': return 'text-yellow-400 bg-yellow-500/20 border-yellow-500/40';
-      case 'low': return 'text-green-400 bg-green-500/20 border-green-500/40';
-      default: return 'text-gray-400 bg-gray-500/20 border-gray-500/40';
+  useEffect(() => {
+    if (activeTab === 'projects') {
+      loadProjects();
+    } else if (activeTab === 'developers') {
+      loadDevelopers();
+    }
+  }, [activeTab, projectFilters, developerFilters]);
+
+  const loadMarketplaceData = async () => {
+    try {
+      const [trendsRes, favoritesRes] = await Promise.all([
+        marketplaceService.getMarketplaceTrends(),
+        marketplaceService.getFavorites()
+      ]);
+
+      if (trendsRes.success) setTrends(trendsRes.data);
+      if (favoritesRes.success) setFavorites(favoritesRes.data);
+    } catch (error) {
+      console.error('Error loading marketplace data:', error);
     }
   };
 
-  const getMatchColor = (score: number) => {
-    if (score >= 90) return 'text-green-400';
-    if (score >= 70) return 'text-yellow-400';
-    return 'text-red-400';
-  };
-
-  const getAvailabilityColor = (availability: string) => {
-    switch (availability) {
-      case 'available': return 'text-green-400 bg-green-500/20';
-      case 'busy': return 'text-yellow-400 bg-yellow-500/20';
-      case 'unavailable': return 'text-red-400 bg-red-500/20';
-      default: return 'text-gray-400 bg-gray-500/20';
+  const loadProjects = async () => {
+    try {
+      setLoading(true);
+      const response = await marketplaceService.getFeaturedProjects(projectFilters);
+      if (response.success) {
+        setProjects(response.data.results || []);
+      }
+    } catch (error) {
+      console.error('Error loading projects:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (!isLoaded) {
-    return (
-      <div className="nexus-loading-overlay flex">
-        <div className="nexus-spinner"></div>
-      </div>
-    );
-  }
+  const loadDevelopers = async () => {
+    try {
+      setLoading(true);
+      const response = await marketplaceService.getFeaturedDevelopers(developerFilters);
+      if (response.success) {
+        setDevelopers(response.data.results || []);
+      }
+    } catch (error) {
+      console.error('Error loading developers:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleApplyToProject = async (projectId: string) => {
+    // This would open an application modal
+    console.log('Apply to project:', projectId);
+  };
+
+  const handleContactDeveloper = async (developerId: string) => {
+    // This would open a contact modal
+    console.log('Contact developer:', developerId);
+  };
+
+  const handleAddToFavorites = async (type: 'project' | 'developer', id: string) => {
+    try {
+      await marketplaceService.addToFavorites(type, id);
+      loadMarketplaceData();
+    } catch (error) {
+      console.error('Error adding to favorites:', error);
+    }
+  };
+
+  const getComplexityColor = (level: string) => {
+    switch (level) {
+      case 'simple': return 'bg-green-100 text-green-800';
+      case 'moderate': return 'bg-yellow-100 text-yellow-800';
+      case 'complex': return 'bg-orange-100 text-orange-800';
+      case 'enterprise': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getAvailabilityColor = (status: string) => {
+    switch (status) {
+      case 'available': return 'bg-green-100 text-green-800';
+      case 'busy': return 'bg-yellow-100 text-yellow-800';
+      case 'unavailable': return 'bg-red-100 text-red-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const formatBudgetRange = (range: string) => {
+    return range.replace('-', ' - $');
+  };
 
   return (
-    <div>
-      {/* Featured Projects Section */}
-      <div className="nexus-container space-y-8 mb-16">
-        <h2 className="text-3xl font-bold text-cyan-400 mb-6 text-center">Featured Projects</h2>
-        
-        {/* Project Categories */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-          {projectCategories.map((category, index) => {
-            const Icon = category.icon;
-            return (
-              <div 
-                key={category.id}
-                className="nexus-card text-center cursor-pointer group transition-all duration-500"
-                onClick={() => setSelectedCategory(category.id)}
-              >
-                <Icon size={32} className={`${category.color} mx-auto mb-3 group-hover:animate-bounce`} />
-                <h3 className={`font-semibold ${category.color} mb-1`}>{category.name}</h3>
-                <p className="text-sm text-gray-400">{category.count.toLocaleString()}</p>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Active Project Spotlight */}
-        <div className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg p-6 mb-6 border border-purple-500/30 transition-all duration-500">
-          <div className="flex items-center gap-2 mb-4">
-            <Award size={20} className="text-yellow-400" />
-            <span className="text-yellow-400 font-semibold">Project Spotlight</span>
-            <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full">Featured</span>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <h4 className="text-xl font-bold text-cyan-400 mb-3">{featuredProjects[activeProject].title}</h4>
-              <p className="text-gray-300 mb-4">{featuredProjects[activeProject].description}</p>
-              
-              <div className="flex flex-wrap gap-2 mb-4">
-                {featuredProjects[activeProject].skills.map((skill, index) => (
-                  <span key={index} className="px-3 py-1 bg-cyan-500/20 border border-cyan-500/40 rounded-full text-sm">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-              
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div>
-                  <span className="text-gray-400">Budget:</span>
-                  <div className="font-semibold text-green-400">
-                    ${featuredProjects[activeProject].budget.min.toLocaleString()} - ${featuredProjects[activeProject].budget.max.toLocaleString()}
-                  </div>
-                </div>
-                <div>
-                  <span className="text-gray-400">Deadline:</span>
-                  <div className="font-semibold">{new Date(featuredProjects[activeProject].deadline).toLocaleDateString()}</div>
-                </div>
-                <div>
-                  <span className="text-gray-400">Applicants:</span>
-                  <div className="font-semibold text-purple-400">{featuredProjects[activeProject].applicants}</div>
-                </div>
-                <div>
-                  <span className="text-gray-400">Match Score:</span>
-                  <div className={`font-semibold ${getMatchColor(featuredProjects[activeProject].matchScore)}`}>
-                    {featuredProjects[activeProject].matchScore}%
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="bg-white/5 rounded-lg p-4">
-                <h5 className="font-semibold text-cyan-400 mb-2">Client Info</h5>
-                <div className="text-sm">
-                  <div className="font-medium">{featuredProjects[activeProject].client}</div>
-                  <div className="flex items-center gap-1 text-yellow-400">
-                    <Star size={12} />
-                    <span>{featuredProjects[activeProject].clientRating}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white/5 rounded-lg p-4">
-                <h5 className="font-semibold text-cyan-400 mb-2">Project Stats</h5>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Views:</span>
-                    <span className="font-semibold">{featuredProjects[activeProject].views}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Type:</span>
-                    <span className="font-semibold">{featuredProjects[activeProject].projectType}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Urgency:</span>
-                    <span className={`text-xs px-2 py-1 rounded-full ${getUrgencyColor(featuredProjects[activeProject].urgency)}`}>
-                      {featuredProjects[activeProject].urgency}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex gap-2">
-                <button className="nexus-action-btn flex-1 text-sm py-2">
-                  Apply Now
-                </button>
-                <button className="nexus-action-btn text-sm py-2 px-3">
-                  <Heart size={14} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Project Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {featuredProjects.map((project, index) => (
-            <div 
-              key={project.id} 
-              className="nexus-card group cursor-pointer transition-all duration-500"
-              onClick={() => setActiveProject(index)}
-            >
-              <div className="flex items-center justify-between mb-4">
-                <h4 className="font-semibold text-cyan-400 group-hover:text-white transition-colors">{project.title}</h4>
-                <div className="flex items-center gap-2">
-                  {project.featured && <Award size={16} className="text-yellow-400" />}
-                  <span className={`text-xs px-2 py-1 rounded-full ${getUrgencyColor(project.urgency)}`}>
-                    {project.urgency}
-                  </span>
-                </div>
-              </div>
-              
-              <p className="text-sm opacity-80 mb-4 line-clamp-2">{project.description}</p>
-              
-              <div className="flex flex-wrap gap-1 mb-4">
-                {project.skills.slice(0, 3).map((skill, skillIndex) => (
-                  <span key={skillIndex} className="px-2 py-1 bg-cyan-500/20 border border-cyan-500/40 rounded-full text-xs">
-                    {skill}
-                  </span>
-                ))}
-                {project.skills.length > 3 && (
-                  <span className="px-2 py-1 bg-gray-500/20 border border-gray-500/40 rounded-full text-xs">
-                    +{project.skills.length - 3}
-                  </span>
-                )}
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                <div>
-                  <span className="text-gray-400">Budget:</span>
-                  <div className="font-semibold text-green-400">
-                    ${project.budget.min.toLocaleString()}+
-                  </div>
-                </div>
-                <div>
-                  <span className="text-gray-400">Match:</span>
-                  <div className={`font-semibold ${getMatchColor(project.matchScore)}`}>
-                    {project.matchScore}%
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4 text-xs text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <Users size={12} />
-                    <span>{project.applicants}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <Eye size={12} />
-                    <span>{project.views}</span>
-                  </div>
-                </div>
-                <button className="nexus-action-btn text-xs px-3 py-1">
-                  View Details
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold mb-2">Marketplace</h1>
+        <p className="text-gray-600">Discover featured projects and top developers</p>
       </div>
 
-      {/* Top Developers Section */}
-      <div className="nexus-container space-y-8 mb-16">
-        <h2 className="text-3xl font-bold text-cyan-400 mb-6 text-center">Top Developers</h2>
-        
-        {/* Developer Spotlight */}
-        <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 rounded-lg p-6 border border-green-500/30 transition-all duration-500">
-          <div className="flex items-center gap-2 mb-4">
-            <Award size={20} className="text-yellow-400" />
-            <span className="text-yellow-400 font-semibold">Top Performer</span>
-            <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-400 rounded-full">Featured</span>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <div className="flex items-center gap-4 mb-4">
-                <div className="text-4xl">{topDevelopers[activeDeveloper].avatar}</div>
-                <div>
-                  <h4 className="text-xl font-bold text-cyan-400">{topDevelopers[activeDeveloper].name}</h4>
-                  <p className="text-gray-400">{topDevelopers[activeDeveloper].title}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="flex items-center gap-1">
-                      <Star size={14} className="text-yellow-400" />
-                      <span className="font-semibold">{topDevelopers[activeDeveloper].rating}</span>
+      {/* Trending Section */}
+      {trends && (
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <TrendingUp className="h-5 w-5" />
+              <span>Market Trends</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <h4 className="font-medium mb-2">Trending Skills</h4>
+                <div className="flex flex-wrap gap-2">
+                  {trends.trending_skills?.slice(0, 5).map((skill: string) => (
+                    <Badge key={skill} variant="secondary">{skill}</Badge>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Popular Project Types</h4>
+                <div className="flex flex-wrap gap-2">
+                  {trends.popular_project_types?.slice(0, 4).map((type: string) => (
+                    <Badge key={type} variant="outline">{type}</Badge>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-medium mb-2">Average Rates</h4>
+                <div className="space-y-1 text-sm">
+                  {Object.entries(trends.average_rates || {}).slice(0, 3).map(([skill, rate]) => (
+                    <div key={skill} className="flex justify-between">
+                      <span>{skill}</span>
+                      <span>${rate}/hr</span>
                     </div>
-                    <span className={`text-xs px-2 py-1 rounded-full ${getAvailabilityColor(topDevelopers[activeDeveloper].availability)}`}>
-                      {topDevelopers[activeDeveloper].availability}
-                    </span>
-                  </div>
+                  ))}
                 </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-2 mb-4">
-                {topDevelopers[activeDeveloper].skills.map((skill, index) => (
-                  <span key={index} className="px-3 py-1 bg-purple-500/20 border border-purple-500/40 rounded-full text-sm">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-              
-              <div className="flex flex-wrap gap-2 mb-4">
-                {topDevelopers[activeDeveloper].badges.map((badge, index) => (
-                  <span key={index} className="px-2 py-1 bg-yellow-500/20 border border-yellow-500/40 rounded-full text-xs text-yellow-400">
-                    {badge}
-                  </span>
-                ))}
-              </div>
-              
-              <p className="text-sm text-gray-300">
-                <strong>Recent Work:</strong> {topDevelopers[activeDeveloper].recentWork}
-              </p>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="bg-white/5 rounded-lg p-4">
-                <h5 className="font-semibold text-cyan-400 mb-3">Performance Stats</h5>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span>Success Rate:</span>
-                    <span className="font-semibold text-green-400">{topDevelopers[activeDeveloper].successRate}%</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Projects:</span>
-                    <span className="font-semibold">{topDevelopers[activeDeveloper].completedProjects}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Response Time:</span>
-                    <span className="font-semibold text-cyan-400">{topDevelopers[activeDeveloper].responseTime}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Total Earnings:</span>
-                    <span className="font-semibold text-green-400">${topDevelopers[activeDeveloper].earnings.toLocaleString()}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="bg-white/5 rounded-lg p-4">
-                <h5 className="font-semibold text-cyan-400 mb-2">Rate & Location</h5>
-                <div className="text-sm">
-                  <div className="font-semibold text-green-400 mb-1">${topDevelopers[activeDeveloper].hourlyRate}/hour</div>
-                  <div className="flex items-center gap-1 text-gray-400">
-                    <MapPin size={12} />
-                    <span>{topDevelopers[activeDeveloper].location}</span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex gap-2">
-                <button className="nexus-action-btn flex-1 text-sm py-2">
-                  Hire Now
-                </button>
-                <button className="nexus-action-btn text-sm py-2 px-3">
-                  <MessageSquare size={14} />
-                </button>
               </div>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
+      )}
 
-        {/* Developer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {topDevelopers.map((developer, index) => (
-            <div 
-              key={developer.id}
-              className="nexus-card group cursor-pointer transition-all duration-500"
-              onClick={() => setActiveDeveloper(index)}
-            >
-              <div className="flex items-center gap-3 mb-4">
-                <div className="text-3xl group-hover:scale-125 transition-all duration-300">{developer.avatar}</div>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="projects">Featured Projects</TabsTrigger>
+          <TabsTrigger value="developers">Top Developers</TabsTrigger>
+          <TabsTrigger value="favorites">My Favorites</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="projects" className="space-y-6">
+          {/* Project Filters */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div>
-                  <h4 className="font-semibold text-cyan-400 group-hover:text-white transition-colors">{developer.name}</h4>
-                  <p className="text-sm text-gray-400">{developer.title}</p>
-                  <div className="flex items-center gap-2 mt-1">
-                    <div className="flex items-center gap-1">
-                      <Star size={12} className="text-yellow-400" />
-                      <span className="text-sm font-semibold">{developer.rating}</span>
+                  <Label>Skills Required</Label>
+                  <Input
+                    placeholder="e.g., React, Python"
+                    value={projectFilters.skills_required}
+                    onChange={(e) => setProjectFilters(prev => ({ ...prev, skills_required: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label>Complexity</Label>
+                  <Select value={projectFilters.complexity_level} onValueChange={(value) => setProjectFilters(prev => ({ ...prev, complexity_level: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All levels" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All levels</SelectItem>
+                      <SelectItem value="simple">Simple</SelectItem>
+                      <SelectItem value="moderate">Moderate</SelectItem>
+                      <SelectItem value="complex">Complex</SelectItem>
+                      <SelectItem value="enterprise">Enterprise</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Budget Range</Label>
+                  <Select value={projectFilters.budget_range} onValueChange={(value) => setProjectFilters(prev => ({ ...prev, budget_range: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All budgets" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All budgets</SelectItem>
+                      <SelectItem value="1000-5000">$1K - $5K</SelectItem>
+                      <SelectItem value="5000-15000">$5K - $15K</SelectItem>
+                      <SelectItem value="15000-50000">$15K - $50K</SelectItem>
+                      <SelectItem value="50000+">$50K+</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Project Type</Label>
+                  <Input
+                    placeholder="e.g., Web App, Mobile"
+                    value={projectFilters.project_type}
+                    onChange={(e) => setProjectFilters(prev => ({ ...prev, project_type: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Projects Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardContent className="p-6">
+                    <div className="space-y-3">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                     </div>
-                    <span className={`text-xs px-2 py-1 rounded-full ${getAvailabilityColor(developer.availability)}`}>
-                      {developer.availability}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="flex flex-wrap gap-1 mb-4">
-                {developer.skills.slice(0, 3).map((skill, skillIndex) => (
-                  <span key={skillIndex} className="px-2 py-1 bg-purple-500/20 border border-purple-500/40 rounded-full text-xs">
-                    {skill}
-                  </span>
-                ))}
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 mb-4 text-sm">
-                <div>
-                  <span className="text-gray-400">Rate:</span>
-                  <div className="font-semibold text-green-400">${developer.hourlyRate}/hr</div>
-                </div>
-                <div>
-                  <span className="text-gray-400">Projects:</span>
-                  <div className="font-semibold">{developer.completedProjects}</div>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between">
-                <div className="text-xs text-gray-400">
-                  <div className="flex items-center gap-1">
-                    <MapPin size={10} />
-                    <span>{developer.location.split(',')[0]}</span>
-                  </div>
-                </div>
-                <button className="nexus-action-btn text-xs px-3 py-1">
-                  View Profile
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Market Analytics Section */}
-      <div className="nexus-container space-y-8 mb-16">
-        <h2 className="text-3xl font-bold text-cyan-400 mb-6 text-center">Market Analytics</h2>
-        
-        {/* Market Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <div className="bg-white/5 rounded-lg p-4 text-center transition-all duration-300">
-            <Target size={24} className="text-cyan-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-cyan-400">12,450</div>
-            <div className="text-sm text-gray-400">Active Projects</div>
-          </div>
-          <div className="bg-white/5 rounded-lg p-4 text-center transition-all duration-300">
-            <Users size={24} className="text-green-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-green-400">8,900</div>
-            <div className="text-sm text-gray-400">Active Developers</div>
-          </div>
-          <div className="bg-white/5 rounded-lg p-4 text-center transition-all duration-300">
-            <DollarSign size={24} className="text-yellow-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-yellow-400">$2.4M</div>
-            <div className="text-sm text-gray-400">Monthly Volume</div>
-          </div>
-          <div className="bg-white/5 rounded-lg p-4 text-center transition-all duration-300">
-            <TrendingUp size={24} className="text-purple-400 mx-auto mb-2" />
-            <div className="text-2xl font-bold text-purple-400">+23%</div>
-            <div className="text-sm text-gray-400">Growth Rate</div>
-          </div>
-        </div>
-
-        {/* Trending Technologies */}
-        <div className="bg-white/5 rounded-lg p-6 mb-6">
-          <h4 className="font-semibold text-cyan-400 mb-4">Trending Technologies</h4>
-          <div className="space-y-3">
-            {[
-              { name: 'AI/Machine Learning', growth: '+180%', projects: 8900, color: 'text-cyan-400' },
-              { name: 'Blockchain & Web3', growth: '+250%', projects: 5670, color: 'text-green-400' },
-              { name: 'AR/VR Development', growth: '+420%', projects: 3200, color: 'text-yellow-400' },
-              { name: 'Mobile Development', growth: '+340%', projects: 2450, color: 'text-purple-400' }
-            ].map((tech, index) => (
-              <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
-                <div>
-                  <div className={`font-semibold ${tech.color}`}>{tech.name}</div>
-                  <div className="text-sm text-gray-400">{tech.projects.toLocaleString()} projects</div>
-                </div>
-                <div className="text-right">
-                  <div className="font-semibold text-green-400">{tech.growth}</div>
-                  <div className="text-xs text-gray-400">growth</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Success Metrics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="bg-white/5 rounded-lg p-6">
-            <h4 className="font-semibold text-cyan-400 mb-4">Success Metrics</h4>
-            <div className="space-y-4">
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Project Success Rate</span>
-                  <span>94.2%</span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-2">
-                  <div className="bg-gradient-to-r from-green-400 to-emerald-500 h-2 rounded-full" style={{ width: '94.2%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>Client Satisfaction</span>
-                  <span>98.5%</span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-2">
-                  <div className="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full" style={{ width: '98.5%' }}></div>
-                </div>
-              </div>
-              <div>
-                <div className="flex justify-between text-sm mb-1">
-                  <span>On-Time Delivery</span>
-                  <span>91.8%</span>
-                </div>
-                <div className="w-full bg-white/10 rounded-full h-2">
-                  <div className="bg-gradient-to-r from-yellow-400 to-orange-500 h-2 rounded-full" style={{ width: '91.8%' }}></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white/5 rounded-lg p-6">
-            <h4 className="font-semibold text-cyan-400 mb-4">Average Rates by Category</h4>
-            <div className="space-y-3">
-              {[
-                { category: 'AI/ML Engineering', rate: 95, color: 'text-cyan-400' },
-                { category: 'Blockchain Security', rate: 110, color: 'text-green-400' },
-                { category: 'Full Stack Development', rate: 85, color: 'text-blue-400' },
-                { category: 'AR/VR Development', rate: 90, color: 'text-yellow-400' },
-                { category: 'Mobile Development', rate: 75, color: 'text-purple-400' }
-              ].map((item, index) => (
-                <div key={index} className="flex items-center justify-between">
-                  <span className={`text-sm ${item.color}`}>{item.category}</span>
-                  <span className="font-semibold text-green-400">${item.rate}/hr</span>
-                </div>
+                  </CardContent>
+                </Card>
               ))}
             </div>
-          </div>
+          ) : projects.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <Briefcase className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No Featured Projects</h3>
+                <p className="text-gray-600">Try adjusting your filters</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {projects.map((project) => (
+                <Card key={project.id} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center space-x-2">
+                        {project.is_featured && <Crown className="h-4 w-4 text-yellow-500" />}
+                        <Badge className={getComplexityColor(project.complexity_level)}>
+                          {project.complexity_level}
+                        </Badge>
+                      </div>
+                      <button
+                        onClick={() => handleAddToFavorites('project', project.id)}
+                        className="text-gray-400 hover:text-red-500"
+                      >
+                        <Heart className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <h3 className="font-semibold text-lg mb-2 line-clamp-2">{project.title}</h3>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-3">{project.description}</p>
+
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center space-x-2 text-sm">
+                        <DollarSign className="h-4 w-4 text-gray-500" />
+                        <span>{formatBudgetRange(project.budget_range)}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <Clock className="h-4 w-4 text-gray-500" />
+                        <span>{project.duration_estimate}</span>
+                      </div>
+                      <div className="flex items-center space-x-2 text-sm">
+                        <Users className="h-4 w-4 text-gray-500" />
+                        <span>{project.applications_count} applications</span>
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <div className="flex flex-wrap gap-1">
+                        {project.skills_required.slice(0, 3).map((skill) => (
+                          <Badge key={skill} variant="outline" className="text-xs">{skill}</Badge>
+                        ))}
+                        {project.skills_required.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{project.skills_required.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setSelectedProject(project)}
+                        className="flex-1"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        View
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleApplyToProject(project.id)}
+                        className="flex-1"
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="developers" className="space-y-6">
+          {/* Developer Filters */}
+          <Card>
+            <CardContent className="p-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div>
+                  <Label>Skills</Label>
+                  <Input
+                    placeholder="e.g., React, Python"
+                    value={developerFilters.skills}
+                    onChange={(e) => setDeveloperFilters(prev => ({ ...prev, skills: e.target.value }))}
+                  />
+                </div>
+                <div>
+                  <Label>Experience</Label>
+                  <Select value={developerFilters.experience_years} onValueChange={(value) => setDeveloperFilters(prev => ({ ...prev, experience_years: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All levels" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All levels</SelectItem>
+                      <SelectItem value="0-2">0-2 years</SelectItem>
+                      <SelectItem value="3-5">3-5 years</SelectItem>
+                      <SelectItem value="6-10">6-10 years</SelectItem>
+                      <SelectItem value="10+">10+ years</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Hourly Rate</Label>
+                  <div className="flex space-x-2">
+                    <Input
+                      placeholder="Min"
+                      type="number"
+                      value={developerFilters.hourly_rate_min}
+                      onChange={(e) => setDeveloperFilters(prev => ({ ...prev, hourly_rate_min: e.target.value }))}
+                    />
+                    <Input
+                      placeholder="Max"
+                      type="number"
+                      value={developerFilters.hourly_rate_max}
+                      onChange={(e) => setDeveloperFilters(prev => ({ ...prev, hourly_rate_max: e.target.value }))}
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label>Availability</Label>
+                  <Select value={developerFilters.availability_status} onValueChange={(value) => setDeveloperFilters(prev => ({ ...prev, availability_status: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="All statuses" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">All statuses</SelectItem>
+                      <SelectItem value="available">Available</SelectItem>
+                      <SelectItem value="busy">Busy</SelectItem>
+                      <SelectItem value="unavailable">Unavailable</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Developers Grid */}
+          {loading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardContent className="p-6">
+                    <div className="space-y-3">
+                      <div className="h-4 bg-gray-200 rounded w-3/4"></div>
+                      <div className="h-3 bg-gray-200 rounded w-full"></div>
+                      <div className="h-3 bg-gray-200 rounded w-1/2"></div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : developers.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <Users className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No Featured Developers</h3>
+                <p className="text-gray-600">Try adjusting your filters</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {developers.map((developer) => (
+                <Card key={developer.id} className="hover:shadow-lg transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start mb-3">
+                      <div className="flex items-center space-x-2">
+                        {developer.is_featured && <Crown className="h-4 w-4 text-yellow-500" />}
+                        <Badge className={getAvailabilityColor(developer.availability_status)}>
+                          {developer.availability_status}
+                        </Badge>
+                      </div>
+                      <button
+                        onClick={() => handleAddToFavorites('developer', developer.id)}
+                        className="text-gray-400 hover:text-red-500"
+                      >
+                        <Heart className="h-4 w-4" />
+                      </button>
+                    </div>
+
+                    <div className="text-center mb-4">
+                      <h3 className="font-semibold text-lg">{developer.username}</h3>
+                      <p className="text-gray-600 text-sm">{developer.title}</p>
+                    </div>
+
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-2">{developer.bio}</p>
+
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center justify-between text-sm">
+                        <div className="flex items-center space-x-1">
+                          <Star className="h-4 w-4 text-yellow-500" />
+                          <span>{developer.rating}</span>
+                        </div>
+                        <span>{developer.completed_projects} projects</span>
+                      </div>
+                      <div className="flex items-center justify-between text-sm">
+                        <span>{developer.experience_years} years exp.</span>
+                        <span>${developer.hourly_rate}/hr</span>
+                      </div>
+                    </div>
+
+                    <div className="mb-4">
+                      <div className="flex flex-wrap gap-1">
+                        {developer.skills.slice(0, 3).map((skill) => (
+                          <Badge key={skill} variant="outline" className="text-xs">{skill}</Badge>
+                        ))}
+                        {developer.skills.length > 3 && (
+                          <Badge variant="outline" className="text-xs">
+                            +{developer.skills.length - 3}
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex space-x-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setSelectedDeveloper(developer)}
+                        className="flex-1"
+                      >
+                        <Eye className="h-4 w-4 mr-1" />
+                        Profile
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => handleContactDeveloper(developer.id)}
+                        className="flex-1"
+                      >
+                        <MessageSquare className="h-4 w-4 mr-1" />
+                        Contact
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="favorites" className="space-y-6">
+          {!favorites ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <Bookmark className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No Favorites Yet</h3>
+                <p className="text-gray-600">Save projects and developers you're interested in</p>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-8">
+              {/* Favorite Projects */}
+              {favorites.projects && favorites.projects.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Favorite Projects</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {favorites.projects.map((project: FeaturedProject) => (
+                      <Card key={project.id} className="hover:shadow-lg transition-shadow">
+                        <CardContent className="p-6">
+                          <div className="flex justify-between items-start mb-3">
+                            <Badge className={getComplexityColor(project.complexity_level)}>
+                              {project.complexity_level}
+                            </Badge>
+                            <Heart className="h-4 w-4 text-red-500 fill-current" />
+                          </div>
+                          <h4 className="font-semibold mb-2">{project.title}</h4>
+                          <p className="text-gray-600 text-sm mb-3 line-clamp-2">{project.description}</p>
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">{formatBudgetRange(project.budget_range)}</span>
+                            <Button size="sm" variant="outline">View</Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Favorite Developers */}
+              {favorites.developers && favorites.developers.length > 0 && (
+                <div>
+                  <h3 className="text-xl font-semibold mb-4">Favorite Developers</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {favorites.developers.map((developer: FeaturedDeveloper) => (
+                      <Card key={developer.id} className="hover:shadow-lg transition-shadow">
+                        <CardContent className="p-6">
+                          <div className="flex justify-between items-start mb-3">
+                            <Badge className={getAvailabilityColor(developer.availability_status)}>
+                              {developer.availability_status}
+                            </Badge>
+                            <Heart className="h-4 w-4 text-red-500 fill-current" />
+                          </div>
+                          <div className="text-center mb-3">
+                            <h4 className="font-semibold">{developer.username}</h4>
+                            <p className="text-gray-600 text-sm">{developer.title}</p>
+                          </div>
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center space-x-1">
+                              <Star className="h-4 w-4 text-yellow-500" />
+                              <span className="text-sm">{developer.rating}</span>
+                            </div>
+                            <Button size="sm" variant="outline">Contact</Button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </TabsContent>
+      </Tabs>
+
+      {/* Project Details Modal */}
+      {selectedProject && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle>{selectedProject.title}</CardTitle>
+                  <CardDescription>
+                    {selectedProject.project_type} • {formatBudgetRange(selectedProject.budget_range)}
+                  </CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setSelectedProject(null)}>
+                  ×
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h4 className="font-medium mb-2">Description</h4>
+                <p className="text-gray-600">{selectedProject.description}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-medium mb-2">Project Details</h4>
+                  <div className="space-y-2 text-sm">
+                    <p><strong>Complexity:</strong> {selectedProject.complexity_level}</p>
+                    <p><strong>Duration:</strong> {selectedProject.duration_estimate}</p>
+                    <p><strong>Applications:</strong> {selectedProject.applications_count}</p>
+                    <p><strong>Status:</strong> {selectedProject.status}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-2">Required Skills</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedProject.skills_required.map((skill) => (
+                      <Badge key={skill} variant="secondary">{skill}</Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex space-x-2 pt-4 border-t">
+                <Button onClick={() => setSelectedProject(null)}>
+                  Close
+                </Button>
+                <Button onClick={() => handleApplyToProject(selectedProject.id)}>
+                  Apply to Project
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </div>
+      )}
+
+      {/* Developer Profile Modal */}
+      {selectedDeveloper && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <CardHeader>
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle>{selectedDeveloper.username}</CardTitle>
+                  <CardDescription>{selectedDeveloper.title}</CardDescription>
+                </div>
+                <Button variant="outline" size="sm" onClick={() => setSelectedDeveloper(null)}>
+                  ×
+                </Button>
+              </div>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <h4 className="font-medium mb-2">About</h4>
+                <p className="text-gray-600">{selectedDeveloper.bio}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="font-medium mb-2">Experience</h4>
+                  <div className="space-y-2 text-sm">
+                    <p><strong>Years:</strong> {selectedDeveloper.experience_years}</p>
+                    <p><strong>Projects:</strong> {selectedDeveloper.completed_projects}</p>
+                    <p><strong>Rating:</strong> {selectedDeveloper.rating}/5</p>
+                    <p><strong>Rate:</strong> ${selectedDeveloper.hourly_rate}/hr</p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-medium mb-2">Skills</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedDeveloper.skills.map((skill) => (
+                      <Badge key={skill} variant="secondary">{skill}</Badge>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {selectedDeveloper.portfolio_items && selectedDeveloper.portfolio_items.length > 0 && (
+                <div>
+                  <h4 className="font-medium mb-2">Portfolio</h4>
+                  <div className="space-y-2">
+                    {selectedDeveloper.portfolio_items.slice(0, 3).map((item) => (
+                      <div key={item.id} className="border rounded p-3">
+                        <h5 className="font-medium">{item.title}</h5>
+                        <p className="text-sm text-gray-600">{item.description}</p>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {item.technologies.map((tech) => (
+                            <Badge key={tech} variant="outline" className="text-xs">{tech}</Badge>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="flex space-x-2 pt-4 border-t">
+                <Button onClick={() => setSelectedDeveloper(null)}>
+                  Close
+                </Button>
+                <Button onClick={() => handleContactDeveloper(selectedDeveloper.id)}>
+                  Contact Developer
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

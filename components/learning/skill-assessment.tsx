@@ -1,471 +1,570 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Brain, Clock, CheckCircle, X, Award, BarChart3 } from 'lucide-react';
-
-interface Question {
-  id: string;
-  type: 'multiple-choice' | 'code' | 'drag-drop' | 'scenario';
-  question: string;
-  options?: string[];
-  correctAnswer: string | number;
-  explanation: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  category: string;
-}
-
-interface AssessmentResult {
-  score: number;
-  totalQuestions: number;
-  timeSpent: number;
-  skillLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert';
-  strengths: string[];
-  weaknesses: string[];
-  recommendations: string[];
-  certificate?: string;
-}
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Target, Award, TrendingUp, CheckCircle, Clock, Star, Brain, Code, FileText } from 'lucide-react';
+import { learningService, SkillAssessment as SkillAssessmentType } from '@/lib/services/learning-service';
+import { useAuth } from '@/components/auth/auth-provider';
 
 export function SkillAssessment() {
-  const [selectedSkill, setSelectedSkill] = useState('quantum-computing');
-  const [isAssessing, setIsAssessing] = useState(false);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [answers, setAnswers] = useState<Record<string, any>>({});
-  const [timeRemaining, setTimeRemaining] = useState(1800); // 30 minutes
-  const [result, setResult] = useState<AssessmentResult | null>(null);
-  const [showExplanation, setShowExplanation] = useState(false);
-
-  const skills = [
-    { id: 'quantum-computing', name: 'Quantum Computing', duration: '30 min', questions: 20 },
-    { id: 'ai-ml', name: 'AI/Machine Learning', duration: '45 min', questions: 30 },
-    { id: 'blockchain', name: 'Blockchain Development', duration: '35 min', questions: 25 },
-    { id: 'web-development', name: 'Web Development', duration: '40 min', questions: 28 },
-    { id: 'data-science', name: 'Data Science', duration: '50 min', questions: 35 }
-  ];
-
-  const mockQuestions: Question[] = [
-    {
-      id: 'q1',
-      type: 'multiple-choice',
-      question: 'What is the fundamental unit of quantum information?',
-      options: ['Bit', 'Qubit', 'Quantum Gate', 'Superposition'],
-      correctAnswer: 1,
-      explanation: 'A qubit (quantum bit) is the fundamental unit of quantum information, capable of existing in superposition states.',
-      difficulty: 'easy',
-      category: 'fundamentals'
-    },
-    {
-      id: 'q2',
-      type: 'multiple-choice',
-      question: 'Which quantum gate creates superposition?',
-      options: ['Pauli-X', 'Hadamard', 'CNOT', 'Pauli-Z'],
-      correctAnswer: 1,
-      explanation: 'The Hadamard gate creates an equal superposition of |0⟩ and |1⟩ states when applied to |0⟩.',
-      difficulty: 'medium',
-      category: 'gates'
-    },
-    {
-      id: 'q3',
-      type: 'code',
-      question: 'Complete the Qiskit code to create a Bell state:',
-      correctAnswer: 'qc.h(0)\nqc.cx(0, 1)',
-      explanation: 'A Bell state is created by applying a Hadamard gate to the first qubit, then a CNOT gate.',
-      difficulty: 'hard',
-      category: 'programming'
-    }
-  ];
+  const { user } = useAuth();
+  const [assessments, setAssessments] = useState<SkillAssessmentType[]>([]);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showTestModal, setShowTestModal] = useState(false);
+  const [currentTest, setCurrentTest] = useState<any>(null);
+  const [testAnswers, setTestAnswers] = useState<any[]>([]);
+  const [createForm, setCreateForm] = useState({
+    skill: '',
+    proficiency_level: 1,
+    assessment_type: 'self_reported',
+    evidence: [] as string[]
+  });
+  const [newEvidence, setNewEvidence] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [testLoading, setTestLoading] = useState(false);
 
   useEffect(() => {
-    if (isAssessing && timeRemaining > 0) {
-      const timer = setInterval(() => {
-        setTimeRemaining(prev => {
-          if (prev <= 1) {
-            finishAssessment();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
+    loadAssessments();
+  }, []);
 
-      return () => clearInterval(timer);
+  const loadAssessments = async () => {
+    try {
+      setLoading(true);
+      const response = await learningService.getSkillAssessments();
+      if (response.success) {
+        setAssessments(response.data);
+      }
+    } catch (error) {
+      console.error('Error loading assessments:', error);
+    } finally {
+      setLoading(false);
     }
-  }, [isAssessing, timeRemaining]);
-
-  const startAssessment = () => {
-    setQuestions(mockQuestions);
-    setIsAssessing(true);
-    setCurrentQuestion(0);
-    setAnswers({});
-    setTimeRemaining(1800);
-    setResult(null);
   };
 
-  const answerQuestion = (answer: any) => {
-    setAnswers(prev => ({
+  const handleCreateAssessment = async () => {
+    if (!createForm.skill) return;
+
+    try {
+      const response = await learningService.createSkillAssessment(createForm);
+      if (response.success) {
+        setShowCreateForm(false);
+        setCreateForm({
+          skill: '',
+          proficiency_level: 1,
+          assessment_type: 'self_reported',
+          evidence: []
+        });
+        loadAssessments();
+      }
+    } catch (error) {
+      console.error('Error creating assessment:', error);
+    }
+  };
+
+  const handleTakeTest = async (skill: string) => {
+    try {
+      setTestLoading(true);
+      const response = await learningService.takeSkillTest(skill);
+      if (response.success) {
+        setCurrentTest(response.data);
+        setTestAnswers(new Array(response.data.questions.length).fill(''));
+        setShowTestModal(true);
+      }
+    } catch (error) {
+      console.error('Error starting test:', error);
+    } finally {
+      setTestLoading(false);
+    }
+  };
+
+  const handleSubmitTest = async () => {
+    if (!currentTest) return;
+
+    try {
+      const response = await learningService.submitSkillTest(currentTest.test_id, testAnswers);
+      if (response.success) {
+        setShowTestModal(false);
+        setCurrentTest(null);
+        setTestAnswers([]);
+        loadAssessments();
+      }
+    } catch (error) {
+      console.error('Error submitting test:', error);
+    }
+  };
+
+  const addEvidence = () => {
+    if (newEvidence.trim() && !createForm.evidence.includes(newEvidence.trim())) {
+      setCreateForm(prev => ({
+        ...prev,
+        evidence: [...prev.evidence, newEvidence.trim()]
+      }));
+      setNewEvidence('');
+    }
+  };
+
+  const removeEvidence = (evidence: string) => {
+    setCreateForm(prev => ({
       ...prev,
-      [questions[currentQuestion].id]: answer
+      evidence: prev.evidence.filter(e => e !== evidence)
     }));
   };
 
-  const nextQuestion = () => {
-    if (currentQuestion < questions.length - 1) {
-      setCurrentQuestion(prev => prev + 1);
-      setShowExplanation(false);
-    } else {
-      finishAssessment();
-    }
-  };
-
-  const previousQuestion = () => {
-    if (currentQuestion > 0) {
-      setCurrentQuestion(prev => prev - 1);
-      setShowExplanation(false);
-    }
-  };
-
-  const finishAssessment = () => {
-    setIsAssessing(false);
-    
-    // Calculate results
-    let correctAnswers = 0;
-    questions.forEach(question => {
-      if (answers[question.id] === question.correctAnswer) {
-        correctAnswers++;
-      }
-    });
-
-    const score = Math.round((correctAnswers / questions.length) * 100);
-    const timeSpent = 1800 - timeRemaining;
-
-    let skillLevel: 'beginner' | 'intermediate' | 'advanced' | 'expert' = 'beginner';
-    if (score >= 90) skillLevel = 'expert';
-    else if (score >= 75) skillLevel = 'advanced';
-    else if (score >= 60) skillLevel = 'intermediate';
-
-    const mockResult: AssessmentResult = {
-      score,
-      totalQuestions: questions.length,
-      timeSpent,
-      skillLevel,
-      strengths: ['Quantum Fundamentals', 'Gate Operations'],
-      weaknesses: ['Advanced Algorithms', 'Error Correction'],
-      recommendations: [
-        'Complete the Advanced Quantum Algorithms course',
-        'Practice with quantum error correction exercises',
-        'Join the Quantum Computing study group'
-      ],
-      certificate: score >= 70 ? 'quantum-computing-certified' : undefined
-    };
-
-    setResult(mockResult);
-  };
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-  };
-
-  const getSkillLevelColor = (level: string) => {
+  const getProficiencyLabel = (level: number) => {
     switch (level) {
-      case 'expert': return 'text-purple-400 bg-purple-500/20';
-      case 'advanced': return 'text-red-400 bg-red-500/20';
-      case 'intermediate': return 'text-yellow-400 bg-yellow-500/20';
-      case 'beginner': return 'text-green-400 bg-green-500/20';
-      default: return 'text-gray-400 bg-gray-500/20';
+      case 1: return 'Beginner';
+      case 2: return 'Novice';
+      case 3: return 'Intermediate';
+      case 4: return 'Advanced';
+      case 5: return 'Expert';
+      default: return 'Unknown';
     }
   };
 
-  if (result) {
-    return (
-      <div className="nexus-card">
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Award size={32} className="text-cyan-400" />
-          </div>
-          <h2 className="text-2xl font-bold text-cyan-400 mb-2">Assessment Complete!</h2>
-          <p className="text-sm opacity-80">Your quantum computing skills have been evaluated</p>
-        </div>
+  const getProficiencyColor = (level: number) => {
+    switch (level) {
+      case 1: return 'bg-red-100 text-red-800';
+      case 2: return 'bg-orange-100 text-orange-800';
+      case 3: return 'bg-yellow-100 text-yellow-800';
+      case 4: return 'bg-blue-100 text-blue-800';
+      case 5: return 'bg-green-100 text-green-800';
+      default: return 'bg-gray-100 text-gray-800';
+    }
+  };
 
-        {/* Score Display */}
-        <div className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-lg p-6 mb-6 border border-cyan-500/30">
-          <div className="text-center">
-            <div className="text-4xl font-bold text-cyan-400 mb-2">{result.score}%</div>
-            <div className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getSkillLevelColor(result.skillLevel)}`}>
-              {result.skillLevel.toUpperCase()}
-            </div>
-            <div className="text-sm text-gray-400 mt-2">
-              {result.totalQuestions} questions • {Math.floor(result.timeSpent / 60)}m {result.timeSpent % 60}s
-            </div>
-          </div>
-        </div>
+  const getAssessmentTypeIcon = (type: string) => {
+    switch (type) {
+      case 'self_reported': return <FileText className="h-4 w-4" />;
+      case 'github_analysis': return <Code className="h-4 w-4" />;
+      case 'peer_review': return <Star className="h-4 w-4" />;
+      case 'formal_test': return <Brain className="h-4 w-4" />;
+      default: return <Target className="h-4 w-4" />;
+    }
+  };
 
-        {/* Detailed Results */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Strengths */}
-          <div className="bg-white/5 rounded-lg p-4">
-            <h3 className="font-semibold text-green-400 mb-3 flex items-center gap-2">
-              <CheckCircle size={16} />
-              Strengths
-            </h3>
-            <div className="space-y-2">
-              {result.strengths.map((strength, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                  <span className="text-sm">{strength}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+  const getAssessmentTypeLabel = (type: string) => {
+    switch (type) {
+      case 'self_reported': return 'Self-Reported';
+      case 'github_analysis': return 'GitHub Analysis';
+      case 'peer_review': return 'Peer Review';
+      case 'formal_test': return 'Formal Test';
+      default: return type;
+    }
+  };
 
-          {/* Areas for Improvement */}
-          <div className="bg-white/5 rounded-lg p-4">
-            <h3 className="font-semibold text-yellow-400 mb-3 flex items-center gap-2">
-              <BarChart3 size={16} />
-              Areas for Improvement
-            </h3>
-            <div className="space-y-2">
-              {result.weaknesses.map((weakness, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
-                  <span className="text-sm">{weakness}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Recommendations */}
-        <div className="bg-white/5 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-cyan-400 mb-3">Personalized Recommendations</h3>
-          <div className="space-y-2">
-            {result.recommendations.map((rec, index) => (
-              <div key={index} className="flex items-start gap-2">
-                <div className="w-2 h-2 bg-cyan-400 rounded-full mt-2"></div>
-                <span className="text-sm">{rec}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Certificate */}
-        {result.certificate && (
-          <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-lg p-4 border border-yellow-500/30 mb-6">
-            <div className="flex items-center gap-3">
-              <Award size={24} className="text-yellow-400" />
-              <div>
-                <h3 className="font-semibold text-yellow-400">Certificate Earned!</h3>
-                <p className="text-sm opacity-80">You've earned a Quantum Computing Proficiency Certificate</p>
-              </div>
-              <button className="nexus-action-btn ml-auto !border-yellow-500/40 !text-yellow-400 hover:!bg-yellow-500/20">
-                Download Certificate
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* Actions */}
-        <div className="flex gap-4">
-          <button
-            onClick={() => {
-              setResult(null);
-              setIsAssessing(false);
-            }}
-            className="nexus-action-btn flex-1"
-          >
-            Take Another Assessment
-          </button>
-          <button className="nexus-action-btn flex-1">
-            View Learning Path
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  if (isAssessing) {
-    const question = questions[currentQuestion];
-    
-    return (
-      <div className="nexus-card">
-        {/* Assessment Header */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h2 className="text-xl font-bold text-cyan-400">Quantum Computing Assessment</h2>
-            <p className="text-sm opacity-80">
-              Question {currentQuestion + 1} of {questions.length}
-            </p>
-          </div>
-          
-          <div className="text-right">
-            <div className="text-sm text-gray-400">Time Remaining</div>
-            <div className={`font-bold ${timeRemaining < 300 ? 'text-red-400' : 'text-cyan-400'}`}>
-              {formatTime(timeRemaining)}
-            </div>
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="w-full bg-white/10 rounded-full h-2 mb-6">
-          <div 
-            className="bg-gradient-to-r from-cyan-400 to-blue-500 h-2 rounded-full transition-all duration-300"
-            style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-          ></div>
-        </div>
-
-        {/* Question */}
-        <div className="bg-white/5 rounded-lg p-6 mb-6">
-          <div className="flex items-center gap-2 mb-4">
-            <span className={`text-xs px-2 py-1 rounded-full ${
-              question.difficulty === 'easy' ? 'bg-green-500/20 text-green-400' :
-              question.difficulty === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
-              'bg-red-500/20 text-red-400'
-            }`}>
-              {question.difficulty}
-            </span>
-            <span className="text-xs text-gray-400">{question.category}</span>
-          </div>
-          
-          <h3 className="text-lg font-semibold mb-4">{question.question}</h3>
-
-          {question.type === 'multiple-choice' && question.options && (
-            <div className="space-y-3">
-              {question.options.map((option, index) => (
-                <button
-                  key={index}
-                  onClick={() => answerQuestion(index)}
-                  className={`w-full text-left p-3 rounded-lg border transition-all ${
-                    answers[question.id] === index
-                      ? 'bg-cyan-500/20 border-cyan-500/40 text-cyan-400'
-                      : 'bg-white/5 border-white/10 hover:bg-white/10'
-                  }`}
-                >
-                  <span className="font-medium mr-3">{String.fromCharCode(65 + index)}.</span>
-                  {option}
-                </button>
-              ))}
-            </div>
-          )}
-
-          {question.type === 'code' && (
-            <div>
-              <textarea
-                value={answers[question.id] || ''}
-                onChange={(e) => answerQuestion(e.target.value)}
-                placeholder="Enter your code here..."
-                className="w-full h-32 bg-black rounded-lg p-3 font-mono text-sm text-white resize-none outline-none"
-              />
-            </div>
-          )}
-        </div>
-
-        {/* Explanation */}
-        {showExplanation && (
-          <div className="bg-blue-500/20 rounded-lg p-4 mb-6 border border-blue-500/30">
-            <h4 className="font-semibold text-blue-400 mb-2">Explanation</h4>
-            <p className="text-sm">{question.explanation}</p>
-          </div>
-        )}
-
-        {/* Navigation */}
-        <div className="flex items-center justify-between">
-          <button
-            onClick={previousQuestion}
-            disabled={currentQuestion === 0}
-            className="nexus-back-btn disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Previous
-          </button>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => setShowExplanation(!showExplanation)}
-              className="nexus-action-btn text-sm px-4 py-2"
-            >
-              {showExplanation ? 'Hide' : 'Show'} Explanation
-            </button>
-            
-            <button
-              onClick={nextQuestion}
-              className="nexus-action-btn"
-            >
-              {currentQuestion === questions.length - 1 ? 'Finish Assessment' : 'Next Question'}
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
+  const groupedAssessments = assessments.reduce((acc, assessment) => {
+    if (!acc[assessment.skill]) {
+      acc[assessment.skill] = [];
+    }
+    acc[assessment.skill].push(assessment);
+    return acc;
+  }, {} as Record<string, SkillAssessmentType[]>);
 
   return (
-    <div className="nexus-card">
-      <div className="text-center mb-6">
-        <div className="w-16 h-16 bg-cyan-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
-          <Brain size={32} className="text-cyan-400" />
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold">Skill Assessment</h2>
+          <p className="text-gray-600">Track and validate your technical skills</p>
         </div>
-        <h2 className="text-2xl font-bold text-cyan-400 mb-2">Neural Skill Assessment</h2>
-        <p className="text-sm opacity-80">Evaluate your skills and earn certifications</p>
+        <Button onClick={() => setShowCreateForm(true)}>
+          <Target className="h-4 w-4 mr-2" />
+          Add Assessment
+        </Button>
       </div>
 
-      {/* Skill Selection */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {skills.map(skill => (
-          <div
-            key={skill.id}
-            onClick={() => setSelectedSkill(skill.id)}
-            className={`p-4 rounded-lg border cursor-pointer transition-all ${
-              selectedSkill === skill.id
-                ? 'bg-cyan-500/20 border-cyan-500/40'
-                : 'bg-white/5 border-white/10 hover:bg-white/10'
-            }`}
-          >
-            <h3 className="font-semibold text-cyan-400 mb-2">{skill.name}</h3>
-            <div className="flex items-center gap-4 text-sm text-gray-400">
-              <div className="flex items-center gap-1">
-                <Clock size={14} />
-                <span>{skill.duration}</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <Brain size={14} />
-                <span>{skill.questions} questions</span>
-              </div>
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList>
+          <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="skills">Skills Detail</TabsTrigger>
+          <TabsTrigger value="tests">Take Tests</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="space-y-6">
+          {/* Skill Summary */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-blue-100 rounded-lg">
+                    <Target className="h-6 w-6 text-blue-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Total Skills</p>
+                    <p className="text-2xl font-bold">{Object.keys(groupedAssessments).length}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-green-100 rounded-lg">
+                    <Award className="h-6 w-6 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Verified Skills</p>
+                    <p className="text-2xl font-bold">
+                      {assessments.filter(a => a.assessment_type !== 'self_reported').length}
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardContent className="p-6">
+                <div className="flex items-center space-x-3">
+                  <div className="p-2 bg-purple-100 rounded-lg">
+                    <TrendingUp className="h-6 w-6 text-purple-600" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-600">Avg. Proficiency</p>
+                    <p className="text-2xl font-bold">
+                      {assessments.length > 0 
+                        ? (assessments.reduce((sum, a) => sum + a.proficiency_level, 0) / assessments.length).toFixed(1)
+                        : '0'
+                      }
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Recent Assessments */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Recent Assessments</CardTitle>
+              <CardDescription>Your latest skill evaluations</CardDescription>
+            </CardHeader>
+            <CardContent>
+              {assessments.length === 0 ? (
+                <div className="text-center py-8">
+                  <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 mb-4">No skill assessments yet</p>
+                  <Button onClick={() => setShowCreateForm(true)}>
+                    Create Your First Assessment
+                  </Button>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {assessments.slice(0, 5).map((assessment) => (
+                    <div key={assessment.id} className="flex items-center justify-between p-3 border rounded">
+                      <div className="flex items-center space-x-3">
+                        {getAssessmentTypeIcon(assessment.assessment_type)}
+                        <div>
+                          <p className="font-medium">{assessment.skill}</p>
+                          <p className="text-sm text-gray-600">
+                            {getAssessmentTypeLabel(assessment.assessment_type)} • 
+                            {new Date(assessment.assessed_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <Badge className={getProficiencyColor(assessment.proficiency_level)}>
+                          {getProficiencyLabel(assessment.proficiency_level)}
+                        </Badge>
+                        <div className="text-right">
+                          <p className="text-sm text-gray-600">Confidence</p>
+                          <p className="text-sm font-medium">{Math.round(assessment.confidence_score * 100)}%</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="skills" className="space-y-6">
+          {Object.keys(groupedAssessments).length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <Target className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-semibold mb-2">No Skills Assessed</h3>
+                <p className="text-gray-600 mb-4">Start by adding your first skill assessment</p>
+                <Button onClick={() => setShowCreateForm(true)}>
+                  Add Skill Assessment
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="space-y-6">
+              {Object.entries(groupedAssessments).map(([skill, skillAssessments]) => {
+                const latestAssessment = skillAssessments.sort((a, b) => 
+                  new Date(b.assessed_at).getTime() - new Date(a.assessed_at).getTime()
+                )[0];
+
+                return (
+                  <Card key={skill}>
+                    <CardHeader>
+                      <div className="flex justify-between items-start">
+                        <div>
+                          <CardTitle className="flex items-center space-x-2">
+                            <span>{skill}</span>
+                            <Badge className={getProficiencyColor(latestAssessment.proficiency_level)}>
+                              {getProficiencyLabel(latestAssessment.proficiency_level)}
+                            </Badge>
+                          </CardTitle>
+                          <CardDescription>
+                            {skillAssessments.length} assessment{skillAssessments.length !== 1 ? 's' : ''}
+                          </CardDescription>
+                        </div>
+                        <Button size="sm" onClick={() => handleTakeTest(skill)} disabled={testLoading}>
+                          <Brain className="h-4 w-4 mr-1" />
+                          Take Test
+                        </Button>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      {/* Proficiency Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span>Proficiency Level</span>
+                          <span>{latestAssessment.proficiency_level}/5</span>
+                        </div>
+                        <Progress value={(latestAssessment.proficiency_level / 5) * 100} />
+                      </div>
+
+                      {/* Assessment History */}
+                      <div>
+                        <h4 className="font-medium mb-2">Assessment History</h4>
+                        <div className="space-y-2">
+                          {skillAssessments.map((assessment) => (
+                            <div key={assessment.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                              <div className="flex items-center space-x-2">
+                                {getAssessmentTypeIcon(assessment.assessment_type)}
+                                <div>
+                                  <p className="text-sm font-medium">
+                                    {getAssessmentTypeLabel(assessment.assessment_type)}
+                                  </p>
+                                  <p className="text-xs text-gray-600">
+                                    {new Date(assessment.assessed_at).toLocaleDateString()}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <Badge className={getProficiencyColor(assessment.proficiency_level)} variant="outline">
+                                  {getProficiencyLabel(assessment.proficiency_level)}
+                                </Badge>
+                                <p className="text-xs text-gray-600 mt-1">
+                                  {Math.round(assessment.confidence_score * 100)}% confidence
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Evidence */}
+                      {latestAssessment.evidence.length > 0 && (
+                        <div>
+                          <h4 className="font-medium mb-2">Evidence</h4>
+                          <ul className="text-sm text-gray-600 space-y-1">
+                            {latestAssessment.evidence.map((evidence, index) => (
+                              <li key={index} className="flex items-start space-x-2">
+                                <span>•</span>
+                                <span>{evidence}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
-          </div>
-        ))}
-      </div>
+          )}
+        </TabsContent>
 
-      {/* Assessment Info */}
-      <div className="bg-white/5 rounded-lg p-4 mb-6">
-        <h3 className="font-semibold text-cyan-400 mb-3">Assessment Details</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-          <div>
-            <div className="text-gray-400 mb-1">Format</div>
-            <div>Multiple choice, coding, and scenario-based questions</div>
-          </div>
-          <div>
-            <div className="text-gray-400 mb-1">Certification</div>
-            <div>Earn a verified certificate with 70%+ score</div>
-          </div>
-          <div>
-            <div className="text-gray-400 mb-1">Retakes</div>
-            <div>Unlimited attempts with 24-hour cooldown</div>
-          </div>
+        <TabsContent value="tests" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Skill Tests</CardTitle>
+              <CardDescription>Take formal tests to validate your skills</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {['JavaScript', 'Python', 'React', 'Node.js', 'SQL', 'Git'].map((skill) => (
+                  <Card key={skill} className="hover:shadow-md transition-shadow">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-medium">{skill}</h4>
+                        <Brain className="h-5 w-5 text-blue-500" />
+                      </div>
+                      <p className="text-sm text-gray-600 mb-3">
+                        Test your {skill} knowledge with our comprehensive assessment
+                      </p>
+                      <div className="flex items-center justify-between text-xs text-gray-500 mb-3">
+                        <span>~30 minutes</span>
+                        <span>25 questions</span>
+                      </div>
+                      <Button 
+                        size="sm" 
+                        className="w-full"
+                        onClick={() => handleTakeTest(skill)}
+                        disabled={testLoading}
+                      >
+                        {testLoading ? 'Loading...' : 'Start Test'}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
+
+      {/* Create Assessment Form */}
+      {showCreateForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="max-w-lg w-full">
+            <CardHeader>
+              <CardTitle>Add Skill Assessment</CardTitle>
+              <CardDescription>Evaluate your proficiency in a specific skill</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label htmlFor="skill">Skill</Label>
+                <Input
+                  id="skill"
+                  placeholder="e.g., JavaScript, Python, React"
+                  value={createForm.skill}
+                  onChange={(e) => setCreateForm(prev => ({ ...prev, skill: e.target.value }))}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="proficiency">Proficiency Level</Label>
+                <Select value={createForm.proficiency_level.toString()} onValueChange={(value) => setCreateForm(prev => ({ ...prev, proficiency_level: parseInt(value) }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">1 - Beginner</SelectItem>
+                    <SelectItem value="2">2 - Novice</SelectItem>
+                    <SelectItem value="3">3 - Intermediate</SelectItem>
+                    <SelectItem value="4">4 - Advanced</SelectItem>
+                    <SelectItem value="5">5 - Expert</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="assessment-type">Assessment Type</Label>
+                <Select value={createForm.assessment_type} onValueChange={(value) => setCreateForm(prev => ({ ...prev, assessment_type: value }))}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="self_reported">Self-Reported</SelectItem>
+                    <SelectItem value="github_analysis">GitHub Analysis</SelectItem>
+                    <SelectItem value="peer_review">Peer Review</SelectItem>
+                    <SelectItem value="formal_test">Formal Test</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="evidence">Evidence (Optional)</Label>
+                <div className="flex space-x-2 mt-1">
+                  <Input
+                    placeholder="e.g., Built 3 React apps, 2 years experience"
+                    value={newEvidence}
+                    onChange={(e) => setNewEvidence(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && addEvidence()}
+                  />
+                  <Button type="button" onClick={addEvidence}>Add</Button>
+                </div>
+                {createForm.evidence.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-2">
+                    {createForm.evidence.map((evidence) => (
+                      <Badge key={evidence} variant="secondary" className="cursor-pointer" onClick={() => removeEvidence(evidence)}>
+                        {evidence} ×
+                      </Badge>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex space-x-2 pt-4">
+                <Button onClick={handleCreateAssessment} disabled={!createForm.skill}>
+                  Create Assessment
+                </Button>
+                <Button variant="outline" onClick={() => setShowCreateForm(false)}>
+                  Cancel
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-      </div>
+      )}
 
-      {/* Start Assessment */}
-      <div className="text-center">
-        <button
-          onClick={startAssessment}
-          className="nexus-action-btn flex items-center gap-2 mx-auto"
-        >
-          <Brain size={16} />
-          Start Assessment
-        </button>
-        <p className="text-xs text-gray-400 mt-2">
-          Make sure you have a stable internet connection and 30+ minutes available
-        </p>
-      </div>
+      {/* Test Modal */}
+      {showTestModal && currentTest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <Card className="max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <CardHeader>
+              <CardTitle>Skill Test</CardTitle>
+              <CardDescription>
+                Time remaining: {Math.floor(currentTest.time_limit / 60)} minutes
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {currentTest.questions.map((question: any, index: number) => (
+                <div key={index} className="space-y-3">
+                  <h4 className="font-medium">
+                    {index + 1}. {question.question}
+                  </h4>
+                  <div className="space-y-2">
+                    {question.options.map((option: string, optionIndex: number) => (
+                      <label key={optionIndex} className="flex items-center space-x-2">
+                        <input
+                          type="radio"
+                          name={`question-${index}`}
+                          value={option}
+                          checked={testAnswers[index] === option}
+                          onChange={(e) => {
+                            const newAnswers = [...testAnswers];
+                            newAnswers[index] = e.target.value;
+                            setTestAnswers(newAnswers);
+                          }}
+                        />
+                        <span>{option}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              <div className="flex space-x-2 pt-4 border-t">
+                <Button onClick={handleSubmitTest}>
+                  Submit Test
+                </Button>
+                <Button variant="outline" onClick={() => {
+                  setShowTestModal(false);
+                  setCurrentTest(null);
+                  setTestAnswers([]);
+                }}>
+                  Cancel
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }

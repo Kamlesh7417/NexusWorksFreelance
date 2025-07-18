@@ -7,7 +7,7 @@ import { HomePage } from '@/components/pages/home-page';
 import { MarketplacePage } from '@/components/pages/marketplace-page';
 import { EnhancedLearningPage } from '@/components/pages/enhanced-learning-page';
 import { CommunityPage } from '@/components/pages/community-page';
-import { EnhancedAIAssistant } from '@/components/ai/enhanced-ai-assistant';
+import EnhancedAIAssistant from '@/components/ai/enhanced-ai-assistant';
 import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import { Logo } from '@/components/ui/logo';
 

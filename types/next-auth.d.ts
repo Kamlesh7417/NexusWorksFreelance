@@ -4,24 +4,37 @@ declare module 'next-auth' {
   interface Session {
     user: {
       id: string;
-      role?: string;
-      profile?: any;
+      role: 'client' | 'developer' | 'admin';
+      username: string;
+      profileCompleted: boolean;
+      githubUsername?: string;
     } & DefaultSession['user'];
+    accessToken: string;
+    refreshToken: string;
+    created?: boolean;
   }
 
   interface User {
     id: string;
-    role?: string;
-    profile?: any;
+    role: 'client' | 'developer' | 'admin';
+    username: string;
+    profileCompleted: boolean;
+    githubUsername?: string;
+    accessToken: string;
+    refreshToken: string;
+    created?: boolean;
   }
 }
 
 declare module 'next-auth/jwt' {
   interface JWT {
     id: string;
-    role?: string;
-    profile?: any;
-    accessToken?: string;
-    githubProfile?: any;
+    role: 'client' | 'developer' | 'admin';
+    username: string;
+    profileCompleted: boolean;
+    githubUsername?: string;
+    accessToken: string;
+    refreshToken: string;
+    created?: boolean;
   }
 }

@@ -1,0 +1,882 @@
+WARNING 2025-07-17 04:57:10,221 log 8053 6147239936 Not Found: /api/ai/health/
+WARNING 2025-07-17 04:57:10,221 basehttp 8053 6147239936 "GET /api/ai/health/ HTTP/1.1" 404 6149
+INFO 2025-07-17 04:58:38,715 autoreload 11171 8026184768 Watching for file changes with StatReloader
+INFO 2025-07-17 05:56:39,989 autoreload 11171 8026184768 /Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/communications/views.py changed, reloading.
+INFO 2025-07-17 05:56:40,298 autoreload 13114 8026184768 Watching for file changes with StatReloader
+INFO 2025-07-17 05:56:55,145 autoreload 13114 8026184768 /Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/communications/urls.py changed, reloading.
+INFO 2025-07-17 05:56:55,378 autoreload 13133 8026184768 Watching for file changes with StatReloader
+INFO 2025-07-17 05:58:32,215 autoreload 13133 8026184768 /Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/learning/views.py changed, reloading.
+INFO 2025-07-17 05:58:32,496 autoreload 13190 8026184768 Watching for file changes with StatReloader
+INFO 2025-07-17 05:58:50,390 autoreload 13190 8026184768 /Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/learning/urls.py changed, reloading.
+INFO 2025-07-17 05:58:50,635 autoreload 13211 8026184768 Watching for file changes with StatReloader
+INFO 2025-07-17 06:01:26,580 autoreload 13211 8026184768 /Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/community/views.py changed, reloading.
+INFO 2025-07-17 06:01:26,940 autoreload 13281 8026184768 Watching for file changes with StatReloader
+INFO 2025-07-17 06:01:42,899 autoreload 13281 8026184768 /Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/community/urls.py changed, reloading.
+INFO 2025-07-17 06:01:43,185 autoreload 13304 8026184768 Watching for file changes with StatReloader
+INFO 2025-07-17 06:03:55,999 autoreload 13304 8026184768 /Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/marketplace/views.py changed, reloading.
+INFO 2025-07-17 06:03:56,342 autoreload 13384 8026184768 Watching for file changes with StatReloader
+INFO 2025-07-17 06:04:18,404 autoreload 13384 8026184768 /Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/marketplace/urls.py changed, reloading.
+INFO 2025-07-17 06:04:18,761 autoreload 13433 8026184768 Watching for file changes with StatReloader
+INFO 2025-07-17 06:08:39,403 autoreload 13635 8026184768 Watching for file changes with StatReloader
+INFO 2025-07-17 06:13:19,701 project_analysis 13908 8026184768 Starting project analysis for: Test Project
+INFO 2025-07-17 06:13:26,350 project_analysis 13908 8026184768 Project analysis completed successfully for: Test Project
+INFO 2025-07-17 06:15:50,190 project_analysis 14078 8026184768 Starting project analysis for: Test Project
+INFO 2025-07-17 06:15:57,085 project_analysis 14078 8026184768 Project analysis completed successfully for: Test Project
+INFO 2025-07-17 06:17:17,419 project_analysis 14173 8026184768 Starting project analysis for: Test Project
+INFO 2025-07-17 06:17:23,614 project_analysis 14173 8026184768 Project analysis completed successfully for: Test Project
+INFO 2025-07-17 06:22:02,247 project_analysis 14450 8026184768 Starting project analysis for: Test Project
+INFO 2025-07-17 06:22:08,905 project_analysis 14450 8026184768 Project analysis completed successfully for: Test Project
+INFO 2025-07-17 06:23:04,830 project_analysis 14552 8026184768 Starting project analysis for: Todo App
+INFO 2025-07-17 06:23:12,007 project_analysis 14552 8026184768 Project analysis completed successfully for: Todo App
+INFO 2025-07-17 06:33:38,119 project_analysis 14893 8026184768 Starting project analysis for: Test Project
+INFO 2025-07-17 06:33:45,371 project_analysis 14893 8026184768 Project analysis completed successfully for: Test Project
+INFO 2025-07-17 06:35:39,754 project_analysis 15015 8026184768 Starting project analysis for: Test Project
+INFO 2025-07-17 06:35:46,718 project_analysis 15015 8026184768 Project analysis completed successfully for: Test Project
+INFO 2025-07-17 06:39:50,514 project_analysis 15257 8026184768 Starting project analysis for: Test Project
+INFO 2025-07-17 06:39:57,168 project_analysis 15257 8026184768 Project analysis completed successfully for: Test Project
+INFO 2025-07-17 06:49:57,265 project_analysis 15790 8026184768 Starting project analysis for: Test Project
+INFO 2025-07-17 06:50:04,308 project_analysis 15790 8026184768 Project analysis completed successfully for: Test Project
+INFO 2025-07-17 06:59:37,905 project_analysis 16312 8026184768 Starting project analysis for: Test Project
+INFO 2025-07-17 06:59:44,694 project_analysis 16312 8026184768 Project analysis completed successfully for: Test Project
+ERROR 2025-07-17 08:25:46,769 neo4j_service 19258 8026184768 Failed to initialize Neo4j driver: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+ERROR 2025-07-17 09:21:15,703 neo4j_service 22005 8026184768 Failed to initialize Neo4j driver: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+ERROR 2025-07-17 09:26:09,985 neo4j_service 22274 8026184768 Failed to initialize Neo4j driver: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 12:57:47,084 SentenceTransformer 29543 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 12:57:47,084 SentenceTransformer 29543 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 12:57:59,089 embedding_service 29543 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 12:57:59,158 neo4j_service 29543 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 13:03:40,883 SentenceTransformer 29813 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 13:03:40,883 SentenceTransformer 29813 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 13:03:46,264 embedding_service 29813 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 13:03:46,320 neo4j_service 29813 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 20:04:08,451 SentenceTransformer 31344 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:04:08,451 SentenceTransformer 31344 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:04:14,793 embedding_service 31344 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:13:32,930 SentenceTransformer 31599 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:13:32,930 SentenceTransformer 31599 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:13:37,605 embedding_service 31599 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:15:27,660 SentenceTransformer 31683 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:15:27,660 SentenceTransformer 31683 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:15:34,586 embedding_service 31683 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:20:15,569 SentenceTransformer 31854 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:20:15,569 SentenceTransformer 31854 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:20:20,873 embedding_service 31854 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:21:06,779 SentenceTransformer 31902 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:21:06,779 SentenceTransformer 31902 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:21:13,125 embedding_service 31902 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:22:06,594 SentenceTransformer 31972 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:22:06,594 SentenceTransformer 31972 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:22:12,552 embedding_service 31972 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:22:55,942 SentenceTransformer 32004 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:22:55,942 SentenceTransformer 32004 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:23:02,324 embedding_service 32004 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:24:01,457 SentenceTransformer 32042 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:24:01,457 SentenceTransformer 32042 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:24:07,324 embedding_service 32042 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:43:15,772 project_analysis 32707 8026184768 Starting project analysis for: E-commerce Platform
+INFO 2025-07-17 20:43:26,940 project_analysis 32707 8026184768 Project analysis completed successfully for: E-commerce Platform
+INFO 2025-07-17 20:43:29,065 project_analysis 32707 8026184768 Starting project analysis for: Test Project
+INFO 2025-07-17 20:43:36,132 project_analysis 32707 8026184768 Project analysis completed successfully for: Test Project
+INFO 2025-07-17 20:46:12,471 SentenceTransformer 32846 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:46:12,471 SentenceTransformer 32846 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:46:19,015 embedding_service 32846 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:46:34,247 SentenceTransformer 32879 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:46:34,247 SentenceTransformer 32879 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:46:39,664 embedding_service 32879 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:47:12,538 SentenceTransformer 32906 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:47:12,538 SentenceTransformer 32906 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:47:17,704 embedding_service 32906 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:47:47,788 SentenceTransformer 32935 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:47:47,788 SentenceTransformer 32935 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:47:54,776 embedding_service 32935 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:48:18,449 SentenceTransformer 33009 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:48:18,449 SentenceTransformer 33009 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:48:23,240 embedding_service 33009 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:51:46,574 SentenceTransformer 33168 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:51:46,574 SentenceTransformer 33168 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:51:52,340 embedding_service 33168 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:55:21,582 SentenceTransformer 33295 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 20:55:21,582 SentenceTransformer 33295 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 20:55:28,500 embedding_service 33295 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-17 20:58:31,163 project_analysis 33432 8026184768 Starting project analysis for: Simple Todo App
+INFO 2025-07-17 20:58:45,202 project_analysis 33432 8026184768 Project analysis completed successfully for: Simple Todo App
+INFO 2025-07-17 20:58:45,202 project_analysis 33432 8026184768 Starting project analysis for: E-commerce Platform
+INFO 2025-07-17 20:58:54,596 project_analysis 33432 8026184768 Project analysis completed successfully for: E-commerce Platform
+INFO 2025-07-17 20:58:54,597 project_analysis 33432 8026184768 Starting project analysis for: AI Chatbot Integration
+INFO 2025-07-17 20:59:04,511 project_analysis 33432 8026184768 Project analysis completed successfully for: AI Chatbot Integration
+INFO 2025-07-17 20:59:04,511 project_analysis 33432 8026184768 Starting project analysis for: Complexity Test 1
+INFO 2025-07-17 20:59:13,108 project_analysis 33432 8026184768 Project analysis completed successfully for: Complexity Test 1
+INFO 2025-07-17 20:59:13,109 project_analysis 33432 8026184768 Starting project analysis for: Complexity Test 2
+INFO 2025-07-17 20:59:22,814 project_analysis 33432 8026184768 Project analysis completed successfully for: Complexity Test 2
+INFO 2025-07-17 20:59:22,814 project_analysis 33432 8026184768 Starting project analysis for: Complexity Test 3
+INFO 2025-07-17 20:59:29,655 project_analysis 33432 8026184768 Project analysis completed successfully for: Complexity Test 3
+INFO 2025-07-17 20:59:29,657 project_analysis 33432 8026184768 Starting project analysis for: Senior Dev Test 1
+INFO 2025-07-17 20:59:39,244 project_analysis 33432 8026184768 Project analysis completed successfully for: Senior Dev Test 1
+INFO 2025-07-17 20:59:39,245 project_analysis 33432 8026184768 Starting project analysis for: Senior Dev Test 2
+INFO 2025-07-17 20:59:47,947 project_analysis 33432 8026184768 Project analysis completed successfully for: Senior Dev Test 2
+INFO 2025-07-17 20:59:47,948 project_analysis 33432 8026184768 Starting project analysis for: Senior Dev Test 3
+INFO 2025-07-17 20:59:58,590 project_analysis 33432 8026184768 Project analysis completed successfully for: Senior Dev Test 3
+INFO 2025-07-17 21:01:31,012 SentenceTransformer 33546 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:01:31,012 SentenceTransformer 33546 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:01:36,284 embedding_service 33546 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:01:36,293 log 33546 8026184768 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+ERROR 2025-07-17 21:01:36,304 log 33546 8026184768 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+ERROR 2025-07-17 21:01:36,346 log 33546 8026184768 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+INFO 2025-07-17 21:01:36,535 project_analysis 33546 8026184768 Starting project analysis for: Simple Blog App
+ERROR 2025-07-17 21:05:23,901 gemini_client 33546 8026184768 Gemini API error on attempt 1: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-1.5-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 50
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 36
+}
+]
+ERROR 2025-07-17 21:05:27,536 gemini_client 33546 8026184768 Gemini API error on attempt 2: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-1.5-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 50
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 32
+}
+]
+ERROR 2025-07-17 21:05:29,887 gemini_client 33546 8026184768 Gemini API error on attempt 3: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-1.5-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 50
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 30
+}
+]
+WARNING 2025-07-17 21:05:29,888 project_analysis 33546 8026184768 AI service unavailable for Simple Blog App, using fallback: Gemini API quota/rate limit exceeded: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-1.5-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 50
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 30
+}
+]
+WARNING 2025-07-17 21:05:29,888 project_analysis 33546 8026184768 Creating fallback analysis due to AI service failure
+INFO 2025-07-17 21:06:03,582 SentenceTransformer 33701 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:06:03,582 SentenceTransformer 33701 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:06:08,314 embedding_service 33701 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:06:08,326 log 33701 8026184768 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+ERROR 2025-07-17 21:06:08,337 log 33701 8026184768 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+ERROR 2025-07-17 21:06:08,346 log 33701 8026184768 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+INFO 2025-07-17 21:06:08,561 project_analysis 33701 8026184768 Starting project analysis for: Simple Blog App
+ERROR 2025-07-17 21:06:10,721 gemini_client 33701 8026184768 Gemini API error on attempt 1: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-1.5-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 50
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 49
+}
+]
+ERROR 2025-07-17 21:06:12,445 gemini_client 33701 8026184768 Gemini API error on attempt 2: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-1.5-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 50
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 47
+}
+]
+ERROR 2025-07-17 21:06:14,796 gemini_client 33701 8026184768 Gemini API error on attempt 3: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-1.5-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 50
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 45
+}
+]
+WARNING 2025-07-17 21:06:14,797 project_analysis 33701 8026184768 AI service unavailable for Simple Blog App, using fallback: Gemini API quota/rate limit exceeded: 429 You exceeded your current quota, please check your plan and billing details. For more information on this error, head to: https://ai.google.dev/gemini-api/docs/rate-limits. [violations {
+  quota_metric: "generativelanguage.googleapis.com/generate_content_free_tier_requests"
+  quota_id: "GenerateRequestsPerDayPerProjectPerModel-FreeTier"
+  quota_dimensions {
+    key: "model"
+    value: "gemini-1.5-flash"
+  }
+  quota_dimensions {
+    key: "location"
+    value: "global"
+  }
+  quota_value: 50
+}
+, links {
+  description: "Learn more about Gemini API quotas"
+  url: "https://ai.google.dev/gemini-api/docs/rate-limits"
+}
+, retry_delay {
+  seconds: 45
+}
+]
+WARNING 2025-07-17 21:06:14,797 project_analysis 33701 8026184768 Creating fallback analysis due to AI service failure
+INFO 2025-07-17 21:12:58,374 SentenceTransformer 33980 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:12:58,374 SentenceTransformer 33980 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:13:04,227 embedding_service 33980 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:13:04,398 neo4j_service 33980 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:13:29,849 SentenceTransformer 34010 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:13:29,849 SentenceTransformer 34010 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:13:34,455 embedding_service 34010 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:13:34,613 neo4j_service 34010 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:37:24,553 SentenceTransformer 34816 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:37:24,554 SentenceTransformer 34816 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:37:29,431 embedding_service 34816 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:37:29,557 neo4j_service 34816 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:39:10,477 SentenceTransformer 34886 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:39:10,477 SentenceTransformer 34886 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:39:15,510 embedding_service 34886 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:39:15,685 neo4j_service 34886 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:41:48,191 SentenceTransformer 34966 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:41:48,191 SentenceTransformer 34966 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:41:54,875 embedding_service 34966 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:41:55,056 neo4j_service 34966 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:43:53,033 SentenceTransformer 35046 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:43:53,033 SentenceTransformer 35046 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:43:58,652 embedding_service 35046 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:43:58,848 neo4j_service 35046 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:46:24,906 SentenceTransformer 35143 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:46:24,907 SentenceTransformer 35143 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:46:30,847 embedding_service 35143 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:46:31,061 neo4j_service 35143 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:47:27,498 SentenceTransformer 35201 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:47:27,498 SentenceTransformer 35201 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:47:34,617 embedding_service 35201 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:47:34,770 neo4j_service 35201 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:48:17,920 SentenceTransformer 35287 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:48:17,920 SentenceTransformer 35287 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:48:23,518 embedding_service 35287 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:48:23,697 neo4j_service 35287 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:49:15,520 SentenceTransformer 35320 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:49:15,520 SentenceTransformer 35320 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:49:19,787 embedding_service 35320 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:49:19,966 neo4j_service 35320 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:50:19,640 SentenceTransformer 35392 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:50:19,640 SentenceTransformer 35392 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:50:24,995 embedding_service 35392 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:50:25,167 neo4j_service 35392 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:53:32,652 SentenceTransformer 35484 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:53:32,652 SentenceTransformer 35484 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:53:37,408 embedding_service 35484 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:53:37,479 neo4j_service 35484 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:57:43,186 SentenceTransformer 35607 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:57:43,187 SentenceTransformer 35607 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:57:49,107 embedding_service 35607 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:57:49,173 neo4j_service 35607 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 21:59:14,284 SentenceTransformer 35676 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 21:59:14,284 SentenceTransformer 35676 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 21:59:19,622 embedding_service 35676 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 21:59:19,683 neo4j_service 35676 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:14:32,278 SentenceTransformer 36231 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:14:32,279 SentenceTransformer 36231 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:14:37,082 embedding_service 36231 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:14:37,145 neo4j_service 36231 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:14:59,574 SentenceTransformer 36279 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:14:59,574 SentenceTransformer 36279 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:15:04,880 embedding_service 36279 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:15:04,945 neo4j_service 36279 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:15:30,400 SentenceTransformer 36309 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:15:30,400 SentenceTransformer 36309 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:15:35,962 embedding_service 36309 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:15:36,037 neo4j_service 36309 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:17:33,649 SentenceTransformer 36434 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:17:33,650 SentenceTransformer 36434 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:17:39,386 embedding_service 36434 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:17:39,449 neo4j_service 36434 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:18:13,073 SentenceTransformer 36491 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:18:13,073 SentenceTransformer 36491 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:18:17,849 embedding_service 36491 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:18:17,910 neo4j_service 36491 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:18:48,287 SentenceTransformer 36517 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:18:48,287 SentenceTransformer 36517 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:18:53,052 embedding_service 36517 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:18:53,127 neo4j_service 36517 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:19:44,471 SentenceTransformer 36571 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:19:44,471 SentenceTransformer 36571 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:19:50,850 embedding_service 36571 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:19:50,909 neo4j_service 36571 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:23:26,011 SentenceTransformer 36788 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:23:26,011 SentenceTransformer 36788 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:23:30,669 embedding_service 36788 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:23:30,760 neo4j_service 36788 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:23:48,432 SentenceTransformer 36813 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:23:48,432 SentenceTransformer 36813 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:23:54,153 embedding_service 36813 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:23:54,218 neo4j_service 36813 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:39:56,157 SentenceTransformer 37611 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:39:56,157 SentenceTransformer 37611 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:40:01,401 embedding_service 37611 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:40:01,463 neo4j_service 37611 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:40:50,097 SentenceTransformer 37678 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:40:50,097 SentenceTransformer 37678 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:40:54,848 embedding_service 37678 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:40:54,907 neo4j_service 37678 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:44:25,849 SentenceTransformer 37839 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:44:25,850 SentenceTransformer 37839 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:44:34,055 embedding_service 37839 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:44:34,214 neo4j_service 37839 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:45:15,522 SentenceTransformer 37872 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:45:15,522 SentenceTransformer 37872 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:45:21,596 embedding_service 37872 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:45:21,661 neo4j_service 37872 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:45:50,121 SentenceTransformer 37908 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:45:50,121 SentenceTransformer 37908 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:45:55,451 embedding_service 37908 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:45:55,517 neo4j_service 37908 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:47:35,088 SentenceTransformer 38061 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:47:35,089 SentenceTransformer 38061 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:47:39,954 embedding_service 38061 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:47:40,014 neo4j_service 38061 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:48:25,764 SentenceTransformer 38148 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:48:25,764 SentenceTransformer 38148 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:48:31,112 embedding_service 38148 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:48:31,185 neo4j_service 38148 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:50:02,896 SentenceTransformer 38201 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:50:02,896 SentenceTransformer 38201 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:50:09,587 embedding_service 38201 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:50:09,669 neo4j_service 38201 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:54:23,713 SentenceTransformer 38412 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:54:23,714 SentenceTransformer 38412 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:54:29,573 embedding_service 38412 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:54:29,636 neo4j_service 38412 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:57:58,232 SentenceTransformer 38609 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:57:58,232 SentenceTransformer 38609 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:58:02,895 embedding_service 38609 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:58:02,959 neo4j_service 38609 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 22:59:38,920 SentenceTransformer 38688 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 22:59:38,921 SentenceTransformer 38688 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 22:59:45,530 embedding_service 38688 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 22:59:45,598 neo4j_service 38688 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 23:23:54,301 SentenceTransformer 39592 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 23:23:54,302 SentenceTransformer 39592 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 23:24:00,303 embedding_service 39592 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 23:24:00,360 neo4j_service 39592 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 23:35:39,609 SentenceTransformer 40054 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 23:35:39,609 SentenceTransformer 40054 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 23:35:45,658 embedding_service 40054 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 23:35:45,724 neo4j_service 40054 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 23:37:11,288 SentenceTransformer 40126 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 23:37:11,288 SentenceTransformer 40126 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 23:37:17,776 embedding_service 40126 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 23:37:17,841 neo4j_service 40126 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 23:37:53,725 SentenceTransformer 40158 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 23:37:53,725 SentenceTransformer 40158 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 23:37:59,486 embedding_service 40158 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 23:37:59,546 neo4j_service 40158 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 23:52:21,272 SentenceTransformer 40786 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 23:52:21,272 SentenceTransformer 40786 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 23:52:28,150 embedding_service 40786 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 23:52:28,212 neo4j_service 40786 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 23:53:16,238 SentenceTransformer 40819 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 23:53:16,238 SentenceTransformer 40819 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 23:53:20,966 embedding_service 40819 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 23:53:21,030 neo4j_service 40819 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-17 23:54:46,110 SentenceTransformer 40881 8026184768 Use pytorch device_name: mps
+INFO 2025-07-17 23:54:46,110 SentenceTransformer 40881 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-17 23:54:50,708 embedding_service 40881 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-17 23:54:50,767 neo4j_service 40881 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 03:47:21,686 SentenceTransformer 48321 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 03:47:21,686 SentenceTransformer 48321 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 03:47:29,243 embedding_service 48321 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 03:47:29,301 neo4j_service 48321 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 03:47:55,785 SentenceTransformer 48361 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 03:47:55,785 SentenceTransformer 48361 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 03:48:00,924 embedding_service 48361 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 03:48:00,984 neo4j_service 48361 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 03:48:29,733 SentenceTransformer 48423 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 03:48:29,733 SentenceTransformer 48423 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 03:48:37,009 embedding_service 48423 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 03:48:37,068 neo4j_service 48423 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 03:49:22,333 SentenceTransformer 48476 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 03:49:22,333 SentenceTransformer 48476 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 03:49:28,794 embedding_service 48476 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 03:49:28,852 neo4j_service 48476 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 03:50:41,816 SentenceTransformer 48563 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 03:50:41,816 SentenceTransformer 48563 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 03:50:47,606 embedding_service 48563 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 03:50:47,671 neo4j_service 48563 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 03:52:06,147 SentenceTransformer 48619 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 03:52:06,147 SentenceTransformer 48619 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 03:52:13,349 embedding_service 48619 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 03:52:13,406 neo4j_service 48619 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 03:53:07,829 SentenceTransformer 48681 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 03:53:07,829 SentenceTransformer 48681 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 03:53:15,782 embedding_service 48681 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 03:53:15,842 neo4j_service 48681 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 03:53:59,221 SentenceTransformer 48717 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 03:53:59,221 SentenceTransformer 48717 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 03:54:05,484 embedding_service 48717 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 03:54:05,549 neo4j_service 48717 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 03:56:09,104 SentenceTransformer 48819 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 03:56:09,104 SentenceTransformer 48819 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 03:56:17,781 embedding_service 48819 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 03:56:17,840 neo4j_service 48819 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:02:19,911 SentenceTransformer 49093 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:02:19,911 SentenceTransformer 49093 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:02:28,454 embedding_service 49093 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+WARNING 2025-07-18 04:03:40,826 resume_parser 49148 8026184768 SkillValidator initialization failed: Error 61 connecting to localhost:6379. Connection refused.. Skill validation will be limited.
+INFO 2025-07-18 04:03:43,039 SentenceTransformer 49148 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:03:43,039 SentenceTransformer 49148 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:03:49,890 embedding_service 49148 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+INFO 2025-07-18 04:07:30,945 SentenceTransformer 49308 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:07:30,945 SentenceTransformer 49308 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:07:37,460 embedding_service 49308 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:07:37,532 neo4j_service 49308 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+ERROR 2025-07-18 04:07:37,985 log 49308 8026184768 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+ERROR 2025-07-18 04:07:37,995 log 49308 8026184768 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+WARNING 2025-07-18 04:09:42,687 resume_parser 49395 8026184768 SkillValidator initialization failed: Error 61 connecting to localhost:6379. Connection refused.. Skill validation will be limited.
+INFO 2025-07-18 04:09:44,842 SentenceTransformer 49395 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:09:44,842 SentenceTransformer 49395 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:09:52,090 embedding_service 49395 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+WARNING 2025-07-18 04:09:56,028 resume_parser 49395 8026184768 SkillValidator initialization failed: Error 61 connecting to localhost:6379. Connection refused.. Skill validation will be limited.
+WARNING 2025-07-18 04:09:56,029 resume_parser 49395 8026184768 SkillValidator initialization failed: Error 61 connecting to localhost:6379. Connection refused.. Skill validation will be limited.
+WARNING 2025-07-18 04:09:56,030 resume_parser 49395 8026184768 SkillValidator initialization failed: Error 61 connecting to localhost:6379. Connection refused.. Skill validation will be limited.
+INFO 2025-07-18 04:39:32,908 SentenceTransformer 50414 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:39:32,908 SentenceTransformer 50414 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:39:39,197 embedding_service 50414 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:39:39,258 neo4j_service 50414 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:42:36,055 SentenceTransformer 50556 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:42:36,055 SentenceTransformer 50556 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:42:40,963 embedding_service 50556 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:42:41,039 neo4j_service 50556 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:43:02,337 SentenceTransformer 50595 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:43:02,337 SentenceTransformer 50595 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:43:07,139 embedding_service 50595 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:43:07,199 neo4j_service 50595 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:43:26,902 SentenceTransformer 50625 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:43:26,902 SentenceTransformer 50625 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:43:33,300 embedding_service 50625 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:43:33,433 neo4j_service 50625 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:50:16,373 SentenceTransformer 50883 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:50:16,374 SentenceTransformer 50883 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:50:21,695 embedding_service 50883 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:50:21,751 neo4j_service 50883 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:50:58,352 SentenceTransformer 50915 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:50:58,352 SentenceTransformer 50915 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:51:03,454 embedding_service 50915 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:51:03,521 neo4j_service 50915 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:51:47,920 SentenceTransformer 50952 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:51:47,920 SentenceTransformer 50952 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:51:52,910 embedding_service 50952 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:51:52,973 neo4j_service 50952 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:52:27,190 SentenceTransformer 51011 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:52:27,190 SentenceTransformer 51011 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:52:32,177 embedding_service 51011 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:52:32,240 neo4j_service 51011 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:52:54,103 SentenceTransformer 51035 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:52:54,103 SentenceTransformer 51035 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:52:58,738 embedding_service 51035 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:52:58,806 neo4j_service 51035 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:53:34,209 SentenceTransformer 51064 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:53:34,209 SentenceTransformer 51064 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:53:38,871 embedding_service 51064 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:53:38,934 neo4j_service 51064 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 04:58:50,727 SentenceTransformer 51265 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 04:58:50,727 SentenceTransformer 51265 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 04:58:56,545 embedding_service 51265 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 04:58:56,614 neo4j_service 51265 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+ERROR 2025-07-18 04:58:57,068 log 51265 8026184768 Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+Traceback (most recent call last):
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+               ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/utils/deprecation.py", line 119, in __call__
+    response = self.process_request(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/middleware/common.py", line 48, in process_request
+    host = request.get_host()
+           ^^^^^^^^^^^^^^^^^^
+  File "/Users/kamleshbhandari/Desktop/NexusWorksFreelance/django-backend/.venv/lib/python3.11/site-packages/django/http/request.py", line 202, in get_host
+    raise DisallowedHost(msg)
+django.core.exceptions.DisallowedHost: Invalid HTTP_HOST header: 'testserver'. You may need to add 'testserver' to ALLOWED_HOSTS.
+INFO 2025-07-18 19:51:46,734 SentenceTransformer 82135 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 19:51:46,734 SentenceTransformer 82135 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 19:51:52,205 embedding_service 82135 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 19:51:52,269 neo4j_service 82135 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 19:53:15,001 SentenceTransformer 82322 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 19:53:15,001 SentenceTransformer 82322 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 19:53:20,496 embedding_service 82322 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 19:53:20,557 neo4j_service 82322 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 19:53:55,875 SentenceTransformer 82442 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 19:53:55,875 SentenceTransformer 82442 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 19:54:02,053 embedding_service 82442 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 19:54:02,120 neo4j_service 82442 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 20:00:29,718 SentenceTransformer 82737 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 20:00:29,718 SentenceTransformer 82737 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 20:00:35,905 embedding_service 82737 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 20:00:35,963 neo4j_service 82737 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 20:02:14,371 SentenceTransformer 83002 8026184768 Use pytorch device_name: mps
+INFO 2025-07-18 20:02:14,371 SentenceTransformer 83002 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-18 20:02:20,438 embedding_service 83002 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-18 20:02:20,501 neo4j_service 83002 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)
+INFO 2025-07-18 20:02:26,558 tasks 83002 8026184768 Starting system health metrics collection
+ERROR 2025-07-18 20:02:31,209 tasks 83002 8026184768 Error collecting system health metrics: relation "monitoring_servicehealthmetric" does not exist
+LINE 1: INSERT INTO "monitoring_servicehealthmetric" ("id", "service...
+                    ^
+
+INFO 2025-07-18 20:02:31,210 tasks 83002 8026184768 Starting task queue metrics collection
+ERROR 2025-07-18 20:02:37,236 tasks 83002 8026184768 Error collecting metrics for queue default: Error 61 connecting to localhost:6379. Connection refused.
+ERROR 2025-07-18 20:02:43,270 tasks 83002 8026184768 Error collecting metrics for queue ai_services: Error 61 connecting to localhost:6379. Connection refused.
+ERROR 2025-07-18 20:02:49,305 tasks 83002 8026184768 Error collecting metrics for queue matching: Error 61 connecting to localhost:6379. Connection refused.
+ERROR 2025-07-18 20:02:55,459 tasks 83002 8026184768 Error collecting metrics for queue communications: Error 61 connecting to localhost:6379. Connection refused.
+INFO 2025-07-18 20:02:55,459 tasks 83002 8026184768 Collected task queue metrics for 0 queues
+INFO 2025-07-18 20:02:55,459 tasks 83002 8026184768 Starting task queue monitoring and recovery
+ERROR 2025-07-18 20:03:01,486 queue_monitor 83002 8026184768 Error getting queue statistics: Error 61 connecting to localhost:6379. Connection refused.
+ERROR 2025-07-18 20:03:01,752 queue_monitor 83002 8026184768 Error creating alert for issue {'type': 'monitoring_error', 'severity': 'medium', 'message': "Error monitoring queues: 'workers'", 'recommendation': 'Check queue monitoring system'}: relation "monitoring_systemalert" does not exist
+LINE 1: ..._at", "monitoring_systemalert"."resolved_at" FROM "monitorin...
+                                                             ^
+
+ERROR 2025-07-18 20:03:07,788 queue_monitor 83002 8026184768 Error getting queue statistics: Error 61 connecting to localhost:6379. Connection refused.
+ERROR 2025-07-18 20:03:07,806 queue_monitor 83002 8026184768 Error in recovery plan execution: Error 61 connecting to localhost:6379. Connection refused.
+WARNING 2025-07-18 20:03:07,806 tasks 83002 8026184768 Found 1 queue issues
+WARNING 2025-07-18 20:03:07,806 tasks 83002 8026184768 Queue issue: Error monitoring queues: 'workers'
+INFO 2025-07-18 20:03:07,806 tasks 83002 8026184768 Starting matching cache cleanup
+ERROR 2025-07-18 20:03:07,806 tasks 83002 8026184768 Error in matching cache cleanup: Cannot resolve keyword 'computed_at' into field. Choices are: cache_data, cache_key, created_at, expires_at, hit_count, id, last_accessed, parameters_hash, search_type
+INFO 2025-07-18 20:03:07,807 tasks 83002 8026184768 Starting matching analytics update
+ERROR 2025-07-18 20:03:08,051 tasks 83002 8026184768 Error updating matching analytics: relation "developer_matches" does not exist
+LINE 1: SELECT COUNT(*) AS "__count" FROM "developer_matches" WHERE ...
+                                          ^
+
+INFO 2025-07-18 20:03:08,053 tasks 83002 8026184768 Starting cache cleanup
+WARNING 2025-07-18 20:03:08,054 tasks 83002 8026184768 Error cleaning cache pattern github_user_*: Error 61 connecting to localhost:6379. Connection refused.
+WARNING 2025-07-18 20:03:08,055 tasks 83002 8026184768 Error cleaning cache pattern github_repos_*: Error 61 connecting to localhost:6379. Connection refused.
+WARNING 2025-07-18 20:03:08,056 tasks 83002 8026184768 Error cleaning cache pattern github_repo_details_*: Error 61 connecting to localhost:6379. Connection refused.
+WARNING 2025-07-18 20:03:08,059 tasks 83002 8026184768 Error cleaning cache pattern repo_analysis_*: Error 61 connecting to localhost:6379. Connection refused.
+INFO 2025-07-18 20:03:08,059 tasks 83002 8026184768 Cleaned up 0 cache keys

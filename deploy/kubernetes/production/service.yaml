@@ -1,0 +1,56 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: freelance-platform-web-service
+  namespace: freelance-platform
+  labels:
+    app: freelance-platform
+    component: web
+spec:
+  selector:
+    app: freelance-platform
+    component: web
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+    protocol: TCP
+  type: ClusterIP
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: freelance-platform-celery-service
+  namespace: freelance-platform
+  labels:
+    app: freelance-platform
+    component: celery
+spec:
+  selector:
+    app: freelance-platform
+    component: celery
+  ports:
+  - name: monitoring
+    port: 5555
+    targetPort: 5555
+    protocol: TCP
+  type: ClusterIP
+
+---
+# Headless service for StatefulSet components if needed
+apiVersion: v1
+kind: Service
+metadata:
+  name: freelance-platform-headless
+  namespace: freelance-platform
+  labels:
+    app: freelance-platform
+spec:
+  clusterIP: None
+  selector:
+    app: freelance-platform
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000

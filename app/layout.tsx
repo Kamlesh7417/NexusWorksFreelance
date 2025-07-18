@@ -1,11 +1,11 @@
 import './globals.css';
 import type { Metadata } from 'next';
-import { AuthProvider } from '@/components/auth/auth-provider';
+import { DjangoAuthProvider } from '@/components/auth/django-auth-provider';
 import { ToastProvider } from '@/components/ui/toast-provider';
 
 export const metadata: Metadata = {
-  title: 'NexusWorks - Futuristic Freelance Platform',
-  description: 'The Future of Freelancing with Holographic Immersion & AI Integration',
+  title: 'NexusWorks - AI-Powered Freelancing Platform',
+  description: 'Connect with top developers and innovative projects through our AI-powered matching system.',
 };
 
 export default function RootLayout({
@@ -22,11 +22,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <AuthProvider>
+        <DjangoAuthProvider>
           <ToastProvider>
             {children}
           </ToastProvider>
-        </AuthProvider>
+        </DjangoAuthProvider>
       </body>
     </html>
   );
