@@ -251,6 +251,26 @@ const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async redirect({ url, baseUrl }) {
+      // Redirect to console after successful authentication
+      if (url.startsWith('/')) {
+        // Handle relative URLs
+        if (url === '/dashboard') {
+          return `${baseUrl}/console`;
+        }
+        return url.startsWith(baseUrl) ? url : `${baseUrl}/console`;
+      }
+      // Handle absolute URLs
+      if (new URL(url).origin === baseUrl) {
+        const urlObj = new URL(url);
+        if (urlObj.pathname === '/dashboard') {
+          urlObj.pathname = '/console';
+          return urlObj.toString();
+        }
+        return url;
+      }
+      return `${baseUrl}/console`;
+    },
   },
   pages: {
     signIn: '/auth/signin',

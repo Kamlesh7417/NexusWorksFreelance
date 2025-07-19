@@ -13,12 +13,12 @@ interface RoleGuardProps {
   requireAuth?: boolean;
 }
 
-export function RoleGuard({ 
-  children, 
-  allowedRoles, 
-  fallback = null, 
+export function RoleGuard({
+  children,
+  allowedRoles,
+  fallback = null,
   redirectTo,
-  requireAuth = true 
+  requireAuth = true
 }: RoleGuardProps) {
   const { user, isAuthenticated, isLoading } = useDjangoAuth();
   const router = useRouter();
@@ -99,11 +99,11 @@ interface ConditionalRenderProps {
   fallback?: ReactNode;
 }
 
-export function ConditionalRender({ 
-  children, 
-  allowedRoles = ['client', 'developer', 'admin'], 
+export function ConditionalRender({
+  children,
+  allowedRoles = ['client', 'developer', 'admin'],
   requireAuth = true,
-  fallback = null 
+  fallback = null
 }: ConditionalRenderProps) {
   const { user, isAuthenticated, isLoading } = useDjangoAuth();
 

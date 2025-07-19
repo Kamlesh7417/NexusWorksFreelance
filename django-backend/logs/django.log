@@ -880,3 +880,9 @@ WARNING 2025-07-18 20:03:08,055 tasks 83002 8026184768 Error cleaning cache patt
 WARNING 2025-07-18 20:03:08,056 tasks 83002 8026184768 Error cleaning cache pattern github_repo_details_*: Error 61 connecting to localhost:6379. Connection refused.
 WARNING 2025-07-18 20:03:08,059 tasks 83002 8026184768 Error cleaning cache pattern repo_analysis_*: Error 61 connecting to localhost:6379. Connection refused.
 INFO 2025-07-18 20:03:08,059 tasks 83002 8026184768 Cleaned up 0 cache keys
+INFO 2025-07-19 02:45:36,856 SentenceTransformer 94935 8026184768 Use pytorch device_name: mps
+INFO 2025-07-19 02:45:36,857 SentenceTransformer 94935 8026184768 Load pretrained SentenceTransformer: all-MiniLM-L6-v2
+INFO 2025-07-19 02:45:43,180 embedding_service 94935 8026184768 Loaded embedding model: all-MiniLM-L6-v2
+ERROR 2025-07-19 02:45:43,245 neo4j_service 94935 8026184768 Failed to connect to Neo4j: Couldn't connect to localhost:7687 (resolved to ('[::1]:7687', '127.0.0.1:7687')):
+Failed to establish connection to ResolvedIPv6Address(('::1', 7687, 0, 0)) (reason [Errno 61] Connection refused)
+Failed to establish connection to ResolvedIPv4Address(('127.0.0.1', 7687)) (reason [Errno 61] Connection refused)

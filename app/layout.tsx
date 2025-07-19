@@ -21,10 +21,12 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>
+      <body className="nexus-app">
         <DjangoAuthProvider>
           <ToastProvider>
-            {children}
+            <div className="nexus-global-wrapper">
+              {children}
+            </div>
           </ToastProvider>
         </DjangoAuthProvider>
       </body>

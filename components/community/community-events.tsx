@@ -48,7 +48,7 @@ export function CommunityEvents({ events, onEventsUpdate }: CommunityEventsProps
   const loadMyRegistrations = async () => {
     try {
       const response = await communityService.getMyRegistrations();
-      if (response.success) {
+      if (response && response.data) {
         setMyRegistrations(response.data);
       }
     } catch (error) {
@@ -62,7 +62,7 @@ export function CommunityEvents({ events, onEventsUpdate }: CommunityEventsProps
     try {
       setLoading(true);
       const response = await communityService.createEvent(createForm);
-      if (response.success) {
+      if (response && response.data) {
         setShowCreateForm(false);
         setCreateForm({
           title: '',
@@ -88,7 +88,7 @@ export function CommunityEvents({ events, onEventsUpdate }: CommunityEventsProps
   const handleRegisterForEvent = async (eventId: string) => {
     try {
       const response = await communityService.registerForEvent(eventId);
-      if (response.success) {
+      if (response && response.data) {
         loadMyRegistrations();
         onEventsUpdate();
       }
@@ -100,7 +100,7 @@ export function CommunityEvents({ events, onEventsUpdate }: CommunityEventsProps
   const handleCancelRegistration = async (eventId: string) => {
     try {
       const response = await communityService.cancelEventRegistration(eventId);
-      if (response.success) {
+      if (response) {
         loadMyRegistrations();
         onEventsUpdate();
       }

@@ -3,6 +3,7 @@ Enhanced logging configuration for production deployment
 """
 import os
 import sys
+import logging
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.

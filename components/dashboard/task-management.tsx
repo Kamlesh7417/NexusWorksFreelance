@@ -90,7 +90,7 @@ export function TaskManagement({
   };
 
   // Update task status
-  const updateTaskStatus = useCallback(async (taskId: string, newStatus: string) => {
+  const updateTaskStatus = useCallback(async (taskId: string, newStatus: 'pending' | 'assigned' | 'in_progress' | 'review' | 'completed' | 'approved') => {
     if (!hasPermission('update_tasks') && !hasPermission('approve_tasks')) {
       return;
     }

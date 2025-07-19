@@ -37,7 +37,7 @@ export function VirtualMeetups() {
     try {
       setLoading(true);
       const response = await communityService.getVirtualMeetings(filter);
-      if (response.success) {
+      if (response && response.data) {
         setMeetings(response.data.results || []);
       }
     } catch (error) {
@@ -53,7 +53,7 @@ export function VirtualMeetups() {
     try {
       setLoading(true);
       const response = await communityService.createVirtualMeeting(createForm);
-      if (response.success) {
+      if (response && response.data) {
         setShowCreateForm(false);
         setCreateForm({
           title: '',
@@ -75,7 +75,7 @@ export function VirtualMeetups() {
   const handleJoinMeeting = async (meetingId: string) => {
     try {
       const response = await communityService.joinVirtualMeeting(meetingId);
-      if (response.success) {
+      if (response && response.data) {
         // Open meeting in new window
         window.open(response.data.meeting_url, '_blank');
         loadMeetings();
@@ -88,7 +88,7 @@ export function VirtualMeetups() {
   const handleEndMeeting = async (meetingId: string) => {
     try {
       const response = await communityService.endVirtualMeeting(meetingId);
-      if (response.success) {
+      if (response) {
         loadMeetings();
       }
     } catch (error) {

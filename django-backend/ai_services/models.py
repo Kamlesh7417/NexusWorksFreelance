@@ -11,6 +11,12 @@ from .vector_models import (
     SkillEmbedding, SimilaritySearchResult
 )
 
+# Import AI agent models to ensure they're included in migrations
+from .ai_agent_models import (
+    AIAgent, AgentCapability, AgentWorkPreference, 
+    AgentPerformanceMetric, AgentAuditLog
+)
+
 
 class EmbeddingModel(models.Model):
     """Base model for storing embeddings"""

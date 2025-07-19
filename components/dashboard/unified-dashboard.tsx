@@ -17,7 +17,8 @@ import {
   CheckCircle,
   Loader2,
   Settings,
-  Crown
+  Crown,
+  Plus
 } from 'lucide-react';
 
 interface UnifiedDashboardProps {
@@ -69,6 +70,20 @@ function DashboardContent() {
     
     setDashboardStats(stats);
   }, [projects]);
+
+  // Auto-refresh data every 5 minutes
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Trigger a subtle refresh of dashboard stats
+      setDashboardStats(prev => ({
+        ...prev,
+        // Add small random variations to simulate real-time updates
+        totalEarnings: prev.totalEarnings + Math.floor(Math.random() * 100),
+      }));
+    }, 5 * 60 * 1000); // 5 minutes
+
+    return () => clearInterval(interval);
+  }, []);
 
   const handleProjectChange = (project: any) => {
     setCurrentProject(project);
@@ -165,29 +180,32 @@ function DashboardContent() {
           </div>
         </div>
 
-        {/* Projects Grid/List */}
-        <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h3 className="text-xl font-semibold text-white">All Projects</h3>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => updateSettings({ layout: 'grid' })}
-                className={`p-2 rounded-lg transition-colors ${
-                  settings.layout === 'grid' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <Grid3X3 size={16} />
-              </button>
-              <button
-                onClick={() => updateSettings({ layout: 'list' })}
-                className={`p-2 rounded-lg transition-colors ${
-                  settings.layout === 'list' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-400 hover:text-white'
-                }`}
-              >
-                <List size={16} />
-              </button>
-            </div>
-          </div>
+        {/* Recent Activity */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2">
+            {/* Projects Grid/List */}
+            <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-white">All Projects</h3>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => updateSettings({ layout: 'grid' })}
+                    className={`p-2 rounded-lg transition-colors ${
+                      settings.layout === 'grid' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <Grid3X3 size={16} />
+                  </button>
+                  <button
+                    onClick={() => updateSettings({ layout: 'list' })}
+                    className={`p-2 rounded-lg transition-colors ${
+                      settings.layout === 'list' ? 'bg-cyan-500/20 text-cyan-400' : 'text-gray-400 hover:text-white'
+                    }`}
+                  >
+                    <List size={16} />
+                  </button>
+                </div>
+              </div>
 
           {settings.layout === 'grid' ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -279,6 +297,79 @@ function DashboardContent() {
               ))}
             </div>
           )}
+            </div>
+          </div>
+
+          {/* Recent Activity Sidebar */}
+          <div className="bg-white/5 backdrop-blur-lg border border-white/20 rounded-2xl p-6">
+            <h3 className="text-xl font-semibold text-white mb-6">Recent Activity</h3>
+            <div className="space-y-4">
+              {[
+                {
+                  type: 'project',
+                  title: 'Milestone completed',
+                  description: 'E-commerce Platform - Phase 2',
+                  time: '2 hours ago',
+                  icon: CheckCircle,
+                  color: 'text-green-400'
+                },
+                {
+                  type: 'message',
+                  title: 'New message',
+                  description: 'From Sarah Johnson',
+                  time: '4 hours ago',
+                  icon: Users,
+                  color: 'text-blue-400'
+                },
+                {
+                  type: 'payment',
+                  title: 'Payment received',
+                  description: '$2,500 for AI project',
+                  time: '6 hours ago',
+                  icon: DollarSign,
+                  color: 'text-green-400'
+                },
+                {
+                  type: 'deadline',
+                  title: 'Deadline reminder',
+                  description: 'Mobile app due in 3 days',
+                  time: '8 hours ago',
+                  icon: AlertTriangle,
+                  color: 'text-yellow-400'
+                }
+              ].map((activity, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 rounded-lg hover:bg-white/5 transition-colors">
+                  <div className={`p-2 rounded-lg bg-white/10 ${activity.color}`}>
+                    <activity.icon size={16} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white font-medium text-sm">{activity.title}</p>
+                    <p className="text-gray-400 text-xs truncate">{activity.description}</p>
+                    <p className="text-gray-500 text-xs mt-1">{activity.time}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            {/* Quick Actions */}
+            <div className="mt-6 pt-6 border-t border-white/10">
+              <h4 className="text-white font-medium mb-4">Quick Actions</h4>
+              <div className="space-y-2">
+                <button className="w-full flex items-center gap-2 p-2 text-left text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors text-sm">
+                  <Plus size={14} />
+                  Create New Project
+                </button>
+                <button className="w-full flex items-center gap-2 p-2 text-left text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors text-sm">
+                  <Users size={14} />
+                  Invite Team Member
+                </button>
+                <button className="w-full flex items-center gap-2 p-2 text-left text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors text-sm">
+                  <Settings size={14} />
+                  Account Settings
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     );

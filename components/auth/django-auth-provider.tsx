@@ -340,4 +340,4 @@ export function useDjangoAuth(): AuthContextType {
 }
 
 // Export types
-export type { AuthContextType, DjangoUser, LoginCredentials, RegisterData };
+export type { AuthContextType };

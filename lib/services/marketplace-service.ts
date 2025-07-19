@@ -4,6 +4,7 @@
  */
 
 import { apiClient, APIResponse, PaginatedResponse } from '../api-client';
+import { DEMO_PROJECTS, DEMO_DEVELOPERS, getFilteredProjects, getFilteredDevelopers, DemoProject, DemoDeveloper } from '@/lib/demo-marketplace-data';
 
 export interface FeaturedProject {
   id: string;
@@ -360,6 +361,75 @@ class MarketplaceService {
       method: 'POST',
       body: JSON.stringify(data),
     });
+  }
+  /**
+   * Demo Methods - Use when backend is not available
+   */
+  
+  async getDemoFeaturedProjects(filters?: {
+    search?: string;
+    skills_required?: string;
+    complexity_level?: string;
+    budget_range?: string;
+    project_type?: string;
+  }): Promise<APIResponse<{ results: DemoProject[] }>> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const filteredProjects = getFilteredProjects(filters || {});
+    
+    return {
+      status: 200,
+      data: {
+        results: filteredProjects
+      }
+    };
+  }
+
+  async getDemoFeaturedDevelopers(filters?: {
+    search?: string;
+    skills?: string;
+    experience_level?: string;
+    availability?: string;
+    hourly_rate_max?: number;
+  }): Promise<APIResponse<{ results: DemoDeveloper[] }>> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const filteredDevelopers = getFilteredDevelopers(filters || {});
+    
+    return {
+      status: 200,
+      data: {
+        results: filteredDevelopers
+      }
+    };
+  }
+
+  async getDemoProject(projectId: string): Promise<APIResponse<DemoProject | null>> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const project = DEMO_PROJECTS.find(p => p.id === projectId);
+    
+    return {
+      status: project ? 200 : 404,
+      data: project || null,
+      error: project ? undefined : 'Project not found'
+    };
+  }
+
+  async getDemoDeveloper(developerId: string): Promise<APIResponse<DemoDeveloper | null>> {
+    // Simulate API delay
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const developer = DEMO_DEVELOPERS.find(d => d.id === developerId);
+    
+    return {
+      status: developer ? 200 : 404,
+      data: developer || null,
+      error: developer ? undefined : 'Developer not found'
+    };
   }
 }
 

@@ -101,7 +101,12 @@ export default function ProjectSubmissionForm() {
         throw new Error(analysisResult.error);
       }
 
-      setAiAnalysis(analysisResult.data);
+      setAiAnalysis({
+        analysis: analysisResult.data.analysis,
+        tasks: analysisResult.data.tasks,
+        timeline_estimate: 'To be determined',
+        recommendations: []
+      });
 
       // Update form with AI suggestions
       if (analysisResult.data?.analysis) {

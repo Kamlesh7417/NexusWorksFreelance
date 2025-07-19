@@ -53,30 +53,28 @@ export default function CommunityPage() {
 
   if (!user) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <Card>
-          <CardContent className="text-center py-8">
-            <p>Please log in to access the community features.</p>
-          </CardContent>
-        </Card>
+      <div className="container mx-auto px-4 py-8 bg-black min-h-screen animate-fadeIn">
+        <div className="nexus-card text-center py-8">
+          <p className="text-cyan-400">Please log in to access the community features.</p>
+        </div>
       </div>
     );
   }
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 bg-black min-h-screen animate-fadeIn">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-32 bg-gray-200 rounded"></div>
-          <div className="h-64 bg-gray-200 rounded"></div>
+          <div className="h-8 bg-cyan-400/20 rounded w-1/4"></div>
+          <div className="h-32 bg-cyan-400/20 rounded"></div>
+          <div className="h-64 bg-cyan-400/20 rounded"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-black min-h-screen animate-fadeIn">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Community Hub</h1>
         <p className="text-gray-600">Connect, learn, and collaborate with fellow developers</p>

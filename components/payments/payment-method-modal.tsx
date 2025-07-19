@@ -108,7 +108,7 @@ export function PaymentMethodModal({ onClose, onSuccess }: PaymentMethodModalPro
         is_default: formData.is_default
       });
 
-      if (result.success) {
+      if (result && result.data) {
         setStep(3); // Move to verification step
       } else {
         setError(result.error || 'Failed to add payment method');

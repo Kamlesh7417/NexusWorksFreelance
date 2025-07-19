@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { BookOpen, Target, Clock, Award, TrendingUp, Calendar, Flame, Trophy } from 'lucide-react';
 
@@ -181,7 +181,9 @@ export function LearningAnalytics({ analytics }: LearningAnalyticsProps) {
                     <span className="font-medium">{skill}</span>
                     <span className="text-sm text-gray-600">{progress}%</span>
                   </div>
-                  <Progress value={progress} />
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${progress}%` }}></div>
+                  </div>
                 </div>
               ))}
             </div>
@@ -264,7 +266,9 @@ export function LearningAnalytics({ analytics }: LearningAnalyticsProps) {
                   <span className="text-sm font-medium">Weekly Learning Goal</span>
                   <span className="text-sm text-gray-600">5 hours</span>
                 </div>
-                <Progress value={Math.min((analytics.learning_hours / 5) * 100, 100)} />
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${Math.min((analytics.learning_hours / 5) * 100, 100)}%` }}></div>
+                </div>
                 <p className="text-xs text-gray-500 mt-1">
                   {analytics.learning_hours >= 5 ? '✅ Goal achieved!' : `${5 - analytics.learning_hours} hours remaining`}
                 </p>
@@ -276,7 +280,9 @@ export function LearningAnalytics({ analytics }: LearningAnalyticsProps) {
                   <span className="text-sm font-medium">Monthly Course Goal</span>
                   <span className="text-sm text-gray-600">2 courses</span>
                 </div>
-                <Progress value={Math.min((analytics.courses_completed / 2) * 100, 100)} />
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${Math.min((analytics.courses_completed / 2) * 100, 100)}%` }}></div>
+                </div>
                 <p className="text-xs text-gray-500 mt-1">
                   {analytics.courses_completed >= 2 ? '✅ Goal achieved!' : `${2 - analytics.courses_completed} courses remaining`}
                 </p>
@@ -288,7 +294,9 @@ export function LearningAnalytics({ analytics }: LearningAnalyticsProps) {
                   <span className="text-sm font-medium">Skill Mastery Goal</span>
                   <span className="text-sm text-gray-600">3 skills</span>
                 </div>
-                <Progress value={Math.min((analytics.skills_learned / 3) * 100, 100)} />
+                <div className="w-full bg-gray-200 rounded-full h-2">
+                  <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${Math.min((analytics.skills_learned / 3) * 100, 100)}%` }}></div>
+                </div>
                 <p className="text-xs text-gray-500 mt-1">
                   {analytics.skills_learned >= 3 ? '✅ Goal achieved!' : `${3 - analytics.skills_learned} skills remaining`}
                 </p>

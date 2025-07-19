@@ -160,8 +160,9 @@ def get_cache_config():
             'KEY_PREFIX': 'freelance_platform_sessions',
         }
     }
-# 
-Database monitoring and optimization utilities
+
+
+# Database monitoring and optimization utilities
 class DatabaseMonitor:
     """Database monitoring and optimization utilities"""
     

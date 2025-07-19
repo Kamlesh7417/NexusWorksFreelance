@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -38,7 +38,7 @@ export function CourseEnrollment({ enrollments, onEnrollmentUpdate }: CourseEnro
     try {
       setLoading(true);
       const response = await learningService.getCourses();
-      if (response.success) {
+      if (response && response.data) {
         setAvailableCourses(response.data.results || []);
       }
     } catch (error) {
@@ -80,7 +80,7 @@ export function CourseEnrollment({ enrollments, onEnrollmentUpdate }: CourseEnro
   const handleEnrollment = async (courseId: string) => {
     try {
       const response = await learningService.enrollInCourse(courseId);
-      if (response.success) {
+      if (response) {
         onEnrollmentUpdate();
       }
     } catch (error) {
@@ -93,7 +93,7 @@ export function CourseEnrollment({ enrollments, onEnrollmentUpdate }: CourseEnro
       const response = await learningService.updateCourseProgress(enrollmentId, {
         progress_percentage: progress
       });
-      if (response.success) {
+      if (response) {
         onEnrollmentUpdate();
       }
     } catch (error) {
@@ -104,7 +104,7 @@ export function CourseEnrollment({ enrollments, onEnrollmentUpdate }: CourseEnro
   const handleCourseCompletion = async (enrollmentId: string) => {
     try {
       const response = await learningService.completeCourse(enrollmentId);
-      if (response.success) {
+      if (response) {
         onEnrollmentUpdate();
       }
     } catch (error) {
@@ -261,7 +261,9 @@ export function CourseEnrollment({ enrollments, onEnrollmentUpdate }: CourseEnro
                               <span>Progress</span>
                               <span>{enrollment.progress_percentage}%</span>
                             </div>
-                            <Progress value={enrollment.progress_percentage} />
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                              <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${enrollment.progress_percentage}%` }}></div>
+                            </div>
                           </div>
                         )}
 
@@ -318,7 +320,7 @@ export function CourseEnrollment({ enrollments, onEnrollmentUpdate }: CourseEnro
                 <BookOpen className="h-16 w-16 text-gray-400 mx-auto mb-4" />
                 <h3 className="text-lg font-semibold mb-2">No Enrollments Yet</h3>
                 <p className="text-gray-600 mb-4">Start learning by enrolling in your first course</p>
-                <Button onClick={() => document.querySelector('[value="browse"]')?.click()}>
+                <Button onClick={() => (document.querySelector('[value="browse"]') as HTMLElement)?.click()}>
                   Browse Courses
                 </Button>
               </CardContent>
@@ -346,7 +348,9 @@ export function CourseEnrollment({ enrollments, onEnrollmentUpdate }: CourseEnro
                           <span>Progress</span>
                           <span>{enrollment.progress_percentage}%</span>
                         </div>
-                        <Progress value={enrollment.progress_percentage} />
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${enrollment.progress_percentage}%` }}></div>
+                        </div>
                       </div>
                     )}
 

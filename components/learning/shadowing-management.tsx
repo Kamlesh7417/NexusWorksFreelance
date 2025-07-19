@@ -40,8 +40,8 @@ export function ShadowingManagement() {
         learningService.getShadowingSessions()
       ]);
 
-      if (opportunitiesRes.success) setOpportunities(opportunitiesRes.data);
-      if (sessionsRes.success) setSessions(sessionsRes.data);
+      if (opportunitiesRes && opportunitiesRes.data) setOpportunities(opportunitiesRes.data);
+      if (sessionsRes && sessionsRes.data) setSessions(sessionsRes.data);
     } catch (error) {
       console.error('Error loading shadowing data:', error);
     } finally {
@@ -54,7 +54,7 @@ export function ShadowingManagement() {
 
     try {
       const response = await learningService.requestShadowingSession(requestForm);
-      if (response.success) {
+      if (response && response.data) {
         setShowRequestForm(false);
         setRequestForm({
           project_id: '',
@@ -76,7 +76,7 @@ export function ShadowingManagement() {
         message,
         nda_required: true
       });
-      if (response.success) {
+      if (response) {
         loadData();
       }
     } catch (error) {
@@ -91,7 +91,7 @@ export function ShadowingManagement() {
         skills_learned: skillsLearned,
         rating
       });
-      if (response.success) {
+      if (response) {
         loadData();
       }
     } catch (error) {

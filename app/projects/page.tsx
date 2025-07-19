@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { AuthProvider, useAuth } from '@/components/auth/auth-provider';
 import { 
   Search, 
   Filter, 
@@ -21,7 +21,8 @@ import {
 } from 'lucide-react';
 import Link from 'next/link';
 
-export default function ProjectsPage() {
+function ProjectsContent() {
+  const { user, profile, loading: authLoading } = useAuth();
   const [projects, setProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -34,81 +35,107 @@ export default function ProjectsPage() {
     status: 'active'
   });
   const [showFilters, setShowFilters] = useState(false);
-  const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<any>(null);
   const router = useRouter();
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-
-      if (user) {
-        const { data: profile } = await supabase
-          .from('user_profiles')
-          .select('*')
-          .eq('id', user.id)
-          .single();
-        setProfile(profile);
-      }
-    };
-
-    getUser();
-  }, [supabase]);
+    if (!authLoading && !user) {
+      router.push('/auth/signin');
+      return;
+    }
+  }, [user, authLoading, router]);
 
   useEffect(() => {
     const fetchProjects = async () => {
+      if (!user) return;
+      
       setLoading(true);
       try {
-        let query = supabase
-          .from('projects')
-          .select(`
-            *,
-            client:user_profiles!projects_client_id_fkey(id, full_name, avatar_url, role)
-          `)
-          .eq('status', filters.status);
+        // Mock projects data for now - replace with actual API call
+        const mockProjects = [
+          {
+            id: '1',
+            title: 'E-commerce Website Development',
+            description: 'Build a modern e-commerce platform with React and Node.js. Need full-stack developer with experience in payment integration.',
+            category: 'web-development',
+            urgency: 'high',
+            status: 'active',
+            budget_min: 5000,
+            budget_max: 8000,
+            deadline: '2024-03-15',
+            skills_required: ['React', 'Node.js', 'MongoDB', 'Stripe'],
+            client: {
+              id: 'client1',
+              full_name: 'Sarah Johnson',
+              avatar_url: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=150&h=150&fit=crop&crop=face',
+              role: 'client'
+            }
+          },
+          {
+            id: '2',
+            title: 'Mobile App for Food Delivery',
+            description: 'Create a cross-platform mobile app for food delivery service. Need React Native developer with backend experience.',
+            category: 'mobile-app',
+            urgency: 'medium',
+            status: 'active',
+            budget_min: 8000,
+            budget_max: 12000,
+            deadline: '2024-04-01',
+            skills_required: ['React Native', 'Firebase', 'Node.js', 'Express'],
+            client: {
+              id: 'client2',
+              full_name: 'Mike Chen',
+              avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&h=150&fit=crop&crop=face',
+              role: 'client'
+            }
+          },
+          {
+            id: '3',
+            title: 'AI Chatbot Integration',
+            description: 'Integrate an AI chatbot into existing website. Looking for developer with AI/ML experience and API integration skills.',
+            category: 'ai-ml',
+            urgency: 'low',
+            status: 'active',
+            budget_min: 3000,
+            budget_max: 5000,
+            deadline: '2024-05-01',
+            skills_required: ['Python', 'OpenAI API', 'JavaScript', 'REST APIs'],
+            client: {
+              id: 'client3',
+              full_name: 'Emma Davis',
+              avatar_url: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&h=150&fit=crop&crop=face',
+              role: 'client'
+            }
+          }
+        ];
 
-        // Apply category filter
-        if (filters.category !== 'all') {
-          query = query.eq('category', filters.category);
-        }
+        // Apply filters
+        let filteredProjects = mockProjects.filter(project => {
+          if (filters.status !== 'active' && project.status !== filters.status) return false;
+          if (filters.category !== 'all' && project.category !== filters.category) return false;
+          if (filters.urgency !== 'all' && project.urgency !== filters.urgency) return false;
+          if (filters.minBudget && project.budget_min < parseInt(filters.minBudget)) return false;
+          if (filters.maxBudget && project.budget_max > parseInt(filters.maxBudget)) return false;
+          if (filters.skills) {
+            const skillsArray = filters.skills.split(',').map(s => s.trim().toLowerCase());
+            const hasSkill = skillsArray.some(skill => 
+              project.skills_required.some(reqSkill => reqSkill.toLowerCase().includes(skill))
+            );
+            if (!hasSkill) return false;
+          }
+          return true;
+        });
 
-        // Apply budget filters
-        if (filters.minBudget) {
-          query = query.gte('budget_min', parseInt(filters.minBudget));
-        }
-        if (filters.maxBudget) {
-          query = query.lte('budget_max', parseInt(filters.maxBudget));
-        }
-
-        // Apply urgency filter
-        if (filters.urgency !== 'all') {
-          query = query.eq('urgency', filters.urgency);
-        }
-
-        // Apply skills filter
-        if (filters.skills) {
-          const skillsArray = filters.skills.split(',').map(s => s.trim());
-          query = query.contains('skills_required', skillsArray);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          throw error;
-        }
-
-        setProjects(data || []);
+        setProjects(filteredProjects);
       } catch (error) {
         console.error('Error fetching projects:', error);
+        setProjects([]);
       } finally {
         setLoading(false);
       }
     };
 
     fetchProjects();
-  }, [supabase, filters]);
+  }, [user, filters]);
 
   // Filter projects by search term
   const filteredProjects = projects.filter(project => {
@@ -162,7 +189,7 @@ export default function ProjectsPage() {
             <p className="text-gray-400">Find the perfect project for your skills</p>
           </div>
           
-          {profile?.role !== 'client' && (
+          {user?.role === 'client' && (
             <Link 
               href="/projects/create"
               className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 flex items-center gap-2"
@@ -417,5 +444,13 @@ export default function ProjectsPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ProjectsPage() {
+  return (
+    <AuthProvider>
+      <ProjectsContent />
+    </AuthProvider>
   );
 }

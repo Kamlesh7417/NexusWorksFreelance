@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -38,7 +38,7 @@ export function SkillAssessment() {
     try {
       setLoading(true);
       const response = await learningService.getSkillAssessments();
-      if (response.success) {
+      if (response && response.data) {
         setAssessments(response.data);
       }
     } catch (error) {
@@ -53,7 +53,7 @@ export function SkillAssessment() {
 
     try {
       const response = await learningService.createSkillAssessment(createForm);
-      if (response.success) {
+      if (response && response.data) {
         setShowCreateForm(false);
         setCreateForm({
           skill: '',
@@ -72,7 +72,7 @@ export function SkillAssessment() {
     try {
       setTestLoading(true);
       const response = await learningService.takeSkillTest(skill);
-      if (response.success) {
+      if (response && response.data) {
         setCurrentTest(response.data);
         setTestAnswers(new Array(response.data.questions.length).fill(''));
         setShowTestModal(true);
@@ -89,7 +89,7 @@ export function SkillAssessment() {
 
     try {
       const response = await learningService.submitSkillTest(currentTest.test_id, testAnswers);
-      if (response.success) {
+      if (response && response.data) {
         setShowTestModal(false);
         setCurrentTest(null);
         setTestAnswers([]);
@@ -333,7 +333,12 @@ export function SkillAssessment() {
                           <span>Proficiency Level</span>
                           <span>{latestAssessment.proficiency_level}/5</span>
                         </div>
-                        <Progress value={(latestAssessment.proficiency_level / 5) * 100} />
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                          <div 
+                            className="bg-blue-600 h-2 rounded-full" 
+                            style={{ width: `${(latestAssessment.proficiency_level / 5) * 100}%` }}
+                          ></div>
+                        </div>
                       </div>
 
                       {/* Assessment History */}

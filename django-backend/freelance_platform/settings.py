@@ -17,13 +17,14 @@ import os
 
 # Import production configurations
 try:
-    from .logging_config import LOGGING_CONFIG
+    from .logging_config import get_logging_config
     from .database_config import get_database_config, get_read_replica_config, get_cache_config, DatabaseRouter
     from .secrets_manager import secrets_manager
     from .cache_config import CACHE_TIMEOUTS
+    LOGGING_CONFIG_DICT = get_logging_config()
 except ImportError:
     # Fallback for development
-    LOGGING_CONFIG = None
+    LOGGING_CONFIG_DICT = None
     secrets_manager = None
     CACHE_TIMEOUTS = {'short': 300, 'medium': 1800, 'long': 3600, 'very_long': 86400}
 
@@ -419,8 +420,8 @@ if not DEBUG:
             print(f"Warning: Could not configure production cache: {e}")
     
     # Logging configuration
-    if LOGGING_CONFIG:
-        LOGGING = LOGGING_CONFIG
+    if LOGGING_CONFIG_DICT:
+        LOGGING = LOGGING_CONFIG_DICT
     
     # Security settings for production
     SECURE_SSL_REDIRECT = config('SECURE_SSL_REDIRECT', default=True, cast=bool)

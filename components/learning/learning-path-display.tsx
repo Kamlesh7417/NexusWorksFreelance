@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -34,7 +34,7 @@ export function LearningPathDisplay({ learningPaths, onPathUpdate }: LearningPat
     try {
       setLoading(true);
       const response = await learningService.createLearningPath(createForm);
-      if (response.success) {
+      if (response && response.data) {
         setShowCreateForm(false);
         setCreateForm({
           target_skills: [],
@@ -71,7 +71,7 @@ export function LearningPathDisplay({ learningPaths, onPathUpdate }: LearningPat
   const handleUpdateProgress = async (pathId: string, completedSkills: string[]) => {
     try {
       const response = await learningService.updateLearningPathProgress(pathId, completedSkills);
-      if (response.success) {
+      if (response) {
         onPathUpdate();
       }
     } catch (error) {
@@ -215,7 +215,9 @@ export function LearningPathDisplay({ learningPaths, onPathUpdate }: LearningPat
                     <span>Overall Progress</span>
                     <span>{path.progress_percentage}%</span>
                   </div>
-                  <Progress value={path.progress_percentage} />
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${path.progress_percentage}%` }}></div>
+                  </div>
                 </div>
 
                 {/* Current Skills */}

@@ -47,7 +47,12 @@ export default function SeniorDeveloperProposalInterface({
   isReadOnly = false
 }: SeniorDeveloperProposalInterfaceProps) {
   const [editingField, setEditingField] = useState<string | null>(null);
-  const [modifications, setModifications] = useState<ProposalModification[]>(proposal.modifications || []);
+  const [modifications, setModifications] = useState<ProposalModification[]>(
+    (proposal.modifications || []).map(mod => ({
+      ...mod,
+      timestamp: (mod as any).timestamp || new Date().toISOString()
+    }))
+  );
   const [justification, setJustification] = useState('');
   const [loading, setLoading] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
@@ -60,7 +65,12 @@ export default function SeniorDeveloperProposalInterface({
 
   useEffect(() => {
     setLocalProposal(proposal);
-    setModifications(proposal.modifications || []);
+    setModifications(
+      (proposal.modifications || []).map(mod => ({
+        ...mod,
+        timestamp: (mod as any).timestamp || new Date().toISOString()
+      }))
+    );
   }, [proposal]);
 
   const handleFieldEdit = (field: string, newValue: any) => {

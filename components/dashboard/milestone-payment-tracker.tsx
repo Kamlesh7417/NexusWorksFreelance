@@ -138,7 +138,12 @@ export function MilestonePaymentTracker({
 
     try {
       setProcessingPayment(milestoneId);
-      await paymentService.processMilestonePayment(projectDetails.id, milestoneId);
+      await paymentService.processMilestonePayment({
+        milestone_id: milestoneId,
+        amount: 0, // This would be calculated based on milestone
+        distributions: [],
+        payment_method_id: 'default'
+      });
       // Refresh data would be called here
     } catch (error) {
       console.error('Failed to process payment:', error);

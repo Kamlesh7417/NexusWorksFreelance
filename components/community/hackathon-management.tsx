@@ -55,8 +55,8 @@ export function HackathonManagement({ hackathons, onHackathonsUpdate }: Hackatho
         communityService.getHackathonSubmissions(hackathonId)
       ]);
 
-      if (teamsRes.success) setTeams(teamsRes.data);
-      if (submissionsRes.success) setSubmissions(submissionsRes.data);
+      if (teamsRes && teamsRes.data) setTeams(teamsRes.data);
+      if (submissionsRes && submissionsRes.data) setSubmissions(submissionsRes.data);
     } catch (error) {
       console.error('Error loading hackathon data:', error);
     }
@@ -68,7 +68,7 @@ export function HackathonManagement({ hackathons, onHackathonsUpdate }: Hackatho
     try {
       setLoading(true);
       const response = await communityService.createHackathonTeam(selectedHackathon.id, createTeamForm);
-      if (response.success) {
+      if (response && response.data) {
         setShowCreateTeamForm(false);
         setCreateTeamForm({
           name: '',
@@ -88,7 +88,7 @@ export function HackathonManagement({ hackathons, onHackathonsUpdate }: Hackatho
   const handleJoinTeam = async (teamId: string, role: string) => {
     try {
       const response = await communityService.joinHackathonTeam(teamId, { role });
-      if (response.success) {
+      if (response) {
         loadHackathonData(selectedHackathon!.id);
       }
     } catch (error) {
@@ -102,7 +102,7 @@ export function HackathonManagement({ hackathons, onHackathonsUpdate }: Hackatho
     try {
       setLoading(true);
       const response = await communityService.submitHackathonProject(selectedTeam.id, submissionForm);
-      if (response.success) {
+      if (response && response.data) {
         setShowSubmissionForm(false);
         setSubmissionForm({
           project_title: '',

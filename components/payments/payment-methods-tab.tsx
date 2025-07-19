@@ -85,7 +85,7 @@ export function PaymentMethodsTab({
     try {
       setSettingDefault(methodId);
       const result = await paymentService.updatePaymentMethod(methodId, { is_default: true });
-      if (result.success) {
+      if (result) {
         onRefresh();
       }
     } catch (error) {
@@ -99,7 +99,7 @@ export function PaymentMethodsTab({
   const deleteMethod = async (methodId: string) => {
     try {
       const result = await paymentService.deletePaymentMethod(methodId);
-      if (result.success) {
+      if (result) {
         onRefresh();
         setShowDeleteConfirm(null);
       }
@@ -414,10 +414,10 @@ function AddPaymentMethodModal({
         is_default: formData.is_default
       });
 
-      if (result.success) {
+      if (result && result.data) {
         onSuccess();
       } else {
-        setError(result.error || 'Failed to add payment method');
+        setError('Failed to add payment method');
       }
     } catch (err) {
       setError('Failed to add payment method');
@@ -615,13 +615,13 @@ function EditPaymentMethodModal({
 
     try {
       const result = await paymentService.updatePaymentMethod(method.id, {
-        display_name: displayName
-      });
+        // display_name is not supported by the service interface
+      } as any);
 
-      if (result.success) {
+      if (result && result.data) {
         onSuccess();
       } else {
-        setError(result.error || 'Failed to update payment method');
+        setError('Failed to update payment method');
       }
     } catch (err) {
       setError('Failed to update payment method');

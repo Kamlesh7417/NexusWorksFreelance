@@ -100,7 +100,7 @@ export function ProjectManagementConsole({ projectId, className = '' }: ProjectC
         projectService.getTeamManagement(projectId)
       ]);
       
-      if (!detailsResponse.success || !progressResponse.success || !teamResponse.success) {
+      if (!detailsResponse || !progressResponse || !teamResponse) {
         throw new Error('Failed to load project data');
       }
       

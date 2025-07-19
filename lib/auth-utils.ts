@@ -38,7 +38,7 @@ export async function getServerSideSession() {
       const profile = await getUserProfile(session.user.id);
       if (profile) {
         session.user.role = profile.role;
-        session.user.profile = profile;
+        (session.user as any).profile = profile;
       }
     }
 

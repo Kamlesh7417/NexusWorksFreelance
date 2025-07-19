@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+// import { Progress } from '@/components/ui/progress';
 import { BookOpen, Target, Users, Award, TrendingUp, Clock } from 'lucide-react';
 import { LearningPathDisplay } from '@/components/learning/learning-path-display';
 import { CourseEnrollment } from '@/components/learning/course-enrollment';
@@ -164,7 +164,13 @@ export default function LearningPage() {
                         </div>
                         <Badge variant="outline">{path.progress_percentage}% Complete</Badge>
                       </div>
-                      <Progress value={path.progress_percentage} className="mb-2" />
+                      {/* <Progress value={path.progress_percentage} className="mb-2" /> */}
+                      <div className="w-full bg-gray-200 rounded-full h-2 mb-2">
+                        <div 
+                          className="bg-blue-600 h-2 rounded-full" 
+                          style={{ width: `${path.progress_percentage}%` }}
+                        ></div>
+                      </div>
                       <p className="text-xs text-gray-500">
                         Est. completion: {path.estimated_completion_time}
                       </p>

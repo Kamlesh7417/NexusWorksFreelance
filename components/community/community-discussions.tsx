@@ -43,7 +43,7 @@ export function CommunityDiscussions() {
     try {
       setLoading(true);
       const response = await communityService.getCommunityPosts(filter);
-      if (response.success) {
+      if (response.data) {
         setPosts(response.data.results || []);
       }
     } catch (error) {
@@ -56,7 +56,7 @@ export function CommunityDiscussions() {
   const loadComments = async (postId: string) => {
     try {
       const response = await communityService.getPostComments(postId);
-      if (response.success) {
+      if (response.data) {
         setComments(response.data);
       }
     } catch (error) {
@@ -70,7 +70,7 @@ export function CommunityDiscussions() {
     try {
       setLoading(true);
       const response = await communityService.createCommunityPost(createForm);
-      if (response.success) {
+      if (response.data) {
         setShowCreateForm(false);
         setCreateForm({
           title: '',
@@ -92,7 +92,7 @@ export function CommunityDiscussions() {
 
     try {
       const response = await communityService.createComment(postId, commentForm);
-      if (response.success) {
+      if (response.status >= 200 && response.status < 300 && response.data) {
         setCommentForm({ content: '', parent_comment: '' });
         loadComments(postId);
         // Update post comment count
@@ -110,7 +110,7 @@ export function CommunityDiscussions() {
   const handleLikePost = async (postId: string) => {
     try {
       const response = await communityService.likePost(postId);
-      if (response.success) {
+      if (response.status >= 200 && response.status < 300) {
         setPosts(prev => prev.map(post => 
           post.id === postId 
             ? { ...post, likes_count: post.likes_count + 1 }
@@ -125,7 +125,7 @@ export function CommunityDiscussions() {
   const handleLikeComment = async (commentId: string) => {
     try {
       const response = await communityService.likeComment(commentId);
-      if (response.success) {
+      if (response.status >= 200 && response.status < 300) {
         setComments(prev => prev.map(comment => 
           comment.id === commentId 
             ? { ...comment, likes_count: comment.likes_count + 1 }

@@ -56,14 +56,18 @@
     font-family: 'Inter', 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   }
   
+  html {
+    background: #000000;
+  }
+  
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(135deg, #080810, #0f0f14, #151520);
+    background: #000000;
     color: #ffffff;
     min-height: 100vh;
     overflow-x: hidden;
     letter-spacing: 0.3px;
-    transition: background 1s ease;
+    transition: all 0.3s ease;
     line-height: 1.6;
     font-weight: 400;
   }
@@ -92,7 +96,7 @@
   }
 
   p {
-    color: #e5e5e5;
+    color: #00e6ff;
     line-height: 1.7;
     font-weight: 400;
   }
@@ -191,6 +195,23 @@
   animation: fadeIn 1s ease-out;
 }
 
+/* Global wrapper for consistent animations */
+.nexus-app {
+  background: #000000;
+  min-height: 100vh;
+}
+
+.nexus-global-wrapper {
+  background: #000000;
+  min-height: 100vh;
+  animation: fadeIn 0.5s ease-out;
+}
+
+/* Ensure all pages have consistent styling */
+.nexus-global-wrapper > * {
+  background: #000000;
+}
+
 /* Header styling */
 .nexus-header {
   background: rgba(0, 0, 0, 0.8);
@@ -264,12 +285,11 @@
 }
 
 .nexus-card {
-  background: rgba(0, 0, 0, 0.4);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
+  background: #000000;
+  border: 1px solid rgba(0, 230, 255, 0.3);
+  border-radius: 20px;
   padding: 1.5rem;
-  transition: transform 0.4s ease, box-shadow 0.4s ease;
-  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
 }
@@ -290,8 +310,9 @@
 }
 
 .nexus-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0 15px 30px rgba(0, 230, 255, 0.2), 0 0 20px rgba(0, 230, 255, 0.1);
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 230, 255, 0.15), 0 0 30px rgba(0, 230, 255, 0.1);
+  border-color: rgba(0, 230, 255, 0.3);
 }
 
 .nexus-card h2 {
@@ -306,7 +327,7 @@
 .nexus-card p, .nexus-card ul {
   font-size: 0.95rem;
   line-height: 1.7;
-  color: #e5e5e5;
+  color: #00e6ff;
   font-family: 'Inter', sans-serif;
 }
 

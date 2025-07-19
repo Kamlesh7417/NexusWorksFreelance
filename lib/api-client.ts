@@ -15,6 +15,11 @@ export const isSuccessResponse = <T>(response: APIResponse<T>): response is APIR
   return response.status >= 200 && response.status < 300 && !response.error && response.data !== undefined;
 };
 
+// Helper function to check if API response is successful (for backward compatibility)
+export const isSuccess = <T>(response: APIResponse<T>): boolean => {
+  return response.status >= 200 && response.status < 300 && !response.error;
+};
+
 export interface APIError {
   message: string;
   code: string;
@@ -77,7 +82,7 @@ export interface Task {
   priority: number;
   dependencies: string[];
   assigned_developer?: string;
-  status: 'pending' | 'assigned' | 'in_progress' | 'review' | 'completed';
+  status: 'pending' | 'assigned' | 'in_progress' | 'review' | 'completed' | 'approved';
   completion_percentage: number;
 }
 

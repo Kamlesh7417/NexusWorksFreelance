@@ -403,7 +403,7 @@ function DisputeDetailModal({
         admin_notes: `Resolved with ${resolutionType}. Amount: $${resolutionAmount}`
       });
 
-      if (result.success) {
+      if (result && result.data) {
         onRefresh();
         onClose();
       }
@@ -613,7 +613,7 @@ function CreateDisputeModal({
         evidence: formData.evidence
       });
 
-      if (result.success) {
+      if (result && result.data) {
         onSuccess();
       } else {
         setError(result.error || 'Failed to create dispute');

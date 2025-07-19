@@ -15,7 +15,7 @@ const customJestConfig = {
     '<rootDir>/django-backend/',
     '<rootDir>/e2e/',
   ],
-  moduleNameMapping: {
+  moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/$1',
     '^@/components/(.*)$': '<rootDir>/components/$1',
     '^@/lib/(.*)$': '<rootDir>/lib/$1',

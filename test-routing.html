@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Routing Test</title>
+</head>
+<body>
+    <h1>Test Routing Implementation</h1>
+    
+    <h2>Test Cases:</h2>
+    <ul>
+        <li><a href="/console">Console (default)</a></li>
+        <li><a href="/console?section=profile">Console - Profile Section</a></li>
+        <li><a href="/console?section=messages">Console - Messages Section</a></li>
+        <li><a href="/console?section=projects">Console - Projects Section</a></li>
+        <li><a href="/console?section=payments">Console - Payments Section</a></li>
+        <li><a href="/dashboard">Dashboard (should redirect to console)</a></li>
+        <li><a href="/profile">Profile (should redirect to console?section=profile)</a></li>
+        <li><a href="/messages">Messages (should redirect to console?section=messages)</a></li>
+        <li><a href="/projects">Projects (should redirect to console?section=projects)</a></li>
+        <li><a href="/projects/123">Project 123 (should redirect to console?section=projects&project=123)</a></li>
+        <li><a href="/projects/456/details">Project 456 Details (should redirect to console?section=projects&project=456&view=details)</a></li>
+    </ul>
+    
+    <h2>Backward Compatibility:</h2>
+    <ul>
+        <li><a href="/dashboard?type=legacy">Legacy Dashboard (should stay)</a></li>
+    </ul>
+</body>
+</html>

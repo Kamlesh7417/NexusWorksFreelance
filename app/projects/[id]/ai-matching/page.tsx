@@ -214,10 +214,7 @@ export default function AIMatchingPage() {
           )}
 
           {activeTab === 'analysis' && (
-            <EnhancedAIAssistant
-              projectId={projectId}
-              showInteractiveFeatures={true}
-            />
+            <EnhancedAIAssistant />
           )}
         </div>
 

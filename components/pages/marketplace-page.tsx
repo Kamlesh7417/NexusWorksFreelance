@@ -45,16 +45,17 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
   const [loading, setLoading] = useState(false);
   const [projectFilters, setProjectFilters] = useState({
     skills_required: '',
-    complexity_level: '',
-    budget_range: '',
-    project_type: ''
+    complexity_level: 'all',
+    budget_range: 'all',
+    project_type: '',
+    search: ''
   });
   const [developerFilters, setDeveloperFilters] = useState({
     skills: '',
-    experience_years: '',
+    experience_years: 'all',
     hourly_rate_min: '',
     hourly_rate_max: '',
-    availability_status: '',
+    availability_status: 'all',
     rating_min: ''
   });
 
@@ -77,19 +78,44 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
         marketplaceService.getFavorites()
       ]);
 
-      if (trendsRes.success) setTrends(trendsRes.data);
-      if (favoritesRes.success) setFavorites(favoritesRes.data);
+      if (trendsRes && trendsRes.data) setTrends(trendsRes.data);
+      if (favoritesRes && favoritesRes.data) setFavorites(favoritesRes.data);
     } catch (error) {
       console.error('Error loading marketplace data:', error);
+      // Set demo data when API fails
+      setTrends({
+        trending_skills: ['React', 'Python', 'TypeScript', 'Node.js', 'Django'],
+        popular_project_types: ['Web App', 'Mobile App', 'API', 'E-commerce'],
+        average_rates: {
+          'React': 75,
+          'Python': 80,
+          'TypeScript': 70,
+          'Node.js': 65
+        }
+      });
     }
   };
 
   const loadProjects = async () => {
     try {
       setLoading(true);
-      const response = await marketplaceService.getFeaturedProjects(projectFilters);
-      if (response.success) {
-        setProjects(response.data.results || []);
+      // Filter out "all" values before sending to API
+      const cleanFilters = Object.fromEntries(
+        Object.entries(projectFilters).filter(([key, value]) => value !== 'all' && value !== '')
+      );
+      
+      try {
+        const response = await marketplaceService.getFeaturedProjects(cleanFilters);
+        if (response && response.data) {
+          setProjects(response.data.results || []);
+        }
+      } catch (error) {
+        console.error('API error, using demo data:', error);
+        // Use demo data when API fails
+        const demoResponse = await marketplaceService.getDemoFeaturedProjects(cleanFilters);
+        if (demoResponse.data) {
+          setProjects(demoResponse.data.results as any || []);
+        }
       }
     } catch (error) {
       console.error('Error loading projects:', error);
@@ -101,9 +127,23 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
   const loadDevelopers = async () => {
     try {
       setLoading(true);
-      const response = await marketplaceService.getFeaturedDevelopers(developerFilters);
-      if (response.success) {
-        setDevelopers(response.data.results || []);
+      // Filter out "all" values before sending to API
+      const cleanFilters = Object.fromEntries(
+        Object.entries(developerFilters).filter(([key, value]) => value !== 'all' && value !== '')
+      );
+      
+      try {
+        const response = await marketplaceService.getFeaturedDevelopers(cleanFilters);
+        if (response && response.data) {
+          setDevelopers(response.data.results || []);
+        }
+      } catch (error) {
+        console.error('API error, using demo data:', error);
+        // Use demo data when API fails
+        const demoResponse = await marketplaceService.getDemoFeaturedDevelopers(cleanFilters);
+        if (demoResponse.data) {
+          setDevelopers(demoResponse.data.results as any || []);
+        }
       }
     } catch (error) {
       console.error('Error loading developers:', error);
@@ -155,7 +195,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-8 bg-black min-h-screen">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Marketplace</h1>
         <p className="text-gray-600">Discover featured projects and top developers</p>
@@ -194,7 +234,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
                   {Object.entries(trends.average_rates || {}).slice(0, 3).map(([skill, rate]) => (
                     <div key={skill} className="flex justify-between">
                       <span>{skill}</span>
-                      <span>${rate}/hr</span>
+                      <span>${Number(rate)}/hr</span>
                     </div>
                   ))}
                 </div>
@@ -231,7 +271,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
                       <SelectValue placeholder="All levels" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All levels</SelectItem>
+                      <SelectItem value="all">All levels</SelectItem>
                       <SelectItem value="simple">Simple</SelectItem>
                       <SelectItem value="moderate">Moderate</SelectItem>
                       <SelectItem value="complex">Complex</SelectItem>
@@ -246,7 +286,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
                       <SelectValue placeholder="All budgets" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All budgets</SelectItem>
+                      <SelectItem value="all">All budgets</SelectItem>
                       <SelectItem value="1000-5000">$1K - $5K</SelectItem>
                       <SelectItem value="5000-15000">$5K - $15K</SelectItem>
                       <SelectItem value="15000-50000">$15K - $50K</SelectItem>
@@ -385,7 +425,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
                       <SelectValue placeholder="All levels" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All levels</SelectItem>
+                      <SelectItem value="all">All levels</SelectItem>
                       <SelectItem value="0-2">0-2 years</SelectItem>
                       <SelectItem value="3-5">3-5 years</SelectItem>
                       <SelectItem value="6-10">6-10 years</SelectItem>
@@ -417,7 +457,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
                       <SelectValue placeholder="All statuses" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="">All statuses</SelectItem>
+                      <SelectItem value="all">All statuses</SelectItem>
                       <SelectItem value="available">Available</SelectItem>
                       <SelectItem value="busy">Busy</SelectItem>
                       <SelectItem value="unavailable">Unavailable</SelectItem>

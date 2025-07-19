@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { paymentService } from '@/lib/services/payment-service';
+import { paymentService, PaymentMethod as ServicePaymentMethod, PaymentDispute as ServicePaymentDispute, Milestone as ServiceMilestone } from '@/lib/services/payment-service';
+import { Payment as APIPayment } from '@/lib/api-client';
 import { 
   CreditCard, 
   DollarSign, 
@@ -38,17 +39,10 @@ interface PaymentManagementInterfaceProps {
   className?: string;
 }
 
-interface PaymentMethod {
-  id: string;
-  type: 'credit_card' | 'bank_account' | 'paypal' | 'stripe';
-  display_name: string;
-  last_four?: string;
-  brand?: string;
-  is_default: boolean;
-  is_verified: boolean;
-  verification_status: 'pending' | 'verified' | 'failed';
-  created_at: string;
-  total_payments_received: number;
+interface PaymentMethod extends ServicePaymentMethod {
+  display_name?: string;
+  verification_status?: 'pending' | 'verified' | 'failed';
+  total_payments_received?: number;
 }
 
 interface Milestone {
@@ -71,57 +65,26 @@ interface Milestone {
   senior_developer_approved: boolean;
 }
 
-interface Payment {
-  id: string;
-  milestone_details: {
+interface Payment extends APIPayment {
+  milestone_details?: {
     id: string;
     percentage: number;
     project_title: string;
   };
-  developer_details: {
+  developer_details?: {
     id: string;
     username: string;
     first_name: string;
     last_name: string;
   };
-  amount: number;
-  net_amount: number;
-  payment_type: 'milestone' | 'bonus' | 'refund' | 'penalty';
-  status: 'pending' | 'processing' | 'completed' | 'failed' | 'disputed' | 'refunded';
-  processed_at?: string;
-  created_at: string;
-  platform_fee: number;
-  gateway_fee: number;
+  net_amount?: number;
+  payment_type?: 'milestone' | 'bonus' | 'refund' | 'penalty';
+  platform_fee?: number;
+  gateway_fee?: number;
 }
 
-interface PaymentDispute {
-  id: string;
-  payment_details: {
-    id: string;
-    amount: number;
-    status: string;
-  };
-  initiated_by_details: {
-    id: string;
-    username: string;
-    first_name: string;
-    last_name: string;
-  };
-  disputed_against_details: {
-    id: string;
-    username: string;
-    first_name: string;
-    last_name: string;
-  };
-  dispute_type: 'non_delivery' | 'quality_issue' | 'scope_change' | 'payment_delay' | 'unauthorized_charge' | 'duplicate_charge' | 'other';
-  status: 'opened' | 'under_review' | 'evidence_requested' | 'mediation' | 'resolved_client' | 'resolved_developer' | 'resolved_partial' | 'closed' | 'escalated';
-  priority: 'low' | 'medium' | 'high' | 'urgent';
-  title: string;
-  description: string;
-  disputed_amount: number;
-  created_at: string;
-  response_deadline?: string;
-}
+// Use the service PaymentDispute interface directly
+type PaymentDispute = ServicePaymentDispute;
 
 export function PaymentManagementInterface({ 
   projectId, 
@@ -169,14 +132,14 @@ export function PaymentManagementInterface({
         paymentService.getDisputes()
       ]);
 
-      if (methodsRes.success) setPaymentMethods(methodsRes.data);
-      if (paymentsRes.success) setPayments(paymentsRes.data.results || []);
-      if (disputesRes.success) setDisputes(disputesRes.data);
+      if (methodsRes && methodsRes.data) setPaymentMethods(methodsRes.data);
+      if (paymentsRes && paymentsRes.data) setPayments(paymentsRes.data.results || []);
+      if (disputesRes && disputesRes.data) setDisputes(disputesRes.data);
 
       // Load milestones if project specified
       if (projectId) {
         const milestonesRes = await paymentService.getProjectMilestones(projectId);
-        if (milestonesRes.success) setMilestones(milestonesRes.data);
+        if (milestonesRes && milestonesRes.data) setMilestones(milestonesRes.data as unknown as Milestone[]);
       }
 
     } catch (err) {
@@ -199,7 +162,7 @@ export function PaymentManagementInterface({
         payment_method_id: paymentMethods.find(m => m.is_default)?.id || ''
       });
 
-      if (result.success) {
+      if (result && result.data) {
         await loadData(); // Refresh data
         // Show success notification
       } else {
@@ -220,7 +183,7 @@ export function PaymentManagementInterface({
       
       const result = await paymentService.verifyPaymentMethod(methodId, {});
       
-      if (result.success) {
+      if (result) {
         await loadData(); // Refresh data
       } else {
         setError(result.error || 'Failed to verify payment method');
@@ -415,7 +378,7 @@ export function PaymentManagementInterface({
         
         {activeTab === 'payments' && (
           <PaymentHistoryTab 
-            payments={filteredPayments}
+            payments={filteredPayments as any}
             paymentFilter={paymentFilter}
             setPaymentFilter={setPaymentFilter}
             searchTerm={searchTerm}
@@ -426,7 +389,7 @@ export function PaymentManagementInterface({
         
         {activeTab === 'methods' && (
           <PaymentMethodsTab 
-            paymentMethods={paymentMethods}
+            paymentMethods={paymentMethods as any}
             onVerifyMethod={verifyPaymentMethod}
             verifyingMethod={verifyingMethod}
             onRefresh={loadData}
@@ -435,7 +398,7 @@ export function PaymentManagementInterface({
         
         {activeTab === 'disputes' && (
           <DisputesTab 
-            disputes={disputes}
+            disputes={disputes as any}
             onRefresh={loadData}
             userRole={userRole}
           />
@@ -505,7 +468,7 @@ function PaymentOverviewTab({
                     </div>
                   </div>
                   <div className="text-gray-400 text-xs">
-                    {new Date(payment.created_at).toLocaleDateString()}
+                    {(payment as any).created_at ? new Date((payment as any).created_at).toLocaleDateString() : 'N/A'}
                   </div>
                 </div>
               ))}
@@ -567,7 +530,7 @@ function PaymentOverviewTab({
           <h4 className="text-md font-medium text-white mb-3">This Month</h4>
           <div className="text-2xl font-bold text-cyan-400 mb-2">
             ${payments.filter(p => {
-              const paymentDate = new Date(p.created_at);
+              const paymentDate = new Date((p as any).created_at || Date.now());
               const now = new Date();
               return paymentDate.getMonth() === now.getMonth() && 
                      paymentDate.getFullYear() === now.getFullYear();
