@@ -15,6 +15,8 @@ interface AuthContextType extends AuthState {
     confirmPassword: string;
     role: 'client' | 'developer';
     githubUsername?: string;
+    firstName?: string;
+    lastName?: string;
   }) => Promise<{ success: boolean; error?: string }>;
   refreshUser: () => Promise<void>;
   isClient: () => boolean;
@@ -44,7 +46,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     // Subscribe to auth state changes
-    const unsubscribe = djangoAuth.subscribe(setAuthState);
+    const unsubscribe = djangoAuth.subscribe((newState) => {
+      console.log('Auth state changed:', newState); // Debug log
+      setAuthState(newState);
+    });
     return unsubscribe;
   }, []);
 
@@ -173,7 +178,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Otherwise use Django auth
       const result = await djangoAuth.login({ email, password });
+      console.log('Django auth login result:', result); // Debug log
       setLoading(false);
+      
+      // The auth state should be updated automatically via the subscription
+      // but let's make sure it's working
+      if (result.success) {
+        const currentState = djangoAuth.getAuthState();
+        console.log('Current Django auth state after login:', currentState); // Debug log
+        setAuthState(currentState);
+      }
+      
       return result;
     } catch (error) {
       console.error('Login error:', error);
@@ -188,6 +203,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     confirmPassword: string;
     role: 'client' | 'developer';
     githubUsername?: string;
+    firstName?: string;
+    lastName?: string;
   }) => {
     return await djangoAuth.register(data);
   };

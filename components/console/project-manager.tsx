@@ -4,8 +4,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDjangoAuth } from '../auth/django-auth-provider';
 import { projectService } from '@/lib/services/project-service';
-import { useRealtimeProjectData, useConnectionStatus } from '@/lib/hooks/use-realtime-data';
-import { useRealtimeUpdates } from '@/lib/services/realtime-update-service';
+// import { useRealtimeProjectData, useConnectionStatus } from '@/lib/hooks/use-realtime-data';
+// import { useRealtimeUpdates } from '@/lib/services/realtime-update-service';
 import { ProjectManagementConsole } from '../dashboard/project-management-console';
 import { Project as APIProject } from '@/lib/api-client';
 import { 

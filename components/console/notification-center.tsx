@@ -2,8 +2,25 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { Bell, X, Check, CheckCheck, Trash2, Settings, Filter } from 'lucide-react';
-import { useNotifications, NotificationData } from '@/lib/services/notification-service';
-import { useRealtimeUpdates } from '@/lib/services/realtime-update-service';
+// WebSocket services commented out for now
+// import { useNotifications, NotificationData } from '@/lib/services/notification-service';
+// import { useRealtimeUpdates } from '@/lib/services/realtime-update-service';
+
+// Temporary mock types
+interface NotificationData {
+  id: string;
+  type: 'message' | 'project' | 'payment' | 'system';
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  title: string;
+  message: string;
+  read: boolean;
+  persistent: boolean;
+  timestamp: Date;
+  conversationId?: string;
+  projectId?: string;
+  actionUrl?: string;
+  actionLabel?: string;
+}
 import { formatDistanceToNow } from 'date-fns';
 
 interface NotificationCenterProps {
@@ -16,28 +33,34 @@ export function NotificationCenter({ className = '' }: NotificationCenterProps) 
   const [filter, setFilter] = useState<'all' | 'unread' | NotificationData['type']>('all');
   const [unreadCount, setUnreadCount] = useState(0);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  
-  const {
-    getNotifications,
-    getUnreadCount,
-    markAsRead,
-    markAllAsRead,
-    removeNotification,
-    clearRead,
-    subscribe
-  } = useNotifications();
 
-  const { getConnectionStatus } = useRealtimeUpdates();
+  // WebSocket services commented out - using mock data for now
+  // const { getNotifications, getUnreadCount, markAsRead, markAllAsRead, removeNotification, clearRead, subscribe } = useNotifications();
+  // const { getConnectionStatus } = useRealtimeUpdates();
 
-  // Subscribe to notification updates
+  // Mock notification functions
+  const markAsRead = (id: string) => {
+    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+  };
+
+  const removeNotification = (id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+  };
+
+  const clearRead = () => {
+    setNotifications(prev => prev.filter(n => !n.read));
+  };
+
+  // Initialize with empty notifications for now
   useEffect(() => {
-    const unsubscribe = subscribe((updatedNotifications) => {
-      setNotifications(updatedNotifications);
-      setUnreadCount(updatedNotifications.filter(n => !n.read).length);
-    });
-
-    return unsubscribe;
-  }, [subscribe]);
+    // TODO: Replace with real notification loading when WebSocket is ready
+    setNotifications([]);
+    setUnreadCount(0);
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -76,7 +99,7 @@ export function NotificationCenter({ className = '' }: NotificationCenterProps) 
   const getNotificationColor = (notification: NotificationData) => {
     if (notification.priority === 'urgent') return 'border-red-500 bg-red-500/10';
     if (notification.priority === 'high') return 'border-orange-500 bg-orange-500/10';
-    
+
     const colorMap = {
       info: 'border-blue-500 bg-blue-500/10',
       success: 'border-green-500 bg-green-500/10',
@@ -86,7 +109,7 @@ export function NotificationCenter({ className = '' }: NotificationCenterProps) 
       project: 'border-cyan-500 bg-cyan-500/10',
       payment: 'border-emerald-500 bg-emerald-500/10',
     };
-    
+
     return colorMap[notification.type] || 'border-gray-500 bg-gray-500/10';
   };
 
@@ -95,14 +118,17 @@ export function NotificationCenter({ className = '' }: NotificationCenterProps) 
     if (!notification.read) {
       markAsRead(notification.id);
     }
-    
+
     if (notification.actionUrl) {
       window.location.href = notification.actionUrl;
     }
   };
 
   // Get connection status indicator
-  const connectionStatus = getConnectionStatus();
+  // const connectionStatus = getConnectionStatus();
+  // const isConnected = connectionStatus.overall === 'connected';
+  // Temporary mock connection status
+  const connectionStatus = { overall: 'connected' };
   const isConnected = connectionStatus.overall === 'connected';
 
   return (
@@ -114,18 +140,17 @@ export function NotificationCenter({ className = '' }: NotificationCenterProps) 
         aria-label={`Notifications (${unreadCount} unread)`}
       >
         <Bell className="h-6 w-6" />
-        
+
         {/* Unread Count Badge */}
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}
-        
+
         {/* Connection Status Indicator */}
-        <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-black ${
-          isConnected ? 'bg-green-500' : 'bg-red-500'
-        }`} />
+        <div className={`absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-black ${isConnected ? 'bg-green-500' : 'bg-red-500'
+          }`} />
       </button>
 
       {/* Notification Dropdown */}
@@ -137,17 +162,15 @@ export function NotificationCenter({ className = '' }: NotificationCenterProps) 
               <h3 className="text-lg font-semibold text-white">Notifications</h3>
               <div className="flex items-center gap-2">
                 {/* Connection Status */}
-                <div className={`flex items-center gap-1 text-xs px-2 py-1 rounded ${
-                  isConnected 
-                    ? 'text-green-400 bg-green-500/20' 
-                    : 'text-red-400 bg-red-500/20'
-                }`}>
-                  <div className={`w-2 h-2 rounded-full ${
-                    isConnected ? 'bg-green-500' : 'bg-red-500'
-                  }`} />
+                <div className={`flex items-center gap-1 text-xs px-2 py-1 rounded ${isConnected
+                  ? 'text-green-400 bg-green-500/20'
+                  : 'text-red-400 bg-red-500/20'
+                  }`}>
+                  <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'
+                    }`} />
                   {isConnected ? 'Live' : 'Offline'}
                 </div>
-                
+
                 <button
                   onClick={() => setIsOpen(false)}
                   className="text-gray-400 hover:text-white p-1"
@@ -169,11 +192,10 @@ export function NotificationCenter({ className = '' }: NotificationCenterProps) 
                 <button
                   key={key}
                   onClick={() => setFilter(key as any)}
-                  className={`px-3 py-1 rounded transition-colors ${
-                    filter === key
-                      ? 'bg-cyan-600 text-white'
-                      : 'text-gray-400 hover:text-white hover:bg-gray-800'
-                  }`}
+                  className={`px-3 py-1 rounded transition-colors ${filter === key
+                    ? 'bg-cyan-600 text-white'
+                    : 'text-gray-400 hover:text-white hover:bg-gray-800'
+                    }`}
                 >
                   {label}
                 </button>
@@ -215,9 +237,8 @@ export function NotificationCenter({ className = '' }: NotificationCenterProps) 
                 {filteredNotifications.map((notification) => (
                   <div
                     key={notification.id}
-                    className={`p-4 hover:bg-gray-800 transition-colors cursor-pointer border-l-4 ${
-                      getNotificationColor(notification)
-                    } ${!notification.read ? 'bg-gray-800/50' : ''}`}
+                    className={`p-4 hover:bg-gray-800 transition-colors cursor-pointer border-l-4 ${getNotificationColor(notification)
+                      } ${!notification.read ? 'bg-gray-800/50' : ''}`}
                     onClick={() => handleNotificationClick(notification)}
                   >
                     <div className="flex items-start gap-3">
@@ -229,23 +250,20 @@ export function NotificationCenter({ className = '' }: NotificationCenterProps) 
                       {/* Content */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2">
-                          <h4 className={`text-sm font-medium ${
-                            notification.read ? 'text-gray-300' : 'text-white'
-                          }`}>
+                          <h4 className={`text-sm font-medium ${notification.read ? 'text-gray-300' : 'text-white'
+                            }`}>
                             {notification.title}
                           </h4>
-                          
+
                           {/* Priority Indicator */}
                           {(notification.priority === 'high' || notification.priority === 'urgent') && (
-                            <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1 ${
-                              notification.priority === 'urgent' ? 'bg-red-500' : 'bg-orange-500'
-                            }`} />
+                            <div className={`w-2 h-2 rounded-full flex-shrink-0 mt-1 ${notification.priority === 'urgent' ? 'bg-red-500' : 'bg-orange-500'
+                              }`} />
                           )}
                         </div>
 
-                        <p className={`text-xs mt-1 ${
-                          notification.read ? 'text-gray-500' : 'text-gray-400'
-                        }`}>
+                        <p className={`text-xs mt-1 ${notification.read ? 'text-gray-500' : 'text-gray-400'
+                          }`}>
                           {notification.message}
                         </p>
 

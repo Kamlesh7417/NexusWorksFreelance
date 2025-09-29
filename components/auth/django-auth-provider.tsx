@@ -1,7 +1,6 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useSession, signIn, signOut, SessionProvider } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
 // Types
@@ -11,7 +10,8 @@ export interface DjangoUser {
   username: string;
   first_name: string;
   last_name: string;
-  user_type: 'client' | 'developer' | 'admin';
+  user_type: 'freelancer' | 'client' | 'both';
+  role?: 'client' | 'developer' | 'admin';
   github_username?: string;
   profile_completed: boolean;
   bio?: string;
@@ -52,100 +52,26 @@ export interface RegisterData {
 }
 
 interface AuthContextType extends AuthState {
-  login: (credentials: LoginCredentials) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   register: (data: RegisterData) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
   signInWithGithub: () => Promise<void>;
+  signInWithDemo: (role: 'client' | 'developer') => Promise<{ success: boolean; error?: string }>;
   isClient: () => boolean;
   isDeveloper: () => boolean;
   isAdmin: () => boolean;
   hasRole: (role: string) => boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Django API client
-const DJANGO_API_URL = process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000/api';
-
-class DjangoApiClient {
-  private baseUrl: string;
-
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
-  }
-
-  private async request(endpoint: string, options: RequestInit = {}) {
-    const url = `${this.baseUrl}${endpoint}`;
-    const config: RequestInit = {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-      ...options,
-    };
-
-    try {
-      const response = await fetch(url, config);
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.detail || data.error || 'Request failed');
-      }
-
-      return { data, error: null };
-    } catch (error) {
-      return { 
-        data: null, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
-      };
-    }
-  }
-
-  async login(email: string, password: string) {
-    return this.request('/auth/login/', {
-      method: 'POST',
-      body: JSON.stringify({ username: email, password }),
-    });
-  }
-
-  async register(userData: Omit<RegisterData, 'confirmPassword'>) {
-    return this.request('/auth/register/', {
-      method: 'POST',
-      body: JSON.stringify({
-        username: userData.email,
-        email: userData.email,
-        password: userData.password,
-        password_confirm: userData.password,
-        first_name: userData.firstName,
-        last_name: userData.lastName,
-        role: userData.role,
-        github_username: userData.githubUsername || '',
-      }),
-    });
-  }
-
-  async getCurrentUser(accessToken: string) {
-    return this.request('/auth/user/', {
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-      },
-    });
-  }
-
-  async refreshToken(refreshToken: string) {
-    return this.request('/auth/token/refresh/', {
-      method: 'POST',
-      body: JSON.stringify({ refresh: refreshToken }),
-    });
-  }
-}
-
-const apiClient = new DjangoApiClient(DJANGO_API_URL);
+// Import the main API client
+import { apiClient } from '@/lib/api-client';
 
 // Auth Provider Component
 function DjangoAuthProviderInner({ children }: { children: ReactNode }) {
-  const { data: session, status } = useSession();
   const router = useRouter();
   
   const [authState, setAuthState] = useState<AuthState>({
@@ -157,63 +83,95 @@ function DjangoAuthProviderInner({ children }: { children: ReactNode }) {
     refreshToken: null,
   });
 
-  // Initialize auth state from NextAuth session
+  // Initialize auth state from stored tokens
   useEffect(() => {
-    if (status === 'loading') {
-      setAuthState(prev => ({ ...prev, isLoading: true }));
-      return;
-    }
+    const initializeAuth = async () => {
+      try {
+        // Check if we have tokens in localStorage
+        const accessToken = localStorage.getItem('access_token');
+        const refreshToken = localStorage.getItem('refresh_token');
+        
+        if (accessToken && refreshToken) {
+          // Set tokens in API client
+          apiClient.setTokens(accessToken, refreshToken);
+          
+          // Verify token validity by fetching current user
+          const response = await apiClient.getCurrentUser();
+          
+          if (response.data && !response.error) {
+            console.log('Django auth: User restored from tokens', response.data);
+            setAuthState({
+              user: response.data as DjangoUser,
+              isAuthenticated: true,
+              isLoading: false,
+              error: null,
+              accessToken,
+              refreshToken,
+            });
+          } else {
+            // Token is invalid, clear it
+            apiClient.clearTokens();
+            setAuthState({
+              user: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: null,
+              accessToken: null,
+              refreshToken: null,
+            });
+          }
+        } else {
+          console.log('Django auth: No tokens found');
+          setAuthState(prev => ({ ...prev, isLoading: false }));
+        }
+      } catch (error) {
+        console.error('Auth initialization error:', error);
+        apiClient.clearTokens();
+        setAuthState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null,
+          accessToken: null,
+          refreshToken: null,
+        });
+      }
+    };
 
-    if (session?.user) {
-      setAuthState({
-        user: {
-          id: session.user.id!,
-          email: session.user.email!,
-          username: session.user.username!,
-          first_name: session.user.name?.split(' ')[0] || '',
-          last_name: session.user.name?.split(' ').slice(1).join(' ') || '',
-          user_type: session.user.role as 'client' | 'developer' | 'admin',
-          github_username: session.user.githubUsername,
-          profile_completed: session.user.profileCompleted || false,
-        },
-        isAuthenticated: true,
-        isLoading: false,
-        error: null,
-        accessToken: session.accessToken || null,
-        refreshToken: session.refreshToken || null,
-      });
-    } else {
-      setAuthState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: null,
-        accessToken: null,
-        refreshToken: null,
-      });
-    }
-  }, [session, status]);
+    initializeAuth();
+  }, []);
 
-  const login = async (credentials: LoginCredentials): Promise<{ success: boolean; error?: string }> => {
+  const login = async (email: string, password: string): Promise<{ success: boolean; error?: string }> => {
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
 
     try {
-      const result = await signIn('credentials', {
-        email: credentials.email,
-        password: credentials.password,
-        redirect: false,
-      });
-
-      if (result?.error) {
+      const response = await apiClient.login(email, password);
+      
+      if (response.error || !response.data) {
+        const errorMessage = response.error || 'Login failed';
         setAuthState(prev => ({
           ...prev,
           isLoading: false,
-          error: result.error || 'Login failed',
+          error: errorMessage,
         }));
-        return { success: false, error: result.error || 'Login failed' };
+        return { success: false, error: errorMessage };
       }
 
-      // Success will be handled by the session effect
+      const { access, refresh, user } = response.data;
+      
+      // Store tokens
+      apiClient.setTokens(access, refresh);
+      
+      // Update auth state
+      setAuthState({
+        user: user as DjangoUser,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+        accessToken: access,
+        refreshToken: refresh,
+      });
+
       return { success: true };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
@@ -236,8 +194,13 @@ function DjangoAuthProviderInner({ children }: { children: ReactNode }) {
     }
 
     try {
-      const { confirmPassword, ...userData } = data;
-      const response = await apiClient.register(userData);
+      const { confirmPassword, firstName, lastName, githubUsername, ...userData } = data;
+      const response = await apiClient.register({
+        ...userData,
+        first_name: firstName,
+        last_name: lastName,
+        github_username: githubUsername
+      });
 
       if (response.error) {
         setAuthState(prev => ({
@@ -249,10 +212,7 @@ function DjangoAuthProviderInner({ children }: { children: ReactNode }) {
       }
 
       // After successful registration, sign in the user
-      const loginResult = await login({
-        email: data.email,
-        password: data.password,
-      });
+      const loginResult = await login(data.email, data.password);
 
       return loginResult;
     } catch (error) {
@@ -268,20 +228,62 @@ function DjangoAuthProviderInner({ children }: { children: ReactNode }) {
 
   const logout = async (): Promise<void> => {
     setAuthState(prev => ({ ...prev, isLoading: true }));
-    await signOut({ redirect: false });
-    router.push('/');
+    
+    try {
+      // Clear tokens from API client and localStorage
+      apiClient.clearTokens();
+      
+      // Update auth state
+      setAuthState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+        accessToken: null,
+        refreshToken: null,
+      });
+      
+      // Redirect to home
+      router.push('/');
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Still clear local state even if server logout fails
+      apiClient.clearTokens();
+      setAuthState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+        accessToken: null,
+        refreshToken: null,
+      });
+      router.push('/');
+    }
   };
 
   const signInWithGithub = async (): Promise<void> => {
     setAuthState(prev => ({ ...prev, isLoading: true, error: null }));
-    await signIn('github', { callbackUrl: '/dashboard' });
+    // TODO: Implement GitHub OAuth with Django backend
+    console.log('GitHub OAuth not implemented yet');
+    setAuthState(prev => ({ ...prev, isLoading: false, error: 'GitHub OAuth not implemented yet' }));
+  };
+
+  const signInWithDemo = async (role: 'client' | 'developer'): Promise<{ success: boolean; error?: string }> => {
+    // Demo credentials
+    const demoCredentials = {
+      client: { email: 'client@demo.com', password: 'demo123' },
+      developer: { email: 'dev@demo.com', password: 'demo123' }
+    };
+    
+    const credentials = demoCredentials[role];
+    return await login(credentials.email, credentials.password);
   };
 
   const refreshUser = async (): Promise<void> => {
     if (!authState.accessToken) return;
 
     try {
-      const response = await apiClient.getCurrentUser(authState.accessToken);
+      const response = await apiClient.getCurrentUser();
       
       if (response.data) {
         setAuthState(prev => ({
@@ -294,10 +296,25 @@ function DjangoAuthProviderInner({ children }: { children: ReactNode }) {
     }
   };
 
-  const isClient = (): boolean => authState.user?.user_type === 'client';
-  const isDeveloper = (): boolean => authState.user?.user_type === 'developer';
-  const isAdmin = (): boolean => authState.user?.user_type === 'admin';
-  const hasRole = (role: string): boolean => authState.user?.user_type === role;
+  const isClient = (): boolean => {
+    const user = authState.user;
+    return user?.role === 'client' || user?.user_type === 'client';
+  };
+  
+  const isDeveloper = (): boolean => {
+    const user = authState.user;
+    return user?.role === 'developer' || user?.user_type === 'freelancer';
+  };
+  
+  const isAdmin = (): boolean => {
+    const user = authState.user;
+    return user?.role === 'admin';
+  };
+  
+  const hasRole = (role: string): boolean => {
+    const user = authState.user;
+    return user?.role === role || user?.user_type === role;
+  };
 
   const contextValue: AuthContextType = {
     ...authState,
@@ -306,10 +323,12 @@ function DjangoAuthProviderInner({ children }: { children: ReactNode }) {
     logout,
     refreshUser,
     signInWithGithub,
+    signInWithDemo,
     isClient,
     isDeveloper,
     isAdmin,
     hasRole,
+    loading: authState.isLoading,
   };
 
   return (
@@ -319,14 +338,12 @@ function DjangoAuthProviderInner({ children }: { children: ReactNode }) {
   );
 }
 
-// Main Provider with SessionProvider wrapper
+// Main Provider - pure Django auth, no NextAuth
 export function DjangoAuthProvider({ children }: { children: ReactNode }) {
   return (
-    <SessionProvider>
-      <DjangoAuthProviderInner>
-        {children}
-      </DjangoAuthProviderInner>
-    </SessionProvider>
+    <DjangoAuthProviderInner>
+      {children}
+    </DjangoAuthProviderInner>
   );
 }
 

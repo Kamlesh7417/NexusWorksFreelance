@@ -42,10 +42,15 @@ export interface AuthTokens {
 export interface User {
   id: string;
   email: string;
-  role: 'client' | 'developer' | 'admin';
+  username: string;
+  first_name: string;
+  last_name: string;
+  role?: 'client' | 'developer' | 'admin';
+  user_type: 'freelancer' | 'client' | 'both';
   github_username?: string;
+  profile_completed: boolean;
   created_at: string;
-  is_verified: boolean;
+  is_verified?: boolean;
 }
 
 export interface DeveloperProfile {
@@ -268,6 +273,10 @@ class APIClient {
     if (typeof window !== 'undefined') {
       localStorage.setItem('access_token', accessToken);
       localStorage.setItem('refresh_token', refreshToken);
+      
+      // Also set cookies for middleware access
+      document.cookie = `access_token=${accessToken}; path=/; max-age=3600; SameSite=Lax`;
+      document.cookie = `refresh_token=${refreshToken}; path=/; max-age=604800; SameSite=Lax`;
     }
   }
 
@@ -278,6 +287,10 @@ class APIClient {
     if (typeof window !== 'undefined') {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
+      
+      // Also clear cookies
+      document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+      document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
     }
   }
 
@@ -303,10 +316,16 @@ class APIClient {
 
   // Authentication endpoints
   async login(email: string, password: string): Promise<APIResponse<AuthTokens & { user: User }>> {
-    return this.makeRequest('/auth/login/', {
+    const loginData = { username: email, password };
+    console.log('Sending login data:', loginData);
+    
+    const response = await this.makeRequest('/auth/login/', {
       method: 'POST',
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify(loginData),
     });
+    
+    console.log('Login response:', response);
+    return response;
   }
 
   async register(userData: {
@@ -314,10 +333,24 @@ class APIClient {
     password: string;
     role: 'client' | 'developer';
     github_username?: string;
+    first_name?: string;
+    last_name?: string;
   }): Promise<APIResponse<AuthTokens & { user: User }>> {
+    // Map frontend role to backend expected fields
+    const registrationData = {
+      username: userData.email, // Use email as username
+      email: userData.email,
+      password: userData.password,
+      password_confirm: userData.password, // Add password confirmation
+      role: userData.role,
+      first_name: userData.first_name || '',
+      last_name: userData.last_name || '',
+      github_username: userData.github_username || ''
+    };
+    
     return this.makeRequest('/auth/register/', {
       method: 'POST',
-      body: JSON.stringify(userData),
+      body: JSON.stringify(registrationData),
     });
   }
 

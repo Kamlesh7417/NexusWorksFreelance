@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth } from '@/components/auth/django-auth-provider';
 import { useFormWithRetry } from '@/lib/hooks/use-error-recovery';
 import { LoadingOverlay, RetryButton } from './loading-states';
 import { Button } from '@/components/ui/button';
@@ -56,7 +56,7 @@ interface PortfolioItem {
 }
 
 export function ProfileManager() {
-  const { user, profile, loading } = useAuth();
+  const { user, loading } = useDjangoAuth();
   const [formData, setFormData] = useState<ProfileFormData>({
     full_name: '',
     email: '',
@@ -93,28 +93,23 @@ export function ProfileManager() {
 
   // Initialize form data from profile
   useEffect(() => {
-    if (profile) {
+    if (user) {
       setFormData({
-        full_name: profile.full_name || '',
-        email: profile.email || '',
-        github_username: profile.github_username || '',
-        company: profile.company || '',
-        hourly_rate: profile.hourly_rate || 0,
-        experience_level: profile.experience_level || 'Intermediate',
-        bio: profile.bio || '',
-        location: profile.location || '',
-        website: profile.website || '',
-        phone: profile.phone || ''
+        full_name: `${user.first_name} ${user.last_name}`.trim() || '',
+        email: user.email || '',
+        github_username: user.github_username || '',
+        company: '', // TODO: Add to user model
+        hourly_rate: 0, // TODO: Add to user model  
+        experience_level: 'Intermediate',
+        bio: user.bio || '',
+        location: user.location || '',
+        website: '', // TODO: Add to user model
+        phone: '' // TODO: Add to user model
       });
 
-      // Initialize skills from profile
-      if (profile.skills) {
-        const profileSkills = profile.skills.map((skill: string) => ({
-          name: skill,
-          level: 'Intermediate' as const
-        }));
-        setSkills(profileSkills);
-      }
+      // Initialize with empty skills for now
+      // TODO: Load skills from Django backend
+      setSkills([]);
 
       // Initialize portfolio items (mock data for now)
       setPortfolioItems([
@@ -136,7 +131,7 @@ export function ProfileManager() {
         }
       ]);
     }
-  }, [profile]);
+  }, [user]);
 
   const handleInputChange = (field: keyof ProfileFormData, value: string | number) => {
     setFormData(prev => ({

@@ -30,7 +30,15 @@ class UserRegistrationSerializer(serializers.ModelSerializer):
         """Create new user"""
         validated_data.pop('password_confirm')
         role = validated_data.pop('role', 'developer')
-        validated_data['user_type'] = role
+        
+        # Set both user_type and role for compatibility
+        validated_data['user_type'] = 'freelancer' if role == 'developer' else 'client'
+        validated_data['role'] = role
+        
+        # If username is not provided, use email as username
+        if 'username' not in validated_data or not validated_data['username']:
+            validated_data['username'] = validated_data['email']
+        
         user = User.objects.create_user(**validated_data)
         return user
 
@@ -79,7 +87,7 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
         password = attrs.get('password')
         
         if username and password:
-            # Try to authenticate with username or email
+            # Try to authenticate with username first
             user = authenticate(username=username, password=password)
             if not user:
                 # Try with email as username
@@ -90,6 +98,9 @@ class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
                         attrs['username'] = user.username
                 except User.DoesNotExist:
                     pass
+            
+            if not user:
+                raise serializers.ValidationError('Invalid credentials')
         
         return super().validate(attrs)
     

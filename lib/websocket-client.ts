@@ -3,7 +3,7 @@
  * Handles WebSocket connections to Django Channels for real-time project management
  */
 
-import { realtimeSync } from './realtime-sync';
+// import { realtimeSync } from './realtime-sync';
 
 export interface WebSocketMessage {
   type: string;
@@ -132,14 +132,14 @@ class WebSocketClient {
   private handleMessage(message: WebSocketMessage): void {
     console.log('WebSocket message received:', message);
 
-    // Forward to realtime sync system
-    realtimeSync.handleExternalMessage({
-      type: message.type,
-      data: message.data,
-      timestamp: message.timestamp,
-      user_id: message.user_id,
-      project_id: message.project_id,
-    });
+    // Forward to realtime sync system - commented out for now
+    // realtimeSync.handleExternalMessage({
+    //   type: message.type,
+    //   data: message.data,
+    //   timestamp: message.timestamp,
+    //   user_id: message.user_id,
+    //   project_id: message.project_id,
+    // });
 
     // Handle specific message types
     switch (message.type) {

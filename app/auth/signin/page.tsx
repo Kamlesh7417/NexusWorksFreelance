@@ -4,15 +4,12 @@ import { useSearchParams } from 'next/navigation';
 import { AuthForms } from '@/components/auth/auth-forms';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { AuthProvider } from '@/components/auth/auth-provider';
-
 export default function SignInPage() {
   const searchParams = useSearchParams();
   const redirectTo = searchParams.get('redirectTo') || '/console';
 
   return (
-    <AuthProvider>
-      <div className="min-h-screen bg-black flex items-center justify-center p-4 animate-fadeIn">
+    <div className="min-h-screen bg-black flex items-center justify-center p-4 animate-fadeIn">
         <div className="max-w-md w-full">
           <div className="text-center mb-8">
             <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-float">
@@ -46,6 +43,5 @@ export default function SignInPage() {
           </div>
         </div>
       </div>
-    </AuthProvider>
   );
 }

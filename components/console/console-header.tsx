@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useConsole } from './unified-console';
-import { useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth } from '@/components/auth/django-auth-provider';
 import { NotificationCenter } from './notification-center';
 import { 
   Search, 
@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 
 export function ConsoleHeader() {
   const { state, setSearchQuery } = useConsole();
-  const { user, profile, signOut } = useAuth();
+  const { user, logout } = useDjangoAuth();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
@@ -58,7 +58,7 @@ export function ConsoleHeader() {
   };
 
   const handleSignOut = async () => {
-    await signOut();
+    await logout();
     setShowUserMenu(false);
   };
 
@@ -123,10 +123,10 @@ export function ConsoleHeader() {
               </div>
               <div className="hidden md:block text-left">
                 <p className="text-sm font-medium">
-                  {profile?.full_name || user?.email?.split('@')[0] || 'User'}
+                  {user?.first_name ? `${user.first_name} ${user.last_name}`.trim() : user?.email?.split('@')[0] || 'User'}
                 </p>
                 <p className="text-xs text-gray-400 capitalize">
-                  {user?.role || 'Member'}
+                  {user?.role || user?.user_type || 'Member'}
                 </p>
               </div>
               <ChevronDown className="w-4 h-4" />
@@ -137,7 +137,7 @@ export function ConsoleHeader() {
               <div className="absolute right-0 top-full mt-2 w-48 bg-gray-800 border border-gray-700 rounded-lg shadow-xl py-2 z-50">
                 <div className="px-4 py-2 border-b border-gray-700">
                   <p className="text-sm font-medium text-white">
-                    {profile?.full_name || user?.email?.split('@')[0] || 'User'}
+                    {user?.first_name || user?.email?.split('@')[0] || 'User'}
                   </p>
                   <p className="text-xs text-gray-400">
                     {user?.email}

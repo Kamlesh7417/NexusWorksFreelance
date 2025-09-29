@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useAuth } from './auth-provider';
+import { useDjangoAuth } from './django-auth-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -34,7 +34,7 @@ interface AuthFormsProps {
 }
 
 export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab = 'login' }: AuthFormsProps) {
-  const { login, register, signInWithDemo, loading, error } = useAuth();
+  const { login, register, loading, error } = useDjangoAuth();
   const router = useRouter();
   
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -63,8 +63,15 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
     console.log('Login attempt:', { email: loginForm.email, password: loginForm.password });
     const result = await login(loginForm.email, loginForm.password);
     console.log('Login result:', result);
+    
     if (result.success) {
-      router.push(redirectTo);
+      console.log('Login successful, redirecting to:', redirectTo);
+      // Add a small delay to ensure state is updated
+      setTimeout(() => {
+        router.push(redirectTo);
+      }, 100);
+    } else {
+      console.log('Login failed:', result.error);
     }
   };
 
@@ -76,6 +83,8 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
       confirmPassword: registerForm.confirmPassword,
       role: registerForm.role,
       githubUsername: registerForm.githubUsername || undefined,
+      firstName: registerForm.firstName,
+      lastName: registerForm.lastName,
     };
     const result = await register(registerData);
     if (result.success) {
@@ -113,7 +122,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
         <Label htmlFor="login-email" className="text-white">Email</Label>
         <Input
           id="login-email"
-          type="email"
+          type="text"
           placeholder="Enter your email"
           value={loginForm.email}
           onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
@@ -457,3 +466,34 @@ export function LoginForm({ redirectTo = '/console' }: { redirectTo?: string }) 
 export function RegisterForm({ redirectTo = '/console' }: { redirectTo?: string }) {
   return <AuthForms redirectTo={redirectTo} showTabs={false} defaultTab="register" />;
 }
+
+// Simple demo sign-in implementation
+async function signInWithDemo(role: 'client' | 'developer'): Promise<{ success: boolean; error?: string }> {
+  // Demo credentials for each role
+  const demoCredentials = {
+    client: { email: 'demo.client@nexusworks.com', password: 'demopassword' },
+    developer: { email: 'demo.developer@nexusworks.com', password: 'demopassword' },
+  };
+
+  const creds = demoCredentials[role];
+  if (!creds) {
+    return { success: false, error: 'Invalid demo role' };
+  }
+
+  // Simulate login using useDjangoAuth's login function
+  // This assumes window.djangoAuth is available, otherwise adapt as needed
+  try {
+    // Dynamically import the provider to avoid circular imports
+    const { useDjangoAuth } = await import('./django-auth-provider');
+    // Use the hook to get the login function
+    const { login } = useDjangoAuth();
+    const result = await login(creds.email, creds.password);
+    return result;
+  } catch (err) {
+    return { success: false, error: 'Demo login failed' };
+  }
+}
+
+// function signInWithDemo(role: string) {
+//   throw new Error('Function not implemented.');
+// }

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { AuthButton } from '@/components/auth/auth-button';
 import { HomePage } from '@/components/pages/home-page';
@@ -31,7 +32,14 @@ export default function Home() {
         {/* Header with Enhanced Navigation */}
         <header className="nexus-header">
           <div className="flex items-center gap-4">
-            <Logo size="medium" />
+            {/* <Logo size="medium" /> */}
+              <Image
+              src="/images/logo.png"
+              alt="NexusWorks Logo"
+              width={40}  // or any size you want
+              height={40}
+              className="object-contain"
+            />
             <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 to-blue-600 bg-clip-text text-transparent">
               NexusWorks
             </h1>

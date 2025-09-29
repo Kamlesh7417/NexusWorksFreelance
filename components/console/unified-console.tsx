@@ -9,19 +9,20 @@ import { ConsoleMainContent } from './console-main-content';
 import { OfflineIndicator } from './offline-indicator';
 import { ErrorBoundary } from './error-boundary';
 import { PageLoader } from './loading-states';
-import { PerformanceMonitorDev } from './performance-monitor-dev';
-import { useRealtimeUpdates } from '@/lib/services/realtime-update-service';
-import { useNotifications } from '@/lib/services/notification-service';
-import { messageWebSocket } from '@/lib/services/message-websocket';
-import { performanceMonitor } from '@/lib/services/performance-monitor';
+// import { PerformanceMonitorDev } from './performance-monitor-dev';
+// WebSocket imports commented out for now - will enable later
+// import { useRealtimeUpdates } from '@/lib/services/realtime-update-service';
+// import { useNotifications } from '@/lib/services/notification-service';
+// import { messageWebSocket } from '@/lib/services/message-websocket';
+// import { performanceMonitor } from '@/lib/services/performance-monitor';
 
 // Console section types
-export type ConsoleSection = 
-  | 'dashboard' 
-  | 'profile' 
-  | 'messages' 
-  | 'projects' 
-  | 'payments' 
+export type ConsoleSection =
+  | 'dashboard'
+  | 'profile'
+  | 'messages'
+  | 'projects'
+  | 'payments'
   | 'settings';
 
 // Console state interface
@@ -78,7 +79,7 @@ export const ConsoleProvider = memo(function ConsoleProvider({ children, initial
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user } = useDjangoAuth();
-  
+
   const [state, setState] = useState<ConsoleState>({
     currentSection: initialSection,
     sidebarCollapsed: false,
@@ -87,18 +88,18 @@ export const ConsoleProvider = memo(function ConsoleProvider({ children, initial
     sectionStates: {},
   });
 
-  // Initialize real-time services
-  const { subscribe: subscribeToUpdates, getConnectionStatus } = useRealtimeUpdates();
-  const { addNotification } = useNotifications();
+  // Initialize real-time services - commented out for now
+  // const { subscribe: subscribeToUpdates, getConnectionStatus } = useRealtimeUpdates();
+  // const { addNotification } = useNotifications();
 
   // Load state from localStorage and URL on mount
   useEffect(() => {
     // First check URL for section parameter
     const urlSection = searchParams.get('section') as ConsoleSection;
     const validSections: ConsoleSection[] = ['dashboard', 'profile', 'messages', 'projects', 'payments', 'settings'];
-    
+
     let targetSection = initialSection;
-    
+
     if (urlSection && validSections.includes(urlSection)) {
       targetSection = urlSection;
     } else {
@@ -157,7 +158,7 @@ export const ConsoleProvider = memo(function ConsoleProvider({ children, initial
       } else {
         url.searchParams.set('section', state.currentSection);
       }
-      
+
       // Use replace to avoid adding to browser history for every section change
       router.replace(url.pathname + url.search, { scroll: false });
     }
@@ -167,97 +168,54 @@ export const ConsoleProvider = memo(function ConsoleProvider({ children, initial
   useEffect(() => {
     if (!user) return;
 
-    // Mark console initialization
-    performanceMonitor.mark('console-init-start');
+    // WebSocket and real-time features commented out for now
+    console.log('Console initialized for user:', user?.username);
 
-    // Connect message WebSocket
-    messageWebSocket.connect(user.id?.toString());
+    // TODO: Re-enable when WebSocket server is ready
+    // performanceMonitor.mark('console-init-start');
+    // messageWebSocket.connect(user.id?.toString());
+    // const unsubscribeUpdates = subscribeToUpdates('*', (update: any) => { ... });
+    // performanceMonitor.mark('console-init-end');
 
-    // Subscribe to real-time updates
-    const unsubscribeUpdates = subscribeToUpdates('*', (update: any) => {
-      // Create notifications for important updates
-      if (update.type === 'message' && update.action === 'created') {
-        addNotification({
-          type: 'message',
-          priority: 'medium',
-          title: 'New Message',
-          message: 'You have received a new message',
-          read: false,
-          persistent: true,
-          conversationId: update.conversationId,
-        });
-      } else if (update.type === 'project' && update.action === 'updated') {
-        addNotification({
-          type: 'project',
-          priority: 'medium',
-          title: 'Project Updated',
-          message: 'A project you\'re involved in has been updated',
-          read: false,
-          persistent: true,
-          projectId: update.projectId,
-        });
-      } else if (update.type === 'payment' && update.action === 'updated') {
-        addNotification({
-          type: 'payment',
-          priority: 'high',
-          title: 'Payment Update',
-          message: 'There has been an update to a payment',
-          read: false,
-          persistent: true,
-          projectId: update.projectId,
-        });
-      }
-    });
-
-    // Mark console initialization complete
-    performanceMonitor.mark('console-init-end');
-    performanceMonitor.measure('console-initialization', 'console-init-start', 'console-init-end');
-
-    // Log performance summary after initialization
-    setTimeout(() => {
-      performanceMonitor.logPerformanceSummary();
-    }, 1000);
-
-    // Cleanup on unmount or user change
+    // Cleanup function (empty for now)
     return () => {
-      unsubscribeUpdates();
-      messageWebSocket.disconnect();
+      console.log('Console cleanup');
     };
-  }, [user, subscribeToUpdates, addNotification]);
+  }, [user]);
 
-  // Monitor connection status and show notifications
-  useEffect(() => {
-    const checkConnection = () => {
-      const status = getConnectionStatus();
-      
-      // Show connection status notifications
-      if (status.overall === 'disconnected') {
-        addNotification({
-          type: 'warning',
-          priority: 'medium',
-          title: 'Connection Lost',
-          message: 'Real-time updates are temporarily unavailable',
-          read: false,
-          persistent: false,
-        });
-      }
-    };
+  // Monitor connection status and show notifications - commented out for now
+  // useEffect(() => {
+  //   const checkConnection = () => {
+  //     const status = getConnectionStatus();
+  //     
+  //     // Show connection status notifications
+  //     if (status.overall === 'disconnected') {
+  //       addNotification({
+  //         type: 'warning',
+  //         priority: 'medium',
+  //         title: 'Connection Lost',
+  //         message: 'Real-time updates are temporarily unavailable',
+  //         read: false,
+  //         persistent: false,
+  //       });
+  //     }
+  //   };
 
-    // Check connection status periodically
-    const interval = setInterval(checkConnection, 30000); // Check every 30 seconds
-    
-    return () => clearInterval(interval);
-  }, [getConnectionStatus, addNotification]);
+  //   // Check connection status periodically
+  //   const interval = setInterval(checkConnection, 30000); // Check every 30 seconds
+  //   
+  //   return () => clearInterval(interval);
+  // }, [getConnectionStatus, addNotification]);
 
   // Memoized callback functions to prevent unnecessary re-renders
   const setCurrentSection = useCallback((section: ConsoleSection) => {
-    // Measure section switching performance
-    const endMeasurement = performanceMonitor.measureSectionSwitch(state.currentSection, section);
-    
+    // Performance monitoring commented out for now
+    // const endMeasurement = performanceMonitor.measureSectionSwitch(state.currentSection, section);
+
     setState(prev => ({ ...prev, currentSection: section }));
-    
+
     // End measurement after state update
-    setTimeout(endMeasurement, 0);
+    // setTimeout(endMeasurement, 0);
   }, [state.currentSection]);
 
   const toggleSidebar = useCallback(() => {
@@ -337,19 +295,22 @@ interface UnifiedConsoleProps {
 
 // Main unified console component
 export function UnifiedConsole({ initialSection = 'dashboard' }: UnifiedConsoleProps) {
-  const { user, isLoading: loading } = useDjangoAuth();
+  const { user, loading, isAuthenticated } = useDjangoAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  // Debug logging
+  console.log('Console auth state:', { user: !!user, loading, isAuthenticated });
 
   // Get initial section from URL or use default
   const getInitialSection = (): ConsoleSection => {
     const urlSection = searchParams.get('section') as ConsoleSection;
     const validSections: ConsoleSection[] = ['dashboard', 'profile', 'messages', 'projects', 'payments', 'settings'];
-    
+
     if (urlSection && validSections.includes(urlSection)) {
       return urlSection;
     }
-    
+
     return initialSection;
   };
 
@@ -389,22 +350,20 @@ export function UnifiedConsole({ initialSection = 'dashboard' }: UnifiedConsoleP
         <div className="min-h-screen bg-black text-white flex">
           {/* Offline indicator */}
           <OfflineIndicator />
-          
-          {/* Performance monitor (dev only) */}
-          <PerformanceMonitorDev />
-          
+
+          {/* Performance monitor (dev only) - commented out for now */}
+          {/* <PerformanceMonitorDev /> */}
+
           {/* Sidebar */}
           <ErrorBoundary section="sidebar">
             <ConsoleSidebar />
           </ErrorBoundary>
-          
+
           {/* Main content area */}
           <div className="flex-1 flex flex-col min-h-screen">
             {/* Header */}
-            <ErrorBoundary section="header">
-              <ConsoleHeader />
-            </ErrorBoundary>
-            
+            <ConsoleHeader />
+
             {/* Main content */}
             <main className="flex-1 overflow-hidden">
               <ConsoleMainContent />

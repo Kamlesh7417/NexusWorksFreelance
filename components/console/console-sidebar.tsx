@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useConsole, ConsoleSection } from './unified-console';
-import { useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth } from '@/components/auth/django-auth-provider';
 import { 
   LayoutDashboard, 
   User, 
@@ -37,7 +37,7 @@ interface QuickAction {
 
 export function ConsoleSidebar() {
   const { state, setCurrentSection, toggleSidebar } = useConsole();
-  const { user, hasRole } = useAuth();
+  const { user, hasRole } = useDjangoAuth();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
   // Navigation items configuration

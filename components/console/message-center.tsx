@@ -1,11 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { useAuth } from '@/components/auth/auth-provider';
+// import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import { useDjangoAuth } from '@/components/auth/django-auth-provider';
 import { useConsole } from './unified-console';
-import { useRealtimeMessageData, useConnectionStatus } from '@/lib/hooks/use-realtime-data';
-import { useMessageWebSocket } from '@/lib/services/message-websocket';
+// import { useRealtimeMessageData, useConnectionStatus } from '@/lib/hooks/use-realtime-data';
+// import { useMessageWebSocket } from '@/lib/services/message-websocket';
 import { 
   Search, 
   Send, 
@@ -67,7 +67,7 @@ interface MessageCenterProps {
 }
 
 export function MessageCenter({ className = '' }: MessageCenterProps) {
-  const { user } = useAuth();
+  const { user } = useDjangoAuth();
   const { addNotification } = useConsole();
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<Conversation[]>([]);

@@ -46,6 +46,7 @@ class UserRegistrationView(generics.CreateAPIView):
                     'first_name': user.first_name,
                     'last_name': user.last_name,
                     'user_type': user.user_type,
+                    'role': getattr(user, 'role', user.user_type),
                     'profile_completed': user.profile_completed,
                     'github_username': user.github_username,
                 }
@@ -74,6 +75,7 @@ class CustomTokenObtainPairView(TokenObtainPairView):
                     'first_name': user.first_name,
                     'last_name': user.last_name,
                     'user_type': user.user_type,
+                    'role': getattr(user, 'role', user.user_type),
                     'profile_completed': user.profile_completed,
                     'github_username': user.github_username,
                 }
@@ -147,6 +149,7 @@ def github_oauth_view(request):
                         'first_name': user.first_name,
                         'last_name': user.last_name,
                         'user_type': user.user_type,
+                        'role': getattr(user, 'role', user.user_type),
                         'profile_completed': user.profile_completed,
                         'github_username': user.github_username,
                     },
@@ -174,6 +177,7 @@ def current_user_view(request):
         'first_name': user.first_name,
         'last_name': user.last_name,
         'user_type': user.user_type,
+        'role': getattr(user, 'role', user.user_type),
         'profile_completed': user.profile_completed,
         'github_username': user.github_username,
         'bio': user.bio,

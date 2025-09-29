@@ -1,11 +1,14 @@
-import { withAuth } from 'next-auth/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export default withAuth(
-  function middleware(req: NextRequest & { nextauth: { token: any } }) {
-    const { pathname, searchParams } = req.nextUrl;
-    const token = req.nextauth?.token;
+export function middleware(req: NextRequest) {
+  const { pathname, searchParams } = req.nextUrl;
+  
+  // Check for Django JWT token in cookies or headers
+  const accessToken = req.cookies.get('access_token')?.value || 
+                     req.headers.get('authorization')?.replace('Bearer ', '');
+  
+  const isAuthenticated = !!accessToken;
 
     // Protected routes that require authentication
     const protectedRoutes = ['/dashboard', '/console', '/profile', '/projects/create', '/messages'];
@@ -37,22 +40,22 @@ export default withAuth(
     );
 
     // Redirect authenticated users from signin route to console
-    if (isAuthRoute && token) {
+    if (isAuthRoute && isAuthenticated) {
       return NextResponse.redirect(new URL('/console', req.url));
     }
 
     // Allow authenticated users to access onboarding
-    if (isOnboardingRoute && token) {
+    if (isOnboardingRoute && isAuthenticated) {
       return NextResponse.next();
     }
 
     // Redirect unauthenticated users from onboarding to signin
-    if (isOnboardingRoute && !token) {
+    if (isOnboardingRoute && !isAuthenticated) {
       return NextResponse.redirect(new URL('/auth/signin', req.url));
     }
 
     // Handle legacy route redirects to console with section parameter
-    if (token && legacyRoutes[pathname]) {
+    if (isAuthenticated && legacyRoutes[pathname]) {
       const section = legacyRoutes[pathname];
       const url = new URL('/console', req.url);
       url.searchParams.set('section', section);
@@ -68,7 +71,7 @@ export default withAuth(
     }
     
     // Handle project-specific routes redirect to console
-    if (token && isProjectRoute) {
+    if (isAuthenticated && isProjectRoute) {
       const [, projectId, subPath] = projectRouteMatch!;
       const url = new URL('/console', req.url);
       url.searchParams.set('section', 'projects');
@@ -88,38 +91,15 @@ export default withAuth(
       return NextResponse.redirect(url);
     }
 
-    // Check if user needs onboarding (when accessing dashboard or console)
-    if (token && (pathname === '/dashboard' || pathname === '/console')) {
-      // Check if profile is complete
-      if (!token.profileCompleted) {
-        return NextResponse.redirect(new URL('/onboarding', req.url));
-      }
+    // Redirect unauthenticated users from protected routes to signin
+    if (isProtectedRoute && !isAuthenticated) {
+      const signInUrl = new URL('/auth/signin', req.url);
+      signInUrl.searchParams.set('redirectTo', pathname);
+      return NextResponse.redirect(signInUrl);
     }
 
     return NextResponse.next();
-  },
-  {
-    callbacks: {
-      authorized: ({ token, req }) => {
-        const { pathname } = req.nextUrl;
-        
-        // Protected routes require authentication
-        const protectedRoutes = ['/dashboard', '/profile', '/projects/create', '/messages'];
-        const isProtectedRoute = protectedRoutes.some(route => 
-          pathname.startsWith(route)
-        );
-
-        // Allow access to protected routes only if authenticated
-        if (isProtectedRoute) {
-          return !!token;
-        }
-
-        // Allow access to all other routes
-        return true;
-      },
-    },
-  }
-);
+}
 
 export const config = {
   matcher: [

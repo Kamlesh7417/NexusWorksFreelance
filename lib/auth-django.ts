@@ -23,6 +23,8 @@ export interface RegisterData {
   confirmPassword: string;
   role: 'client' | 'developer';
   githubUsername?: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 class DjangoAuthService {
@@ -50,9 +52,16 @@ class DjangoAuthService {
       const accessToken = localStorage.getItem('access_token');
       const refreshToken = localStorage.getItem('refresh_token');
       
+      console.log('Auth initialization - tokens found:', { accessToken: !!accessToken, refreshToken: !!refreshToken }); // Debug log
+      
       if (accessToken && refreshToken) {
+        // Set tokens in API client
+        apiClient.setTokens(accessToken, refreshToken);
+        
         // Verify token validity by fetching current user
         const response = await apiClient.getCurrentUser();
+        
+        console.log('Auth initialization - user fetch response:', response); // Debug log
         
         if (response.data && !response.error) {
           this.setAuthState({
@@ -61,11 +70,14 @@ class DjangoAuthService {
             isLoading: false,
             error: null,
           });
+          console.log('Auth initialization - user restored from tokens'); // Debug log
         } else {
           // Token is invalid, clear it
+          console.log('Auth initialization - tokens invalid, clearing'); // Debug log
           this.clearAuth();
         }
       } else {
+        console.log('Auth initialization - no tokens found'); // Debug log
         this.setLoading(false);
       }
     } catch (error) {
@@ -124,8 +136,12 @@ class DjangoAuthService {
     try {
       const response = await apiClient.login(credentials.email, credentials.password);
       
-      if (response.data && !response.error) {
+      console.log('Login response:', response); // Debug log
+      
+      if (response.data && !response.error && response.status === 200) {
         const { access, refresh, user } = response.data;
+        
+        console.log('Login success - tokens:', { access: !!access, refresh: !!refresh, user: !!user }); // Debug log
         
         // Store tokens
         apiClient.setTokens(access, refresh);
@@ -138,9 +154,12 @@ class DjangoAuthService {
           error: null,
         });
         
+        console.log('Auth state updated:', this.getAuthState()); // Debug log
+        
         return { success: true };
       } else {
-        const errorMessage = response.error || 'Login failed';
+        const errorMessage = response.error || `Login failed with status ${response.status}`;
+        console.log('Login failed:', errorMessage, response); // Debug log
         this.setAuthState({
           isLoading: false,
           error: errorMessage,
@@ -150,6 +169,7 @@ class DjangoAuthService {
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Network error';
+      console.error('Login error:', error); // Debug log
       this.setAuthState({
         isLoading: false,
         error: errorMessage,
@@ -172,8 +192,13 @@ class DjangoAuthService {
     }
 
     try {
-      const { confirmPassword, ...userData } = registerData;
-      const response = await apiClient.register(userData);
+      const { confirmPassword, githubUsername, firstName, lastName, ...userData } = registerData;
+      const response = await apiClient.register({
+        ...userData,
+        github_username: githubUsername,
+        first_name: firstName,
+        last_name: lastName
+      });
       
       if (response.data && !response.error) {
         const { access, refresh, user } = response.data;
@@ -243,19 +268,23 @@ class DjangoAuthService {
   }
 
   public isClient(): boolean {
-    return this.authState.user?.role === 'client';
+    const user = this.authState.user;
+    return user?.role === 'client' || user?.user_type === 'client';
   }
 
   public isDeveloper(): boolean {
-    return this.authState.user?.role === 'developer';
+    const user = this.authState.user;
+    return user?.role === 'developer' || user?.user_type === 'freelancer';
   }
 
   public isAdmin(): boolean {
-    return this.authState.user?.role === 'admin';
+    const user = this.authState.user;
+    return user?.role === 'admin';
   }
 
   public hasRole(role: string): boolean {
-    return this.authState.user?.role === role;
+    const user = this.authState.user;
+    return user?.role === role || user?.user_type === role;
   }
 
   public getUserId(): string | null {
@@ -269,6 +298,11 @@ class DjangoAuthService {
 
 // Export singleton instance
 export const djangoAuth = new DjangoAuthService();
+
+// Add to window for debugging
+if (typeof window !== 'undefined') {
+  (window as any).djangoAuth = djangoAuth;
+}
 
 // React hook for using Django auth in components
 export function useDjangoAuth() {

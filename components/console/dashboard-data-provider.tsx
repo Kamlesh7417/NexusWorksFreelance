@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAuth } from '../auth/auth-provider';
+import { useDjangoAuth } from '../auth/django-auth-provider';
 
 interface DashboardData {
   stats: {
@@ -74,7 +74,7 @@ interface DashboardDataProviderProps {
 }
 
 export function DashboardDataProvider({ children }: DashboardDataProviderProps) {
-  const { user, profile } = useAuth();
+  const { user } = useDjangoAuth();
   const [data, setData] = useState<DashboardData>({
     stats: {
       totalProjects: 0,
