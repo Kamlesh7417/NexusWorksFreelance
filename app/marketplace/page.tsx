@@ -1,7 +1,7 @@
 'use client';
 
 import { MarketplacePage } from '@/components/pages/marketplace-page';
-import { AuthProvider } from '@/components/auth/auth-provider';
+
 
 export default function Marketplace() {
   return (

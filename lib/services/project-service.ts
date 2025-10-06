@@ -113,6 +113,48 @@ class ProjectService {
   }
 
   /**
+   * Update task with Django /api/projects/tasks/ endpoint
+   */
+  async updateTaskWithDjango(taskId: string, updates: Partial<Task>): Promise<APIResponse<Task>> {
+    return apiClient.makeRequest(`/projects/tasks/${taskId}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  /**
+   * Create task with Django /api/projects/tasks/ endpoint
+   */
+  async createTaskWithDjango(projectId: string, taskData: Partial<Task>): Promise<APIResponse<Task>> {
+    return apiClient.makeRequest('/projects/tasks/', {
+      method: 'POST',
+      body: JSON.stringify({
+        project: projectId,
+        ...taskData
+      }),
+    });
+  }
+
+  /**
+   * Delete task with Django /api/projects/tasks/ endpoint
+   */
+  async deleteTaskWithDjango(taskId: string): Promise<APIResponse<void>> {
+    return apiClient.makeRequest(`/projects/tasks/${taskId}/`, {
+      method: 'DELETE',
+    });
+  }
+
+  /**
+   * Assign developer to task with Django API
+   */
+  async assignDeveloperToTaskWithDjango(taskId: string, developerId: string): Promise<APIResponse<Task>> {
+    return this.updateTaskWithDjango(taskId, {
+      assigned_developer: developerId,
+      status: 'assigned'
+    });
+  }
+
+  /**
    * Assign developer to a task
    */
   async assignDeveloperToTask(taskId: string, developerId: string): Promise<APIResponse<Task>> {
@@ -123,7 +165,7 @@ class ProjectService {
    * Mark task as completed
    */
   async completeTask(taskId: string, completionNotes?: string): Promise<APIResponse<Task>> {
-    return this.updateTask(taskId, { 
+    return this.updateTask(taskId, {
       status: 'completed',
       completion_percentage: 100,
     });
@@ -205,6 +247,63 @@ class ProjectService {
   }
 
   /**
+   * Send team invitation with Django /api/projects/team-invitations/ endpoint
+   */
+  async sendTeamInvitation(projectId: string, invitationData: {
+    developer_id: string;
+    task_ids: string[];
+    custom_message?: string;
+  }): Promise<APIResponse<any>> {
+    return apiClient.makeRequest('/projects/team-invitations/', {
+      method: 'POST',
+      body: JSON.stringify({
+        project: projectId,
+        ...invitationData
+      }),
+    });
+  }
+
+  /**
+   * Respond to team invitation with Django API
+   */
+  async respondToTeamInvitation(invitationId: string, action: 'accept' | 'decline'): Promise<APIResponse<any>> {
+    return apiClient.makeRequest(`/projects/team-invitations/${invitationId}/${action}/`, {
+      method: 'POST',
+    });
+  }
+
+  /**
+   * Remove developer from team with Django API
+   */
+  async removeDeveloperFromTeam(projectId: string, developerId: string): Promise<APIResponse<any>> {
+    return apiClient.makeRequest(`/projects/${projectId}/team-members/${developerId}/`, {
+      method: 'DELETE',
+    });
+  }
+
+  /**
+   * Get available developers for invitation
+   */
+  async getAvailableDevelopers(projectId: string, filters?: {
+    skills?: string[];
+    experience_level?: string;
+    hourly_rate_max?: number;
+  }): Promise<APIResponse<any[]>> {
+    const queryParams = new URLSearchParams();
+    if (filters?.skills) {
+      queryParams.append('skills', filters.skills.join(','));
+    }
+    if (filters?.experience_level) {
+      queryParams.append('experience_level', filters.experience_level);
+    }
+    if (filters?.hourly_rate_max) {
+      queryParams.append('hourly_rate_max', filters.hourly_rate_max.toString());
+    }
+
+    return apiClient.makeRequest(`/projects/${projectId}/available-developers/?${queryParams.toString()}`);
+  }
+
+  /**
    * Get project activity feed
    */
   async getProjectActivity(projectId: string, limit?: number): Promise<APIResponse<any[]>> {
@@ -217,6 +316,16 @@ class ProjectService {
    */
   async getProjectConsole(projectId: string, endpoint: string = 'dashboard'): Promise<APIResponse<any>> {
     return apiClient.makeRequest(`/projects/${projectId}/console?endpoint=${endpoint}`);
+  }
+
+  /**
+   * Get comprehensive project console data from Django /api/projects/console/ endpoint
+   */
+  async getProjectConsoleData(projectId: string): Promise<APIResponse<any>> {
+    return apiClient.makeRequest(`/projects/console/`, {
+      method: 'POST',
+      body: JSON.stringify({ project_id: projectId }),
+    });
   }
 
   /**
@@ -264,7 +373,7 @@ class ProjectService {
    * Cancel project
    */
   async cancelProject(projectId: string, reason: string): Promise<APIResponse<Project>> {
-    return this.updateProject(projectId, { 
+    return this.updateProject(projectId, {
       status: 'cancelled',
     });
   }

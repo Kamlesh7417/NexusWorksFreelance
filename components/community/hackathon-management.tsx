@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Trophy, Users, Calendar, Code, Award, Plus, UserPlus, Send } from 'lucide-react';
 import { communityService, Hackathon, HackathonTeam, HackathonSubmission } from '@/lib/services/community-service';
-import { useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth as useAuth } from '@/components/auth/django-auth-provider';
 
 interface HackathonManagementProps {
   hackathons: Hackathon[];

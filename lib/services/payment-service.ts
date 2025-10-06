@@ -162,6 +162,78 @@ class PaymentService {
   }
 
   /**
+   * Process milestone payment with Django /api/payments/ endpoint
+   */
+  async processMilestonePaymentWithDjango(paymentData: {
+    milestone_id: string;
+    project_id: string;
+  }): Promise<APIResponse<any>> {
+    return apiClient.makeRequest(`/payments/${paymentData.milestone_id}/process/`, {
+      method: 'POST',
+      body: JSON.stringify({
+        project_id: paymentData.project_id
+      }),
+    });
+  }
+
+  /**
+   * Create milestone with Django /api/projects/milestones/ endpoint
+   */
+  async createMilestoneWithDjango(projectId: string, milestoneData: {
+    percentage: number;
+    amount: number;
+    due_date: string;
+    description?: string;
+  }): Promise<APIResponse<Milestone>> {
+    return apiClient.makeRequest('/projects/milestones/', {
+      method: 'POST',
+      body: JSON.stringify({
+        project: projectId,
+        ...milestoneData
+      }),
+    });
+  }
+
+  /**
+   * Update milestone with Django API
+   */
+  async updateMilestoneWithDjango(milestoneId: string, updates: Partial<Milestone>): Promise<APIResponse<Milestone>> {
+    return apiClient.makeRequest(`/projects/milestones/${milestoneId}/`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    });
+  }
+
+  /**
+   * Delete milestone with Django API
+   */
+  async deleteMilestoneWithDjango(milestoneId: string): Promise<APIResponse<void>> {
+    return apiClient.makeRequest(`/projects/milestones/${milestoneId}/`, {
+      method: 'DELETE',
+    });
+  }
+
+  /**
+   * Get milestone payment history with Django API
+   */
+  async getMilestonePaymentHistory(milestoneId: string): Promise<APIResponse<Payment[]>> {
+    return apiClient.makeRequest(`/payments/?milestone=${milestoneId}`);
+  }
+
+  /**
+   * Get project payment summary with Django API
+   */
+  async getProjectPaymentSummary(projectId: string): Promise<APIResponse<{
+    total_budget: number;
+    paid_amount: number;
+    pending_amount: number;
+    milestones: Milestone[];
+    payment_health: string;
+  }>> {
+    return apiClient.makeRequest(`/payments/project-summary/${projectId}/`);
+  }
+
+  /**
    * Get payment distribution for a milestone
    */
   async getPaymentDistribution(milestoneId: string): Promise<APIResponse<PaymentDistribution[]>> {

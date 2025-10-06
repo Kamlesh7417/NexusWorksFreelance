@@ -132,25 +132,84 @@ export function MilestonePaymentTracker({
     return statusMap[status as keyof typeof statusMap] || statusMap.pending;
   };
 
-  // Process milestone payment
+  // Process milestone payment with Django API integration
   const processMilestonePayment = useCallback(async (milestoneId: string) => {
     if (!hasPermission('manage_budget')) return;
 
     try {
       setProcessingPayment(milestoneId);
-      await paymentService.processMilestonePayment({
+      
+      const response = await paymentService.processMilestonePaymentWithDjango({
         milestone_id: milestoneId,
-        amount: 0, // This would be calculated based on milestone
-        distributions: [],
-        payment_method_id: 'default'
+        project_id: projectDetails.id
       });
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
       // Refresh data would be called here
+      window.dispatchEvent(new CustomEvent('paymentUpdate', { 
+        detail: { projectId: projectDetails.id, milestoneId } 
+      }));
+      
     } catch (error) {
       console.error('Failed to process payment:', error);
     } finally {
       setProcessingPayment(null);
     }
   }, [hasPermission, projectDetails.id]);
+
+  // Create new milestone
+  const createMilestone = useCallback(async (milestoneData: {
+    percentage: number;
+    amount: number;
+    due_date: string;
+    description?: string;
+  }) => {
+    if (!hasPermission('manage_budget')) return;
+
+    try {
+      const response = await paymentService.createMilestoneWithDjango(projectDetails.id, milestoneData);
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      // Refresh data
+      window.dispatchEvent(new CustomEvent('paymentUpdate', { 
+        detail: { projectId: projectDetails.id } 
+      }));
+      
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create milestone:', error);
+      throw error;
+    }
+  }, [hasPermission, projectDetails.id]);
+
+  // Update milestone
+  const updateMilestone = useCallback(async (milestoneId: string, updates: any) => {
+    if (!hasPermission('manage_budget')) return;
+
+    try {
+      const response = await paymentService.updateMilestoneWithDjango(milestoneId, updates);
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      // Refresh data
+      window.dispatchEvent(new CustomEvent('paymentUpdate', { 
+        detail: { projectId: projectDetails.id, milestoneId } 
+      }));
+      
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update milestone:', error);
+      throw error;
+    }
+  }, [hasPermission]);
 
   // Calculate milestone progress based on task completion
   const calculateMilestoneProgress = (milestonePercentage: number) => {

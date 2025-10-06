@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { AuthProvider } from '@/components/auth/auth-provider';
+
 import { AuthButton } from '@/components/auth/auth-button';
 import { HomePage } from '@/components/pages/home-page';
 import { MarketplacePage } from '@/components/pages/marketplace-page';
@@ -11,6 +11,7 @@ import { CommunityPage } from '@/components/pages/community-page';
 import EnhancedAIAssistant from '@/components/ai/enhanced-ai-assistant';
 import { LoadingOverlay } from '@/components/ui/loading-overlay';
 import { Logo } from '@/components/ui/logo';
+import { DjangoAuthProvider } from '@/components/auth/django-auth-provider';
 
 export type PageType = 'home' | 'marketplace' | 'learning' | 'community';
 
@@ -27,13 +28,13 @@ export default function Home() {
   };
 
   return (
-    <AuthProvider>
+    <DjangoAuthProvider>
       <div className="min-h-screen bg-gradient-to-br from-gray-900 via-gray-800 to-black">
         {/* Header with Enhanced Navigation */}
         <header className="nexus-header">
           <div className="flex items-center gap-4">
             {/* <Logo size="medium" /> */}
-              <Image
+            <Image
               src="/images/logo.png"
               alt="NexusWorks Logo"
               width={40}  // or any size you want
@@ -44,7 +45,7 @@ export default function Home() {
               NexusWorks
             </h1>
           </div>
-          
+
           <nav className="nexus-nav">
             <ul>
               <li>
@@ -109,7 +110,7 @@ export default function Home() {
         </header>
 
         <EnhancedAIAssistant />
-        
+
         <main className="nexus-container">
           <div className="transition-all duration-300 ease-in-out">
             {currentPage === 'home' && <HomePage />}
@@ -118,21 +119,21 @@ export default function Home() {
             {currentPage === 'community' && <CommunityPage onPageChange={switchPage} />}
           </div>
         </main>
-        
+
         <footer className="nexus-footer">
           <div className="max-w-6xl mx-auto">
             <p>&copy; 2024 NexusWorks. The Future of Freelancing.</p>
             <div className="mt-2">
-              <a href="#" className="hover:text-cyan-400 transition-colors">Terms of Service</a> | 
-              <a href="#" className="hover:text-cyan-400 transition-colors"> Privacy Policy</a> | 
-              <a href="#" className="hover:text-cyan-400 transition-colors"> Contact Us</a> | 
+              <a href="#" className="hover:text-cyan-400 transition-colors">Terms of Service</a> |
+              <a href="#" className="hover:text-cyan-400 transition-colors"> Privacy Policy</a> |
+              <a href="#" className="hover:text-cyan-400 transition-colors"> Contact Us</a> |
               <a href="#" className="hover:text-cyan-400 transition-colors"> Support</a>
             </div>
           </div>
         </footer>
-        
+
         {isLoading && <LoadingOverlay />}
       </div>
-    </AuthProvider>
+    </DjangoAuthProvider>
   );
 }

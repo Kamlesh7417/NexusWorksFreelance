@@ -14,7 +14,7 @@ import { SkillAssessment } from '@/components/learning/skill-assessment';
 import { LearningAnalytics } from '@/components/learning/learning-analytics';
 import { learningService, LearningPath, Course, CourseEnrollment as CourseEnrollmentType } from '@/lib/services/learning-service';
 import { isSuccessResponse } from '@/lib/api-client';
-import { useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth as useAuth } from '@/components/auth/django-auth-provider';
 
 export default function LearningPage() {
   const { user } = useAuth();

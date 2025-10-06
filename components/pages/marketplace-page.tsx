@@ -8,15 +8,15 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  Star, 
-  Heart, 
-  Search, 
-  Filter, 
-  TrendingUp, 
-  Users, 
-  Briefcase, 
-  Clock, 
+import {
+  Star,
+  Heart,
+  Search,
+  Filter,
+  TrendingUp,
+  Users,
+  Briefcase,
+  Clock,
   DollarSign,
   MapPin,
   Award,
@@ -27,14 +27,14 @@ import {
   Crown
 } from 'lucide-react';
 import { marketplaceService, FeaturedProject, FeaturedDeveloper } from '@/lib/services/marketplace-service';
-import { useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth } from '@/components/auth/django-auth-provider';
 
 interface MarketplacePageProps {
   onPageChange?: (page: string) => void;
 }
 
 export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
-  const { user } = useAuth();
+  const { user } = useDjangoAuth();
   const [activeTab, setActiveTab] = useState('projects');
   const [projects, setProjects] = useState<FeaturedProject[]>([]);
   const [developers, setDevelopers] = useState<FeaturedDeveloper[]>([]);
@@ -103,7 +103,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
       const cleanFilters = Object.fromEntries(
         Object.entries(projectFilters).filter(([key, value]) => value !== 'all' && value !== '')
       );
-      
+
       try {
         const response = await marketplaceService.getFeaturedProjects(cleanFilters);
         if (response && response.data) {
@@ -131,7 +131,7 @@ export function MarketplacePage({ onPageChange }: MarketplacePageProps = {}) {
       const cleanFilters = Object.fromEntries(
         Object.entries(developerFilters).filter(([key, value]) => value !== 'all' && value !== '')
       );
-      
+
       try {
         const response = await marketplaceService.getFeaturedDevelopers(cleanFilters);
         if (response && response.data) {

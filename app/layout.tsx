@@ -2,6 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { DjangoAuthProvider } from '@/components/auth/django-auth-provider';
 import { ToastProvider } from '@/components/ui/toast-provider';
+import { SmartToastContainer } from '@/components/ui/smart-toast';
 
 export const metadata: Metadata = {
   title: 'NexusWorks - AI-Powered Freelancing Platform',
@@ -27,6 +28,7 @@ export default function RootLayout({
             <div className="nexus-global-wrapper">
               {children}
             </div>
+            <SmartToastContainer />
           </ToastProvider>
         </DjangoAuthProvider>
       </body>

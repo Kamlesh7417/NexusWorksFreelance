@@ -118,7 +118,7 @@ class APIClient {
 
   constructor() {
     this.baseURL = process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://localhost:8000/api';
-    
+
     // Load tokens from localStorage if available
     if (typeof window !== 'undefined') {
       this.accessToken = localStorage.getItem('access_token');
@@ -145,7 +145,12 @@ class APIClient {
     options: RequestInit = {}
   ): Promise<APIResponse<T>> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
+    // Proactively refresh token if it's expiring soon (except for auth endpoints)
+    if (!endpoint.includes('/auth/') && this.accessToken) {
+      await this.ensureValidToken();
+    }
+
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
       ...options.headers,
@@ -171,16 +176,24 @@ class APIClient {
 
       // Handle token refresh for 401 errors
       if (response.status === 401 && this.refreshToken && !endpoint.includes('/auth/')) {
+        console.log('Received 401, attempting token refresh...');
         const refreshed = await this.refreshAccessToken();
         if (refreshed) {
           // Retry the original request with new token
           headers['Authorization'] = `Bearer ${this.accessToken}`;
+          console.log('Retrying request with refreshed token...');
           const retryResponse = await fetch(url, {
             ...options,
             headers,
             signal: AbortSignal.timeout(timeout),
           });
           return this.handleResponse<T>(retryResponse);
+        } else {
+          // Token refresh failed, redirect to login
+          if (typeof window !== 'undefined') {
+            console.log('Token refresh failed, redirecting to login...');
+            window.location.href = '/auth/signin';
+          }
         }
       }
 
@@ -202,10 +215,10 @@ class APIClient {
 
   private async handleResponse<T>(response: Response): Promise<APIResponse<T>> {
     const status = response.status;
-    
+
     try {
       const data = await response.json();
-      
+
       if (response.ok) {
         return { data, status };
       } else {
@@ -226,6 +239,7 @@ class APIClient {
   }
 
   private async refreshAccessToken(): Promise<boolean> {
+    // Prevent multiple simultaneous refresh attempts
     if (this.refreshPromise) {
       return this.refreshPromise;
     }
@@ -237,9 +251,14 @@ class APIClient {
   }
 
   private async performTokenRefresh(): Promise<boolean> {
-    if (!this.refreshToken) return false;
+    if (!this.refreshToken) {
+      console.warn('No refresh token available for token refresh');
+      return false;
+    }
 
     try {
+      console.log('Attempting to refresh access token...');
+
       const response = await fetch(`${this.baseURL}/auth/token/refresh/`, {
         method: 'POST',
         headers: {
@@ -248,20 +267,59 @@ class APIClient {
         body: JSON.stringify({
           refresh: this.refreshToken,
         }),
+        signal: AbortSignal.timeout(10000), // 10 second timeout for refresh
       });
 
       if (response.ok) {
         const data = await response.json();
+
+        // Update access token while keeping the same refresh token
         this.setTokens(data.access, this.refreshToken);
+        console.log('Access token refreshed successfully');
+
+        // Dispatch custom event for token refresh success
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('tokenRefreshed', {
+            detail: { accessToken: data.access }
+          }));
+        }
+
         return true;
       } else {
+        console.warn('Token refresh failed with status:', response.status);
+
+        // Handle specific error cases
+        if (response.status === 401) {
+          console.log('Refresh token expired, clearing all tokens');
+        }
+
         // Refresh token is invalid, clear all tokens
         this.clearTokens();
+
+        // Dispatch custom event for token refresh failure
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new CustomEvent('tokenRefreshFailed', {
+            detail: { status: response.status }
+          }));
+        }
+
         return false;
       }
     } catch (error) {
-      console.error('Token refresh failed:', error);
-      this.clearTokens();
+      console.error('Token refresh network error:', error);
+
+      // Only clear tokens if it's not a network error
+      if (error instanceof Error && !error.message.includes('fetch')) {
+        this.clearTokens();
+      }
+
+      // Dispatch custom event for token refresh error
+      if (typeof window !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('tokenRefreshError', {
+          detail: { error: error instanceof Error ? error.message : 'Unknown error' }
+        }));
+      }
+
       return false;
     }
   }
@@ -269,29 +327,68 @@ class APIClient {
   public setTokens(accessToken: string, refreshToken: string): void {
     this.accessToken = accessToken;
     this.refreshToken = refreshToken;
-    
+
     if (typeof window !== 'undefined') {
       localStorage.setItem('access_token', accessToken);
       localStorage.setItem('refresh_token', refreshToken);
-      
+
+      // Store token timestamp for expiration tracking
+      localStorage.setItem('token_timestamp', Date.now().toString());
+
       // Also set cookies for middleware access
       document.cookie = `access_token=${accessToken}; path=/; max-age=3600; SameSite=Lax`;
       document.cookie = `refresh_token=${refreshToken}; path=/; max-age=604800; SameSite=Lax`;
+
+      console.log('Tokens stored successfully');
     }
   }
 
   public clearTokens(): void {
     this.accessToken = null;
     this.refreshToken = null;
-    
+
     if (typeof window !== 'undefined') {
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
-      
+      localStorage.removeItem('token_timestamp');
+
       // Also clear cookies
       document.cookie = 'access_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
       document.cookie = 'refresh_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+
+      console.log('Tokens cleared');
     }
+  }
+
+  /**
+   * Check if access token is likely expired (within 5 minutes of expiration)
+   */
+  public isTokenExpiringSoon(): boolean {
+    if (!this.accessToken || typeof window === 'undefined') return false;
+
+    const tokenTimestamp = localStorage.getItem('token_timestamp');
+    if (!tokenTimestamp) return false;
+
+    const tokenAge = Date.now() - parseInt(tokenTimestamp);
+    const fiveMinutes = 5 * 60 * 1000;
+    const oneHour = 60 * 60 * 1000;
+
+    // Consider token expiring soon if it's older than 55 minutes (assuming 1 hour expiry)
+    return tokenAge > (oneHour - fiveMinutes);
+  }
+
+  /**
+   * Proactively refresh token if it's expiring soon
+   */
+  public async ensureValidToken(): Promise<boolean> {
+    if (!this.accessToken) return false;
+
+    if (this.isTokenExpiringSoon()) {
+      console.log('Token expiring soon, proactively refreshing...');
+      return await this.refreshAccessToken();
+    }
+
+    return true;
   }
 
   public isAuthenticated(): boolean {
@@ -318,12 +415,12 @@ class APIClient {
   async login(email: string, password: string): Promise<APIResponse<AuthTokens & { user: User }>> {
     const loginData = { username: email, password };
     console.log('Sending login data:', loginData);
-    
-    const response = await this.makeRequest('/auth/login/', {
+
+    const response = await this.makeRequest<AuthTokens & { user: User }>('/auth/login/', {
       method: 'POST',
       body: JSON.stringify(loginData),
     });
-    
+
     console.log('Login response:', response);
     return response;
   }
@@ -347,7 +444,7 @@ class APIClient {
       last_name: userData.last_name || '',
       github_username: userData.github_username || ''
     };
-    
+
     return this.makeRequest('/auth/register/', {
       method: 'POST',
       body: JSON.stringify(registrationData),
@@ -394,7 +491,7 @@ class APIClient {
         }
       });
     }
-    
+
     const endpoint = `/projects/${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
     return this.makeRequest(endpoint);
   }
@@ -448,7 +545,7 @@ class APIClient {
   }
 
   async getDeveloperMatches(developerId?: string): Promise<APIResponse<DeveloperMatch[]>> {
-    const endpoint = developerId 
+    const endpoint = developerId
       ? `/ai/developer-matches/${developerId}/`
       : '/ai/developer-matches/';
     return this.makeRequest(endpoint);
@@ -474,7 +571,7 @@ class APIClient {
         }
       });
     }
-    
+
     const endpoint = `/payments/${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
     return this.makeRequest(endpoint);
   }
@@ -510,7 +607,7 @@ class APIClient {
     if (params?.skill) {
       searchParams.append('skill', params.skill);
     }
-    
+
     const endpoint = `/learning/courses/${searchParams.toString() ? `?${searchParams.toString()}` : ''}`;
     return this.makeRequest(endpoint);
   }

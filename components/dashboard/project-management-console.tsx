@@ -85,7 +85,7 @@ export function ProjectManagementConsole({ projectId, className = '' }: ProjectC
   const [searchQuery, setSearchQuery] = useState('');
   const [showFilters, setShowFilters] = useState(false);
 
-  // Load project data
+  // Load project data from Django console endpoint
   const loadProjectData = useCallback(async () => {
     if (!projectId) return;
     
@@ -93,30 +93,55 @@ export function ProjectManagementConsole({ projectId, className = '' }: ProjectC
       setLoading(true);
       setError(null);
       
-      // Load project details, task progress, and team management data in parallel
-      const [detailsResponse, progressResponse, teamResponse] = await Promise.all([
-        projectService.getProjectDetails(projectId),
-        projectService.getTaskProgress(projectId),
-        projectService.getTeamManagement(projectId)
-      ]);
+      // Use the comprehensive Django console endpoint
+      const response = await projectService.getProjectConsoleData(projectId);
       
-      if (!detailsResponse || !progressResponse || !teamResponse) {
-        throw new Error('Failed to load project data');
+      if (!response || response.error) {
+        throw new Error(response?.error || 'Failed to load project console data');
       }
       
-      const [details, progress, team] = [
-        detailsResponse.data,
-        progressResponse.data,
-        teamResponse.data
-      ];
+      const consoleData = response.data;
       
-      setProjectDetails(details);
-      setTaskProgress(progress);
-      setTeamManagement(team);
+      // Extract data from the comprehensive console response
+      setProjectDetails({
+        id: consoleData.project.id,
+        title: consoleData.project.title,
+        description: consoleData.project.description,
+        status: consoleData.project.status,
+        user_role: consoleData.user_role,
+        client: consoleData.project.client,
+        senior_developer: consoleData.project.senior_developer,
+        tasks: consoleData.tasks || [],
+        team_members: consoleData.team_members || [],
+        resource_allocation: consoleData.resource_allocation,
+        milestones: consoleData.milestones || [],
+        pending_invitations: consoleData.pending_invitations || [],
+        ai_analysis: consoleData.ai_analysis,
+        required_skills: consoleData.project.required_skills || [],
+        created_at: consoleData.project.created_at,
+        updated_at: consoleData.project.updated_at
+      });
+      
+      setTaskProgress({
+        project_id: consoleData.project.id,
+        project_title: consoleData.project.title,
+        task_statistics: consoleData.task_statistics,
+        overall_progress: consoleData.overall_progress,
+        task_progress: consoleData.tasks || [],
+        critical_path_tasks: consoleData.critical_path_tasks || [],
+        timeline_analysis: consoleData.timeline_analysis
+      });
+      
+      setTeamManagement({
+        team_members: consoleData.team_members || [],
+        pending_invitations: consoleData.pending_invitations || [],
+        team_metrics: consoleData.team_metrics,
+        role_permissions: consoleData.role_permissions
+      });
       
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to load project data');
-      console.error('Error loading project data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to load project console data');
+      console.error('Error loading project console data:', err);
     } finally {
       setLoading(false);
     }

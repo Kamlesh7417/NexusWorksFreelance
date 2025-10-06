@@ -1,418 +1,263 @@
 /**
- * API Error Handler
- * Provides centralized error handling and retry logic for API calls
+ * Django API Error Handler
+ * Provides comprehensive error handling for Django REST API responses
  */
 
-import { APIResponse, APIError } from './api-client';
+import { APIResponse } from './api-client';
 
 export interface RetryConfig {
-  maxRetries: number;
+  maxAttempts: number;
   baseDelay: number;
   maxDelay: number;
-  backoffMultiplier: number;
-  retryableStatusCodes: number[];
-  retryableErrors: string[];
+  backoffFactor: number;
 }
 
-export interface CircuitBreakerConfig {
-  failureThreshold: number;
-  resetTimeout: number;
-  monitoringPeriod: number;
-}
-
-export const DEFAULT_RETRY_CONFIG: RetryConfig = {
-  maxRetries: 3,
+const DEFAULT_RETRY_CONFIG: RetryConfig = {
+  maxAttempts: 3,
   baseDelay: 1000,
   maxDelay: 10000,
-  backoffMultiplier: 2,
-  retryableStatusCodes: [408, 429, 500, 502, 503, 504],
-  retryableErrors: ['NetworkError', 'TimeoutError', 'ConnectionError'],
+  backoffFactor: 2,
 };
 
-export const DEFAULT_CIRCUIT_BREAKER_CONFIG: CircuitBreakerConfig = {
-  failureThreshold: 5,
-  resetTimeout: 60000,
-  monitoringPeriod: 300000,
-};
-
-export enum CircuitBreakerState {
-  CLOSED = 'CLOSED',
-  OPEN = 'OPEN',
-  HALF_OPEN = 'HALF_OPEN',
-}
-
-class CircuitBreaker {
-  private state: CircuitBreakerState = CircuitBreakerState.CLOSED;
-  private failureCount = 0;
-  private lastFailureTime = 0;
-  private successCount = 0;
-
-  constructor(private config: CircuitBreakerConfig) {}
-
-  async execute<T>(operation: () => Promise<T>): Promise<T> {
-    if (this.state === CircuitBreakerState.OPEN) {
-      if (Date.now() - this.lastFailureTime > this.config.resetTimeout) {
-        this.state = CircuitBreakerState.HALF_OPEN;
-        this.successCount = 0;
-      } else {
-        throw new Error('Circuit breaker is OPEN - service unavailable');
-      }
-    }
-
-    try {
-      const result = await operation();
-      this.onSuccess();
-      return result;
-    } catch (error) {
-      this.onFailure();
-      throw error;
-    }
-  }
-
-  private onSuccess(): void {
-    this.failureCount = 0;
-    
-    if (this.state === CircuitBreakerState.HALF_OPEN) {
-      this.successCount++;
-      if (this.successCount >= 3) {
-        this.state = CircuitBreakerState.CLOSED;
-      }
-    }
-  }
-
-  private onFailure(): void {
-    this.failureCount++;
-    this.lastFailureTime = Date.now();
-
-    if (this.failureCount >= this.config.failureThreshold) {
-      this.state = CircuitBreakerState.OPEN;
-    }
-  }
-
-  getState(): CircuitBreakerState {
-    return this.state;
-  }
-
-  reset(): void {
-    this.state = CircuitBreakerState.CLOSED;
-    this.failureCount = 0;
-    this.lastFailureTime = 0;
-    this.successCount = 0;
-  }
-}
-
-class APIErrorHandler {
-  private circuitBreakers: Map<string, CircuitBreaker> = new Map();
-  private retryConfig: RetryConfig;
-  private circuitBreakerConfig: CircuitBreakerConfig;
-
-  constructor(
-    retryConfig: RetryConfig = DEFAULT_RETRY_CONFIG,
-    circuitBreakerConfig: CircuitBreakerConfig = DEFAULT_CIRCUIT_BREAKER_CONFIG
-  ) {
-    this.retryConfig = retryConfig;
-    this.circuitBreakerConfig = circuitBreakerConfig;
-  }
-
-  /**
-   * Execute API call with retry logic and circuit breaker
-   */
-  async executeWithRetry<T>(
-    operation: () => Promise<APIResponse<T>>,
-    endpoint: string,
-    customRetryConfig?: Partial<RetryConfig>
-  ): Promise<APIResponse<T>> {
-    const config = { ...this.retryConfig, ...customRetryConfig };
-    const circuitBreaker = this.getCircuitBreaker(endpoint);
-
-    return circuitBreaker.execute(async () => {
-      let lastError: any;
-      
-      for (let attempt = 0; attempt <= config.maxRetries; attempt++) {
-        try {
-          const response = await operation();
-          
-          // If response is successful, return it
-          if (response.status >= 200 && response.status < 300) {
-            return response;
-          }
-          
-          // Check if error is retryable
-          if (!this.isRetryableError(response, config)) {
-            return response;
-          }
-          
-          lastError = response;
-          
-          // Don't delay on the last attempt
-          if (attempt < config.maxRetries) {
-            await this.delay(this.calculateDelay(attempt, config));
-          }
-        } catch (error) {
-          lastError = error;
-          
-          // Check if error is retryable
-          if (!this.isRetryableException(error, config)) {
-            throw error;
-          }
-          
-          // Don't delay on the last attempt
-          if (attempt < config.maxRetries) {
-            await this.delay(this.calculateDelay(attempt, config));
-          }
-        }
-      }
-      
-      // All retries exhausted
-      if (lastError instanceof Error) {
-        throw lastError;
-      } else {
-        return lastError as APIResponse<T>;
-      }
-    });
-  }
-
-  /**
-   * Handle API errors and provide user-friendly messages
-   */
-  handleError(error: any): APIError {
-    // Network errors
-    if (error instanceof TypeError && error.message.includes('fetch')) {
-      return {
-        message: 'Network connection error. Please check your internet connection.',
-        code: 'NETWORK_ERROR',
-        status: 0,
-        details: error,
-      };
-    }
-
-    // Timeout errors
-    if (error.name === 'AbortError' || error.message.includes('timeout')) {
-      return {
-        message: 'Request timed out. Please try again.',
-        code: 'TIMEOUT_ERROR',
-        status: 408,
-        details: error,
-      };
-    }
-
-    // API Response errors
-    if (error.status) {
-      return this.handleHTTPError(error);
-    }
-
-    // Generic error
-    return {
-      message: error.message || 'An unexpected error occurred',
-      code: 'UNKNOWN_ERROR',
-      status: 500,
-      details: error,
-    };
-  }
-
-  /**
-   * Handle HTTP status code errors
-   */
-  private handleHTTPError(response: APIResponse<any>): APIError {
-    const status = response.status;
-    
-    switch (status) {
-      case 400:
-        return {
-          message: response.error || 'Invalid request. Please check your input.',
-          code: 'BAD_REQUEST',
-          status,
-          details: response.data,
-        };
-      
-      case 401:
-        return {
-          message: 'Authentication required. Please log in again.',
-          code: 'UNAUTHORIZED',
-          status,
-          details: response.data,
-        };
-      
-      case 403:
-        return {
-          message: 'Access denied. You don\'t have permission for this action.',
-          code: 'FORBIDDEN',
-          status,
-          details: response.data,
-        };
-      
-      case 404:
-        return {
-          message: 'Resource not found.',
-          code: 'NOT_FOUND',
-          status,
-          details: response.data,
-        };
-      
-      case 409:
-        return {
-          message: 'Conflict. The resource already exists or is in use.',
-          code: 'CONFLICT',
-          status,
-          details: response.data,
-        };
-      
-      case 422:
-        return {
-          message: 'Validation error. Please check your input.',
-          code: 'VALIDATION_ERROR',
-          status,
-          details: response.data,
-        };
-      
-      case 429:
-        return {
-          message: 'Too many requests. Please wait a moment and try again.',
-          code: 'RATE_LIMITED',
-          status,
-          details: response.data,
-        };
-      
-      case 500:
-        return {
-          message: 'Server error. Please try again later.',
-          code: 'INTERNAL_SERVER_ERROR',
-          status,
-          details: response.data,
-        };
-      
-      case 502:
-        return {
-          message: 'Service temporarily unavailable. Please try again.',
-          code: 'BAD_GATEWAY',
-          status,
-          details: response.data,
-        };
-      
-      case 503:
-        return {
-          message: 'Service maintenance in progress. Please try again later.',
-          code: 'SERVICE_UNAVAILABLE',
-          status,
-          details: response.data,
-        };
-      
-      case 504:
-        return {
-          message: 'Request timed out. Please try again.',
-          code: 'GATEWAY_TIMEOUT',
-          status,
-          details: response.data,
-        };
-      
-      default:
-        return {
-          message: response.error || `HTTP ${status} error occurred`,
-          code: 'HTTP_ERROR',
-          status,
-          details: response.data,
-        };
-    }
-  }
-
-  /**
-   * Check if an API response error is retryable
-   */
-  private isRetryableError(response: APIResponse<any>, config: RetryConfig): boolean {
-    return config.retryableStatusCodes.includes(response.status);
-  }
-
-  /**
-   * Check if an exception is retryable
-   */
-  private isRetryableException(error: any, config: RetryConfig): boolean {
-    if (error.name && config.retryableErrors.includes(error.name)) {
-      return true;
-    }
-    
-    if (error.message) {
-      return config.retryableErrors.some(retryableError => 
-        error.message.toLowerCase().includes(retryableError.toLowerCase())
-      );
-    }
-    
-    return false;
-  }
-
-  /**
-   * Calculate delay for exponential backoff
-   */
-  private calculateDelay(attempt: number, config: RetryConfig): number {
-    const delay = config.baseDelay * Math.pow(config.backoffMultiplier, attempt);
-    const jitter = Math.random() * 0.1 * delay; // Add 10% jitter
-    return Math.min(delay + jitter, config.maxDelay);
-  }
-
-  /**
-   * Delay execution
-   */
-  private delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-  /**
-   * Get or create circuit breaker for endpoint
-   */
-  private getCircuitBreaker(endpoint: string): CircuitBreaker {
-    if (!this.circuitBreakers.has(endpoint)) {
-      this.circuitBreakers.set(endpoint, new CircuitBreaker(this.circuitBreakerConfig));
-    }
-    return this.circuitBreakers.get(endpoint)!;
-  }
-
-  /**
-   * Get circuit breaker status for monitoring
-   */
-  getCircuitBreakerStatus(): Record<string, CircuitBreakerState> {
-    const status: Record<string, CircuitBreakerState> = {};
-    this.circuitBreakers.forEach((breaker, endpoint) => {
-      status[endpoint] = breaker.getState();
-    });
-    return status;
-  }
-
-  /**
-   * Reset circuit breaker for endpoint
-   */
-  resetCircuitBreaker(endpoint: string): void {
-    const breaker = this.circuitBreakers.get(endpoint);
-    if (breaker) {
-      breaker.reset();
-    }
-  }
-
-  /**
-   * Reset all circuit breakers
-   */
-  resetAllCircuitBreakers(): void {
-    this.circuitBreakers.forEach(breaker => breaker.reset());
-  }
-}
-
-// Export singleton instance
-export const apiErrorHandler = new APIErrorHandler();
-
-// Utility function to wrap API calls with error handling
+/**
+ * Enhanced error handling wrapper for API operations
+ */
 export async function withErrorHandling<T>(
   operation: () => Promise<APIResponse<T>>,
   endpoint: string,
-  customRetryConfig?: Partial<RetryConfig>
+  retryConfig: Partial<RetryConfig> = {}
 ): Promise<APIResponse<T>> {
-  try {
-    return await apiErrorHandler.executeWithRetry(operation, endpoint, customRetryConfig);
-  } catch (error) {
-    const apiError = apiErrorHandler.handleError(error);
+  const config = { ...DEFAULT_RETRY_CONFIG, ...retryConfig };
+  let lastError: any;
+  
+  for (let attempt = 1; attempt <= config.maxAttempts; attempt++) {
+    try {
+      const result = await operation();
+      
+      // If successful or non-retryable error, return immediately
+      if (result.status < 500 || attempt === config.maxAttempts) {
+        return result;
+      }
+      
+      // Server error - retry with exponential backoff
+      lastError = result;
+      const delay = Math.min(
+        config.baseDelay * Math.pow(config.backoffFactor, attempt - 1),
+        config.maxDelay
+      );
+      
+      console.warn(`API request to ${endpoint} failed (attempt ${attempt}/${config.maxAttempts}), retrying in ${delay}ms...`);
+      await new Promise(resolve => setTimeout(resolve, delay));
+      
+    } catch (error) {
+      lastError = error;
+      
+      // Network errors - retry
+      if (attempt < config.maxAttempts && isRetryableError(error)) {
+        const delay = Math.min(
+          config.baseDelay * Math.pow(config.backoffFactor, attempt - 1),
+          config.maxDelay
+        );
+        
+        console.warn(`Network error for ${endpoint} (attempt ${attempt}/${config.maxAttempts}), retrying in ${delay}ms...`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        continue;
+      }
+      
+      // Non-retryable error or max attempts reached
+      return {
+        status: 0,
+        error: error instanceof Error ? error.message : 'Network error',
+      };
+    }
+  }
+  
+  // Return the last error if all retries failed
+  return lastError || {
+    status: 0,
+    error: 'All retry attempts failed',
+  };
+}
+
+/**
+ * Check if an error is retryable
+ */
+function isRetryableError(error: any): boolean {
+  if (error instanceof TypeError && error.message.includes('fetch')) {
+    return true; // Network error
+  }
+  
+  if (error instanceof Error && error.name === 'AbortError') {
+    return true; // Timeout error
+  }
+  
+  return false;
+}
+
+/**
+ * Django-specific error message handler
+ */
+export class DjangoErrorHandler {
+  static handleDjangoError(error: any, context: string): string {
+    // Django validation errors (400)
+    if (error.status === 400 && error.data) {
+      if (typeof error.data === 'object') {
+        // Handle field-specific validation errors
+        const fieldErrors = [];
+        for (const [field, messages] of Object.entries(error.data)) {
+          if (Array.isArray(messages)) {
+            fieldErrors.push(`${field}: ${messages.join(', ')}`);
+          } else if (typeof messages === 'string') {
+            fieldErrors.push(`${field}: ${messages}`);
+          }
+        }
+        
+        if (fieldErrors.length > 0) {
+          return fieldErrors.join('; ');
+        }
+        
+        // Handle non-field errors
+        if (error.data.non_field_errors) {
+          return Array.isArray(error.data.non_field_errors) 
+            ? error.data.non_field_errors.join(', ')
+            : error.data.non_field_errors;
+        }
+        
+        // Handle detail field
+        if (error.data.detail) {
+          return error.data.detail;
+        }
+      }
+      
+      return error.data.message || 'Validation error occurred';
+    }
+
+    // Authentication errors (401)
+    if (error.status === 401) {
+      return 'Please sign in to continue';
+    }
+
+    // Permission errors (403)
+    if (error.status === 403) {
+      return 'You do not have permission to perform this action';
+    }
+
+    // Not found errors (404)
+    if (error.status === 404) {
+      return `${context} not found`;
+    }
+
+    // Method not allowed (405)
+    if (error.status === 405) {
+      return 'This action is not allowed';
+    }
+
+    // Conflict errors (409)
+    if (error.status === 409) {
+      return error.data?.detail || 'A conflict occurred with existing data';
+    }
+
+    // Rate limiting (429)
+    if (error.status === 429) {
+      return 'Too many requests. Please try again later.';
+    }
+
+    // Server errors (500+)
+    if (error.status >= 500) {
+      return 'Server error occurred. Please try again later.';
+    }
+
+    // Network errors
+    if (error.status === 0) {
+      return 'Network error. Please check your connection and try again.';
+    }
+
+    // Default fallback
+    return error.message || error.error || 'An unexpected error occurred';
+  }
+
+  /**
+   * Get user-friendly error message for toast notifications
+   */
+  static getToastMessage(error: any, context: string): {
+    title: string;
+    message: string;
+    type: 'error' | 'warning' | 'info';
+  } {
+    const message = this.handleDjangoError(error, context);
+    
+    if (error.status === 401) {
+      return {
+        title: 'Authentication Required',
+        message,
+        type: 'warning',
+      };
+    }
+    
+    if (error.status === 403) {
+      return {
+        title: 'Access Denied',
+        message,
+        type: 'warning',
+      };
+    }
+    
+    if (error.status === 404) {
+      return {
+        title: 'Not Found',
+        message,
+        type: 'info',
+      };
+    }
+    
+    if (error.status >= 500) {
+      return {
+        title: 'Server Error',
+        message,
+        type: 'error',
+      };
+    }
+    
+    if (error.status === 0) {
+      return {
+        title: 'Connection Error',
+        message,
+        type: 'error',
+      };
+    }
+    
     return {
-      status: apiError.status,
-      error: apiError.message,
-      data: apiError.details,
+      title: 'Error',
+      message,
+      type: 'error',
     };
   }
 }
 
-export default apiErrorHandler;
+/**
+ * Utility function to check if a response indicates an authentication error
+ */
+export function isAuthError(response: APIResponse<any>): boolean {
+  return response.status === 401;
+}
+
+/**
+ * Utility function to check if a response indicates a permission error
+ */
+export function isPermissionError(response: APIResponse<any>): boolean {
+  return response.status === 403;
+}
+
+/**
+ * Utility function to check if a response indicates a server error
+ */
+export function isServerError(response: APIResponse<any>): boolean {
+  return response.status >= 500;
+}
+
+/**
+ * Utility function to check if a response indicates a network error
+ */
+export function isNetworkError(response: APIResponse<any>): boolean {
+  return response.status === 0;
+}

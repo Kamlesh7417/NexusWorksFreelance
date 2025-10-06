@@ -24,7 +24,8 @@ import {
   Activity,
   CheckCircle,
   AlertCircle,
-  Send
+  Send,
+  Search
 } from 'lucide-react';
 
 interface TeamManagementInterfaceProps {
@@ -94,23 +95,17 @@ export function TeamManagementInterface({
     };
   };
 
-  // Handle invitation response
+  // Handle invitation response with Django API integration
   const handleInvitationResponse = useCallback(async (invitationId: string, action: 'accept' | 'decline') => {
     if (!hasPermission('manage_team')) return;
 
     try {
       setProcessingInvitation(invitationId);
       
-      const response = await fetch(`/api/invitations/${invitationId}/${action}/`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to ${action} invitation`);
+      const response = await projectService.respondToTeamInvitation(invitationId, action);
+      
+      if (response.error) {
+        throw new Error(response.error);
       }
 
       onTeamUpdate();
@@ -121,15 +116,43 @@ export function TeamManagementInterface({
     }
   }, [hasPermission, onTeamUpdate]);
 
-  // Remove team member
+  // Remove team member with Django API integration
   const removeMember = useCallback(async (memberId: string) => {
     if (!hasPermission('manage_team')) return;
 
     try {
-      await projectService.removeDeveloper(projectDetails.id, memberId);
+      const response = await projectService.removeDeveloperFromTeam(projectDetails.id, memberId);
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
       onTeamUpdate();
     } catch (error) {
       console.error('Error removing team member:', error);
+    }
+  }, [hasPermission, projectDetails.id, onTeamUpdate]);
+
+  // Send team invitation
+  const sendInvitation = useCallback(async (developerId: string, taskIds: string[], customMessage?: string) => {
+    if (!hasPermission('manage_team')) return;
+
+    try {
+      const response = await projectService.sendTeamInvitation(projectDetails.id, {
+        developer_id: developerId,
+        task_ids: taskIds,
+        custom_message: customMessage
+      });
+      
+      if (response.error) {
+        throw new Error(response.error);
+      }
+      
+      onTeamUpdate();
+      return response.data;
+    } catch (error) {
+      console.error('Error sending invitation:', error);
+      throw error;
     }
   }, [hasPermission, projectDetails.id, onTeamUpdate]);
 
@@ -619,16 +642,106 @@ function InviteDeveloperModal({
   onInvite: () => void; 
 }) {
   const [selectedTasks, setSelectedTasks] = useState<string[]>([]);
+  const [selectedDeveloper, setSelectedDeveloper] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [availableDevelopers, setAvailableDevelopers] = useState([]);
+  const [availableDevelopers, setAvailableDevelopers] = useState<any[]>([]);
+  const [availableTasks, setAvailableTasks] = useState<any[]>([]);
+  const [customMessage, setCustomMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState({
+    skills: [] as string[],
+    experience_level: '',
+    hourly_rate_max: 0
+  });
+
+  // Load available developers and tasks
+  React.useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const [developersResponse, tasksResponse] = await Promise.all([
+          projectService.getAvailableDevelopers(projectId, filters),
+          projectService.getProjectTasks(projectId)
+        ]);
+
+        if (developersResponse.data) {
+          setAvailableDevelopers(developersResponse.data);
+        }
+        if (tasksResponse.data) {
+          // Filter for unassigned tasks
+          setAvailableTasks(tasksResponse.data.filter((task: any) => !task.assigned_developer));
+        }
+      } catch (err) {
+        setError('Failed to load data');
+        console.error('Error loading invitation data:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [projectId, filters]);
+
+  // Filter developers based on search
+  const filteredDevelopers = availableDevelopers.filter(dev => 
+    dev.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    dev.username.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    dev.profile?.skills?.some((skill: string) => 
+      skill.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+
+  // Send invitation
+  const handleSendInvitation = async () => {
+    if (!selectedDeveloper || selectedTasks.length === 0) {
+      setError('Please select a developer and at least one task');
+      return;
+    }
+
+    try {
+      setSending(true);
+      setError(null);
+
+      const response = await projectService.sendTeamInvitation(projectId, {
+        developer_id: selectedDeveloper.id,
+        task_ids: selectedTasks,
+        custom_message: customMessage.trim() || undefined
+      });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      onInvite();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to send invitation');
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div className="bg-gray-900 border border-gray-700 rounded-xl p-8">
+          <div className="text-center">
+            <Clock className="h-8 w-8 animate-spin text-cyan-400 mx-auto mb-4" />
+            <p className="text-gray-400">Loading available developers...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl max-w-6xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6 border-b border-gray-700">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white">Invite Developer</h2>
+            <h2 className="text-xl font-bold text-white">Invite Developer to Project</h2>
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
@@ -639,9 +752,214 @@ function InviteDeveloperModal({
         </div>
         
         <div className="p-6">
-          <div className="text-center py-8">
-            <UserPlus className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-            <p className="text-gray-400">Developer invitation interface will be implemented...</p>
+          {error && (
+            <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4 mb-6">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-red-400" />
+                <span className="text-red-400">{error}</span>
+              </div>
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Developer Selection */}
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-4">Select Developer</h3>
+              
+              {/* Search */}
+              <div className="relative mb-4">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                <input
+                  type="text"
+                  placeholder="Search developers..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
+                />
+              </div>
+
+              {/* Developer List */}
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {filteredDevelopers.map(developer => (
+                  <div
+                    key={developer.id}
+                    onClick={() => setSelectedDeveloper(developer)}
+                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      selectedDeveloper?.id === developer.id
+                        ? 'border-cyan-500 bg-cyan-500/10'
+                        : 'border-gray-700 hover:border-gray-600 bg-gray-800/30'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3 mb-2">
+                      <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                        {developer.name?.charAt(0) || 'U'}
+                      </div>
+                      <div>
+                        <div className="text-white font-medium">{developer.name}</div>
+                        <div className="text-gray-400 text-sm">@{developer.username}</div>
+                      </div>
+                    </div>
+
+                    {developer.profile && (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-400">Rate:</span>
+                          <span className="text-white">${developer.profile.hourly_rate}/hr</span>
+                        </div>
+                        <div className="flex items-center justify-between text-sm">
+                          <span className="text-gray-400">Experience:</span>
+                          <span className="text-white capitalize">{developer.profile.experience_level}</span>
+                        </div>
+                        {developer.profile.reputation_score > 0 && (
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="text-gray-400">Rating:</span>
+                            <div className="flex items-center gap-1">
+                              <Star className="h-3 w-3 text-yellow-400" />
+                              <span className="text-white">{developer.profile.reputation_score}/5</span>
+                            </div>
+                          </div>
+                        )}
+                        {developer.profile.skills?.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {developer.profile.skills.slice(0, 4).map((skill: string, index: number) => (
+                              <span
+                                key={index}
+                                className="px-2 py-1 bg-cyan-600/20 text-cyan-400 rounded text-xs"
+                              >
+                                {skill}
+                              </span>
+                            ))}
+                            {developer.profile.skills.length > 4 && (
+                              <span className="px-2 py-1 bg-gray-600/20 text-gray-400 rounded text-xs">
+                                +{developer.profile.skills.length - 4}
+                              </span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {filteredDevelopers.length === 0 && (
+                  <div className="text-center py-8">
+                    <Users className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-400">No developers found</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Task Selection */}
+            <div>
+              <h3 className="text-lg font-semibold text-white mb-4">Select Tasks</h3>
+              
+              <div className="space-y-3 max-h-96 overflow-y-auto">
+                {availableTasks.map(task => (
+                  <div
+                    key={task.id}
+                    onClick={() => {
+                      setSelectedTasks(prev => 
+                        prev.includes(task.id)
+                          ? prev.filter(id => id !== task.id)
+                          : [...prev, task.id]
+                      );
+                    }}
+                    className={`p-4 border rounded-lg cursor-pointer transition-colors ${
+                      selectedTasks.includes(task.id)
+                        ? 'border-cyan-500 bg-cyan-500/10'
+                        : 'border-gray-700 hover:border-gray-600 bg-gray-800/30'
+                    }`}
+                  >
+                    <div className="flex items-start justify-between mb-2">
+                      <h4 className="text-white font-medium">{task.title}</h4>
+                      <div className="flex items-center gap-2 text-sm text-gray-400">
+                        <Clock className="h-3 w-3" />
+                        {task.estimated_hours}h
+                      </div>
+                    </div>
+                    <p className="text-gray-400 text-sm mb-2">{task.description}</p>
+                    
+                    {task.required_skills?.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {task.required_skills.slice(0, 3).map((skill: string, index: number) => (
+                          <span
+                            key={index}
+                            className="px-2 py-1 bg-gray-600/20 text-gray-400 rounded text-xs"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                        {task.required_skills.length > 3 && (
+                          <span className="px-2 py-1 bg-gray-600/20 text-gray-400 rounded text-xs">
+                            +{task.required_skills.length - 3}
+                          </span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {availableTasks.length === 0 && (
+                  <div className="text-center py-8">
+                    <CheckCircle className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                    <p className="text-gray-400">No unassigned tasks available</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Custom Message */}
+              <div className="mt-6">
+                <label className="block text-sm font-medium text-gray-400 mb-2">
+                  Custom Message (Optional)
+                </label>
+                <textarea
+                  value={customMessage}
+                  onChange={(e) => setCustomMessage(e.target.value)}
+                  rows={3}
+                  className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 resize-none"
+                  placeholder="Add a personal message to the invitation..."
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-700">
+            <div className="text-sm text-gray-400">
+              {selectedDeveloper && selectedTasks.length > 0 && (
+                <>
+                  Inviting <span className="text-white">{selectedDeveloper.name}</span> to{' '}
+                  <span className="text-white">{selectedTasks.length}</span> task{selectedTasks.length !== 1 ? 's' : ''}
+                </>
+              )}
+            </div>
+            
+            <div className="flex items-center gap-4">
+              <button
+                onClick={onClose}
+                className="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSendInvitation}
+                disabled={!selectedDeveloper || selectedTasks.length === 0 || sending}
+                className="flex items-center gap-2 px-6 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white rounded-lg transition-colors"
+              >
+                {sending ? (
+                  <>
+                    <Clock className="h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <Send className="h-4 w-4" />
+                    Send Invitation
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </div>

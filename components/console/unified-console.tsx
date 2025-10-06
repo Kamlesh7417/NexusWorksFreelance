@@ -298,9 +298,42 @@ export function UnifiedConsole({ initialSection = 'dashboard' }: UnifiedConsoleP
   const { user, loading, isAuthenticated } = useDjangoAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [profile, setProfile] = useState<any>(null);
+  const [profileLoading, setProfileLoading] = useState(true);
 
   // Debug logging
   console.log('Console auth state:', { user: !!user, loading, isAuthenticated });
+
+  // Fetch user profile data
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!user) return;
+      
+      try {
+        setProfileLoading(true);
+        const { apiClient } = await import('@/lib/api-client');
+        
+        // Fetch developer profile if user is a developer
+        if (user.user_type === 'freelancer' || user.role === 'developer') {
+          const profileResponse = await apiClient.getDeveloperProfile();
+          if (profileResponse.data) {
+            setProfile(profileResponse.data);
+          }
+        } else {
+          // For clients, use user data as profile
+          setProfile(user);
+        }
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        // Use user data as fallback
+        setProfile(user);
+      } finally {
+        setProfileLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [user]);
 
   // Get initial section from URL or use default
   const getInitialSection = (): ConsoleSection => {
@@ -322,7 +355,7 @@ export function UnifiedConsole({ initialSection = 'dashboard' }: UnifiedConsoleP
   }, [user, loading, router]);
 
   // Show loading state
-  if (loading) {
+  if (loading || profileLoading) {
     return <PageLoader message="Loading console..." />;
   }
 
@@ -347,30 +380,41 @@ export function UnifiedConsole({ initialSection = 'dashboard' }: UnifiedConsoleP
   return (
     <ErrorBoundary section="console">
       <ConsoleProvider initialSection={getInitialSection()}>
-        <div className="min-h-screen bg-black text-white flex">
-          {/* Offline indicator */}
-          <OfflineIndicator />
+        <UserDataProvider user={user} profile={profile}>
+          <div className="min-h-screen bg-black text-white flex">
+            {/* Offline indicator */}
+            <OfflineIndicator />
 
-          {/* Performance monitor (dev only) - commented out for now */}
-          {/* <PerformanceMonitorDev /> */}
+            {/* Performance monitor (dev only) - commented out for now */}
+            {/* <PerformanceMonitorDev /> */}
 
-          {/* Sidebar */}
-          <ErrorBoundary section="sidebar">
-            <ConsoleSidebar />
-          </ErrorBoundary>
+            {/* Sidebar */}
+            <ErrorBoundary section="sidebar">
+              <ConsoleSidebar />
+            </ErrorBoundary>
 
-          {/* Main content area */}
-          <div className="flex-1 flex flex-col min-h-screen">
-            {/* Header */}
-            <ConsoleHeader />
+            {/* Main content area */}
+            <div className="flex-1 flex flex-col min-h-screen">
+              {/* Header */}
+              <ConsoleHeader />
 
-            {/* Main content */}
-            <main className="flex-1 overflow-hidden">
-              <ConsoleMainContent />
-            </main>
+              {/* Main content */}
+              <main className="flex-1 overflow-hidden">
+                <ConsoleMainContent />
+              </main>
+            </div>
           </div>
-        </div>
+        </UserDataProvider>
       </ConsoleProvider>
     </ErrorBoundary>
+  );
+}
+
+// User Data Provider to pass user and profile data to child components
+function UserDataProvider({ children, user, profile }: { children: React.ReactNode; user: any; profile: any }) {
+  return (
+    <div data-user={JSON.stringify(user)} data-profile={JSON.stringify(profile)}>
+      {children}
+    </div>
   );
 }

@@ -21,10 +21,10 @@ import {
   Clock,
   Award
 } from 'lucide-react';
-import { useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth } from '@/components/auth/django-auth-provider';
 
 export function HomePage() {
-  const { user, signIn } = useAuth();
+  const { user } = useDjangoAuth();
   const [activeJourney, setActiveJourney] = useState<'client' | 'developer'>('client');
   const [animatedStats, setAnimatedStats] = useState({
     developers: 0,
@@ -51,7 +51,7 @@ export function HomePage() {
     if (user) {
       window.location.href = '/dashboard';
     } else {
-      signIn();
+      window.location.href = '/auth/signin?redirectTo=/dashboard';
     }
   };
 

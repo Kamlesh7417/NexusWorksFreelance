@@ -108,91 +108,41 @@ export function ProjectProvider({ children, user, profile }: ProjectProviderProp
     setError(null);
     
     try {
-      // Mock data for demonstration - in real implementation, this would be API calls
-      const mockProjects: Project[] = [
-        {
-          id: '1',
-          title: 'E-commerce Platform Redesign',
-          status: 'in_progress',
-          role: profile?.role === 'client' ? 'client' : 'senior_developer',
-          progress: 65,
-          budget: 15000,
-          deadline: '2024-02-15',
-          team_size: 4,
-          priority: 'high',
-          description: 'Complete redesign of the e-commerce platform with modern UI/UX',
-          skills_required: ['React', 'Node.js', 'PostgreSQL', 'AWS']
-        },
-        {
-          id: '2',
-          title: 'Mobile App Development',
-          status: 'active',
-          role: profile?.role === 'client' ? 'client' : 'developer',
-          progress: 30,
-          budget: 8000,
-          deadline: '2024-03-01',
-          team_size: 2,
-          priority: 'medium',
-          description: 'Native mobile app for iOS and Android',
-          skills_required: ['React Native', 'Firebase', 'TypeScript']
-        },
-        {
-          id: '3',
-          title: 'AI Chatbot Integration',
-          status: 'completed',
-          role: profile?.role === 'client' ? 'client' : 'developer',
-          progress: 100,
-          budget: 5000,
-          deadline: '2024-01-15',
-          team_size: 1,
-          priority: 'low',
-          description: 'Integration of AI chatbot for customer support',
-          skills_required: ['Python', 'OpenAI API', 'FastAPI']
-        },
-        {
-          id: '4',
-          title: 'Blockchain Voting System',
-          status: 'paused',
-          role: profile?.role === 'client' ? 'client' : 'senior_developer',
-          progress: 45,
-          budget: 20000,
-          deadline: '2024-04-01',
-          team_size: 3,
-          priority: 'high',
-          description: 'Secure blockchain-based voting system',
-          skills_required: ['Solidity', 'Web3', 'React', 'Ethereum']
-        },
-        {
-          id: '5',
-          title: 'Data Analytics Dashboard',
-          status: 'active',
-          role: 'developer',
-          progress: 20,
-          budget: 12000,
-          deadline: '2024-03-15',
-          team_size: 2,
-          priority: 'medium',
-          description: 'Real-time analytics dashboard for business intelligence',
-          skills_required: ['Python', 'D3.js', 'PostgreSQL', 'Docker']
-        }
-      ];
-
-      // Filter projects based on user role and permissions
-      let filteredProjects = mockProjects;
+      // Import project service for real API calls
+      const { projectService } = await import('@/lib/services/project-service');
       
-      if (profile?.role === 'client') {
-        // Clients see projects they own
-        filteredProjects = mockProjects.filter(p => p.role === 'client');
-      } else if (profile?.role === 'developer') {
-        // Developers see projects they're assigned to
-        filteredProjects = mockProjects.filter(p => p.role === 'developer' || p.role === 'senior_developer');
+      // Fetch real projects from Django API with role-based filtering
+      const response = await projectService.getProjects({
+        page: 1,
+        // Django backend should handle role-based filtering automatically
+        // but we can add explicit filters if needed
+      });
+      
+      if (response.error) {
+        throw new Error(response.error);
       }
+      
+      // Transform API response to match our Project interface
+      const apiProjects = response.data?.results || [];
+      const transformedProjects: Project[] = apiProjects.map((apiProject: any) => ({
+        id: apiProject.id,
+        title: apiProject.title,
+        status: apiProject.status,
+        role: apiProject.user_role || (user?.user_type === 'client' ? 'client' : 'developer'),
+        progress: apiProject.completion_percentage || 0,
+        budget: apiProject.budget_range?.max || apiProject.budget_range?.min || 0,
+        deadline: apiProject.deadline,
+        team_size: apiProject.team_members_count || 1,
+        priority: apiProject.priority || 'medium',
+        description: apiProject.description,
+        skills_required: apiProject.required_skills || []
+      }));
 
-      setProjects(filteredProjects);
+      setProjects(transformedProjects);
       
       // Set current project if none selected and projects exist
-      if (!currentProject && filteredProjects.length > 0) {
-        const activeProject = filteredProjects.find(p => p.status === 'in_progress') || filteredProjects[0];
+      if (!currentProject && transformedProjects.length > 0) {
+        const activeProject = transformedProjects.find(p => p.status === 'in_progress') || transformedProjects[0];
         setCurrentProject(activeProject);
       }
       

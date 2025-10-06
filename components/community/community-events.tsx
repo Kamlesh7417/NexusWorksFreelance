@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Calendar, MapPin, Users, Clock, Plus, Video, CheckCircle, XCircle } from 'lucide-react';
 import { communityService, CommunityEvent, EventRegistration } from '@/lib/services/community-service';
-import { useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth as useAuth } from '@/components/auth/django-auth-provider';
 
 interface CommunityEventsProps {
   events: CommunityEvent[];

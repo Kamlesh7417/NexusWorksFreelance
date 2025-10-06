@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useDjangoAuth } from './django-auth-provider';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -34,7 +34,7 @@ interface AuthFormsProps {
 }
 
 export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab = 'login' }: AuthFormsProps) {
-  const { login, register, loading, error } = useDjangoAuth();
+  const { login, register, signInWithDemo, loading, error } = useDjangoAuth();
   const router = useRouter();
   
   const [activeTab, setActiveTab] = useState(defaultTab);
@@ -57,6 +57,43 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
     lastName: '',
     githubUsername: '',
   });
+
+  // Memoized input handlers to prevent re-renders that cause focus loss
+  const handleLoginEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginForm(prev => ({ ...prev, email: e.target.value }));
+  }, []);
+
+  const handleLoginPasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setLoginForm(prev => ({ ...prev, password: e.target.value }));
+  }, []);
+
+  const handleRegisterEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setRegisterForm(prev => ({ ...prev, email: e.target.value }));
+  }, []);
+
+  const handleRegisterPasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setRegisterForm(prev => ({ ...prev, password: e.target.value }));
+  }, []);
+
+  const handleRegisterConfirmPasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setRegisterForm(prev => ({ ...prev, confirmPassword: e.target.value }));
+  }, []);
+
+  const handleRegisterFirstNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setRegisterForm(prev => ({ ...prev, firstName: e.target.value }));
+  }, []);
+
+  const handleRegisterLastNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setRegisterForm(prev => ({ ...prev, lastName: e.target.value }));
+  }, []);
+
+  const handleRegisterGithubChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setRegisterForm(prev => ({ ...prev, githubUsername: e.target.value }));
+  }, []);
+
+  const handleRegisterRoleChange = useCallback((value: 'client' | 'developer') => {
+    setRegisterForm(prev => ({ ...prev, role: value }));
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,31 +129,25 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
     }
   };
 
-  const handleGithubSignIn = async () => {
+  const handleGithubSignIn = useCallback(async () => {
     try {
-      // Use NextAuth signIn function
-      const { signIn } = await import('next-auth/react');
-      await signIn('github', { 
-        callbackUrl: redirectTo,
-        redirect: true 
-      });
+      // Use Django GitHub OAuth endpoint
+      window.location.href = `${process.env.NEXT_PUBLIC_DJANGO_API_URL}/auth/github-oauth/?redirect_uri=${encodeURIComponent(window.location.origin + redirectTo)}`;
     } catch (error) {
       console.error('GitHub sign-in error:', error);
-      // Fallback to direct redirect
-      window.location.href = '/api/auth/signin/github';
     }
-  };
+  }, [redirectTo]);
 
-  const handleDemoLogin = async (role: 'client' | 'developer') => {
+  const handleDemoLogin = useCallback(async (role: 'client' | 'developer') => {
     console.log('Demo login attempt:', role);
     const result = await signInWithDemo(role);
     console.log('Demo login result:', result);
     if (result.success) {
       router.push(redirectTo);
     }
-  };
+  }, [signInWithDemo, router, redirectTo]);
 
-  const LoginForm = () => (
+  const LoginForm = useCallback(() => (
     <form onSubmit={handleLogin} className="space-y-4">
       <div className="space-y-2">
         <Label htmlFor="login-email" className="text-white">Email</Label>
@@ -125,7 +156,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
           type="text"
           placeholder="Enter your email"
           value={loginForm.email}
-          onChange={(e) => setLoginForm(prev => ({ ...prev, email: e.target.value }))}
+          onChange={handleLoginEmailChange}
           required
           disabled={loading}
           className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
@@ -140,7 +171,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
             type={showPassword ? 'text' : 'password'}
             placeholder="Enter your password"
             value={loginForm.password}
-            onChange={(e) => setLoginForm(prev => ({ ...prev, password: e.target.value }))}
+            onChange={handleLoginPasswordChange}
             required
             disabled={loading}
             className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 pr-10"
@@ -229,9 +260,9 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
         </div>
       </div>
     </form>
-  );
+  ), [loginForm.email, loginForm.password, handleLoginEmailChange, handleLoginPasswordChange, handleLogin, error, loading, handleGithubSignIn, handleDemoLogin, showPassword]);
 
-  const RegisterForm = () => (
+  const RegisterForm = useCallback(() => (
     <form onSubmit={handleRegister} className="space-y-4">
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -240,7 +271,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
             id="register-firstName"
             placeholder="John"
             value={registerForm.firstName}
-            onChange={(e) => setRegisterForm(prev => ({ ...prev, firstName: e.target.value }))}
+            onChange={handleRegisterFirstNameChange}
             required
             disabled={loading}
             className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
@@ -252,7 +283,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
             id="register-lastName"
             placeholder="Doe"
             value={registerForm.lastName}
-            onChange={(e) => setRegisterForm(prev => ({ ...prev, lastName: e.target.value }))}
+            onChange={handleRegisterLastNameChange}
             required
             disabled={loading}
             className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
@@ -267,7 +298,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
           type="email"
           placeholder="john@example.com"
           value={registerForm.email}
-          onChange={(e) => setRegisterForm(prev => ({ ...prev, email: e.target.value }))}
+          onChange={handleRegisterEmailChange}
           required
           disabled={loading}
           className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
@@ -278,9 +309,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
         <Label htmlFor="register-role" className="text-white">Role</Label>
         <Select
           value={registerForm.role}
-          onValueChange={(value: 'client' | 'developer') => 
-            setRegisterForm(prev => ({ ...prev, role: value }))
-          }
+          onValueChange={handleRegisterRoleChange}
           disabled={loading}
         >
           <SelectTrigger className="bg-white/10 border-white/20 text-white">
@@ -299,7 +328,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
           id="register-github"
           placeholder="your-github-username"
           value={registerForm.githubUsername}
-          onChange={(e) => setRegisterForm(prev => ({ ...prev, githubUsername: e.target.value }))}
+          onChange={handleRegisterGithubChange}
           disabled={loading}
           className="bg-white/10 border-white/20 text-white placeholder:text-gray-400"
         />
@@ -313,7 +342,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
             type={showPassword ? 'text' : 'password'}
             placeholder="Create a password"
             value={registerForm.password}
-            onChange={(e) => setRegisterForm(prev => ({ ...prev, password: e.target.value }))}
+            onChange={handleRegisterPasswordChange}
             required
             disabled={loading}
             className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 pr-10"
@@ -343,7 +372,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
             type={showConfirmPassword ? 'text' : 'password'}
             placeholder="Confirm your password"
             value={registerForm.confirmPassword}
-            onChange={(e) => setRegisterForm(prev => ({ ...prev, confirmPassword: e.target.value }))}
+            onChange={handleRegisterConfirmPasswordChange}
             required
             disabled={loading}
             className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 pr-10"
@@ -405,7 +434,7 @@ export function AuthForms({ redirectTo = '/console', showTabs = true, defaultTab
         GitHub
       </Button>
     </form>
-  );
+  ), [registerForm, handleRegisterEmailChange, handleRegisterPasswordChange, handleRegisterConfirmPasswordChange, handleRegisterFirstNameChange, handleRegisterLastNameChange, handleRegisterGithubChange, handleRegisterRoleChange, handleRegister, error, loading, handleGithubSignIn, showPassword, showConfirmPassword]);
 
   if (!showTabs) {
     return (
@@ -467,33 +496,4 @@ export function RegisterForm({ redirectTo = '/console' }: { redirectTo?: string 
   return <AuthForms redirectTo={redirectTo} showTabs={false} defaultTab="register" />;
 }
 
-// Simple demo sign-in implementation
-async function signInWithDemo(role: 'client' | 'developer'): Promise<{ success: boolean; error?: string }> {
-  // Demo credentials for each role
-  const demoCredentials = {
-    client: { email: 'demo.client@nexusworks.com', password: 'demopassword' },
-    developer: { email: 'demo.developer@nexusworks.com', password: 'demopassword' },
-  };
 
-  const creds = demoCredentials[role];
-  if (!creds) {
-    return { success: false, error: 'Invalid demo role' };
-  }
-
-  // Simulate login using useDjangoAuth's login function
-  // This assumes window.djangoAuth is available, otherwise adapt as needed
-  try {
-    // Dynamically import the provider to avoid circular imports
-    const { useDjangoAuth } = await import('./django-auth-provider');
-    // Use the hook to get the login function
-    const { login } = useDjangoAuth();
-    const result = await login(creds.email, creds.password);
-    return result;
-  } catch (err) {
-    return { success: false, error: 'Demo login failed' };
-  }
-}
-
-// function signInWithDemo(role: string) {
-//   throw new Error('Function not implemented.');
-// }

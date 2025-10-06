@@ -355,10 +355,13 @@ function DashboardContent() {
             <div className="mt-6 pt-6 border-t border-white/10">
               <h4 className="text-white font-medium mb-4">Quick Actions</h4>
               <div className="space-y-2">
-                <button className="w-full flex items-center gap-2 p-2 text-left text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors text-sm">
-                  <Plus size={14} />
-                  Create New Project
-                </button>
+                {/* Only clients can create projects */}
+                {(user?.user_type === 'client' || user?.role === 'client') && (
+                  <button className="w-full flex items-center gap-2 p-2 text-left text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors text-sm">
+                    <Plus size={14} />
+                    Create New Project
+                  </button>
+                )}
                 <button className="w-full flex items-center gap-2 p-2 text-left text-gray-300 hover:text-white hover:bg-white/5 rounded-lg transition-colors text-sm">
                   <Users size={14} />
                   Invite Team Member

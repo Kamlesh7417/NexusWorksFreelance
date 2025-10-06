@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { User, LogOut, Settings, Github, Loader2, Bell, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
-import { useAuth } from './auth-provider';
+import { useDjangoAuth } from './django-auth-provider';
 
 // Simple notification badge component
 function NotificationBadge({ userId }: { userId: string }) {
@@ -24,15 +24,15 @@ function NotificationBadge({ userId }: { userId: string }) {
 }
 
 export function AuthButton() {
-  const { user, profile, signOut, signIn, loading } = useAuth();
+  const { user, logout, signInWithGithub, loading } = useDjangoAuth();
   const [signingOut, setSigningOut] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
 
   const handleSignOut = async () => {
     setSigningOut(true);
     try {
-      await signOut();
-      window.location.href = '/';
+      await logout();
+      // logout() already handles redirect, so no need for manual redirect
     } catch (error) {
       console.error('Sign out error:', error);
     } finally {
@@ -42,7 +42,7 @@ export function AuthButton() {
 
   const handleSignIn = async () => {
     try {
-      await signIn();
+      await signInWithGithub();
     } catch (err) {
       console.error('Sign in error:', err);
     }
@@ -75,34 +75,26 @@ export function AuthButton() {
       <div className="flex items-center gap-4">
         {/* Notifications */}
         {user && <NotificationBadge userId={user.id} />}
-        
+
         {/* Messages */}
         <Link href="/messages" className="relative">
           <MessageSquare size={20} className="text-gray-400 hover:text-white transition-colors" />
         </Link>
-        
+
         {/* User Menu */}
         <button
           onClick={() => setShowMenu(!showMenu)}
           className="flex items-center gap-3 nexus-card px-3 py-2 hover:scale-105 transition-all duration-300"
         >
-          {profile?.avatar_url ? (
-            <img 
-              src={profile.avatar_url} 
-              alt={profile.full_name}
-              className="w-8 h-8 rounded-full"
-            />
-          ) : (
-            <div className="w-8 h-8 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center">
-              <User size={16} className="text-cyan-400" />
-            </div>
-          )}
+          <div className="w-8 h-8 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center">
+            <User size={16} className="text-cyan-400" />
+          </div>
           <div className="text-left hidden sm:block">
             <div className="text-sm font-medium text-white">
-              {profile?.full_name || user.email?.split('@')[0]}
+              {user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.email?.split('@')[0]}
             </div>
             <div className="text-xs text-gray-400 capitalize">
-              {profile?.role || 'User'}
+              {user.role || user.user_type || 'User'}
             </div>
           </div>
         </button>
@@ -112,26 +104,22 @@ export function AuthButton() {
         <div className="absolute right-0 top-full mt-2 w-56 nexus-card z-50 overflow-hidden animate-fadeIn">
           <div className="p-4 border-b border-white/10">
             <div className="flex items-center gap-3">
-              {profile?.avatar_url ? (
-                <div className="w-10 h-10 rounded-full overflow-hidden">
-                  <img src={profile.avatar_url} alt={profile.full_name} className="w-full h-full object-cover" />
-                </div>
-              ) : (
-                <div className="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center">
-                  <User size={20} className="text-cyan-400" />
-                </div>
-              )}
+              <div className="w-10 h-10 bg-gradient-to-br from-cyan-500/20 to-blue-500/20 rounded-full flex items-center justify-center">
+                <User size={20} className="text-cyan-400" />
+              </div>
               <div>
-                <div className="font-medium text-white">{profile?.full_name || user.email?.split('@')[0]}</div>
+                <div className="font-medium text-white">
+                  {user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.email?.split('@')[0]}
+                </div>
                 <div className="text-xs text-gray-400">{user.email}</div>
-                <div className="text-xs text-cyan-400 capitalize font-medium">{profile?.role || 'User'}</div>
+                <div className="text-xs text-cyan-400 capitalize font-medium">{user.role || user.user_type || 'User'}</div>
               </div>
             </div>
           </div>
 
           <div className="py-2">
-            <a 
-              href="/dashboard" 
+            <a
+              href="/dashboard"
               className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
               <div className="w-5 h-5 bg-blue-500/20 rounded flex items-center justify-center">
@@ -139,8 +127,8 @@ export function AuthButton() {
               </div>
               Dashboard
             </a>
-            <a 
-              href="/profile" 
+            <a
+              href="/profile"
               className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
               <div className="w-5 h-5 bg-purple-500/20 rounded flex items-center justify-center">
@@ -148,8 +136,8 @@ export function AuthButton() {
               </div>
               Profile
             </a>
-            <a 
-              href="/messages" 
+            <a
+              href="/messages"
               className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
               <div className="w-5 h-5 bg-green-500/20 rounded flex items-center justify-center">
@@ -157,8 +145,8 @@ export function AuthButton() {
               </div>
               Messages
             </a>
-            <a 
-              href="/projects" 
+            <a
+              href="/projects"
               className="flex items-center gap-3 px-4 py-3 text-gray-300 hover:bg-white/10 hover:text-white transition-colors"
             >
               <div className="w-5 h-5 bg-cyan-500/20 rounded flex items-center justify-center">
@@ -169,7 +157,7 @@ export function AuthButton() {
           </div>
 
           <div className="border-t border-white/10 p-2">
-            <button 
+            <button
               onClick={handleSignOut}
               disabled={signingOut}
               className="flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-500/10 w-full text-left rounded-lg transition-colors"
@@ -189,8 +177,8 @@ export function AuthButton() {
 
       {/* Click outside to close menu */}
       {showMenu && (
-        <div 
-          className="fixed inset-0 z-40" 
+        <div
+          className="fixed inset-0 z-40"
           onClick={() => setShowMenu(false)}
         />
       )}

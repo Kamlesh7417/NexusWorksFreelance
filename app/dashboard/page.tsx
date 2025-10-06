@@ -1,20 +1,93 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { AuthProvider, useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth } from '@/components/auth/django-auth-provider';
+import { apiClient, Project, DeveloperProfile } from '@/lib/api-client';
 import { Loader2 } from 'lucide-react';
 import Link from 'next/link';
 
 function DashboardContent() {
-  const { user, profile, loading, signOut } = useAuth();
+  const { user, loading, logout, isClient, isDeveloper } = useDjangoAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
+  
+  // Dashboard data state
+  const [dashboardData, setDashboardData] = useState({
+    activeProjects: 0,
+    completedProjects: 0,
+    totalEarnings: 0,
+    messages: 0,
+    loading: true,
+    error: null as string | null
+  });
+  const [profile, setProfile] = useState<DeveloperProfile | null>(null);
 
   const handleSignOut = async () => {
-    await signOut();
-    router.push('/');
+    await logout();
+    // logout() already handles redirect
   };
+
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      if (!user) return;
+      
+      try {
+        setDashboardData(prev => ({ ...prev, loading: true, error: null }));
+        
+        // Fetch user's projects
+        const projectsResponse = await apiClient.getProjects({
+          client: isClient() ? user.id : undefined,
+          page: 1
+        });
+        
+        let activeProjects = 0;
+        let completedProjects = 0;
+        
+        if (projectsResponse.data) {
+          const projects = projectsResponse.data.results || [];
+          activeProjects = projects.filter(p => 
+            ['analyzing', 'proposal_review', 'approved', 'in_progress'].includes(p.status)
+          ).length;
+          completedProjects = projects.filter(p => p.status === 'completed').length;
+        }
+        
+        // Fetch developer profile if user is a developer
+        let profileData = null;
+        if (isDeveloper()) {
+          const profileResponse = await apiClient.getDeveloperProfile();
+          if (profileResponse.data) {
+            profileData = profileResponse.data;
+          }
+        }
+        
+        // TODO: Fetch messages count when messaging API is available
+        // TODO: Fetch earnings when payment API is available
+        
+        setDashboardData({
+          activeProjects,
+          completedProjects,
+          totalEarnings: profileData?.total_earnings || 0,
+          messages: 0, // Placeholder
+          loading: false,
+          error: null
+        });
+        
+        setProfile(profileData);
+        
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+        setDashboardData(prev => ({
+          ...prev,
+          loading: false,
+          error: error instanceof Error ? error.message : 'Failed to load dashboard data'
+        }));
+      }
+    };
+
+    fetchDashboardData();
+  }, [user, isClient, isDeveloper]);
 
   useEffect(() => {
     // Check if user wants legacy dashboard
@@ -108,7 +181,7 @@ function DashboardContent() {
           <div>
             <h1 className="text-4xl font-bold text-white mb-4">Welcome to Your Dashboard</h1>
             <p className="text-cyan-400 text-lg">
-              Hello, {profile?.full_name || user.email}!
+              Hello, {user.first_name && user.last_name ? `${user.first_name} ${user.last_name}` : user.email}!
             </p>
           </div>
           <button
@@ -119,21 +192,48 @@ function DashboardContent() {
           </button>
         </div>
         
+        {/* Profile Completion Banner */}
+        {!user.profile_completed && (
+          <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/40 rounded-lg p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-yellow-400 font-semibold">Complete Your Profile</h3>
+                <p className="text-gray-300 text-sm">
+                  Complete your profile to get better project matches and increase your visibility.
+                </p>
+              </div>
+              <Link 
+                href="/profile"
+                className="bg-yellow-500/20 hover:bg-yellow-500/30 border border-yellow-500/40 text-yellow-400 font-medium py-2 px-4 rounded-lg transition-colors"
+              >
+                Complete Profile
+              </Link>
+            </div>
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Profile Information */}
           <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
             <h2 className="text-xl font-semibold text-white mb-4">Profile Information</h2>
             <div className="space-y-2 text-gray-300">
               <p><strong className="text-white">Email:</strong> {user.email}</p>
-              <p><strong className="text-white">Role:</strong> <span className="capitalize">{user.role}</span></p>
-              {profile?.github_username && (
-                <p><strong className="text-white">GitHub:</strong> {profile.github_username}</p>
+              <p><strong className="text-white">Role:</strong> <span className="capitalize">{user.role || user.user_type}</span></p>
+              {user.github_username && (
+                <p><strong className="text-white">GitHub:</strong> {user.github_username}</p>
               )}
-              <p><strong className="text-white">Status:</strong> 
-                <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                  Active
+              <p><strong className="text-white">Profile:</strong> 
+                <span className={`ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                  user.profile_completed 
+                    ? 'bg-green-100 text-green-800' 
+                    : 'bg-yellow-100 text-yellow-800'
+                }`}>
+                  {user.profile_completed ? 'Complete' : 'Incomplete'}
                 </span>
               </p>
+              {user.created_at && (
+                <p><strong className="text-white">Member since:</strong> {new Date(user.created_at).toLocaleDateString()}</p>
+              )}
             </div>
             <div className="mt-4">
               <Link 
@@ -199,7 +299,7 @@ function DashboardContent() {
               >
                 Join Community
               </Link>
-              {user.role === 'client' && (
+              {isClient() && (
                 <Link 
                   href="/projects/create" 
                   className="block w-full bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md text-center transition-colors"
@@ -213,26 +313,48 @@ function DashboardContent() {
           {/* Stats Overview */}
           <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
             <h2 className="text-xl font-semibold text-white mb-4">Overview</h2>
-            <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Active Projects</span>
-                <span className="text-white font-semibold">0</span>
+            {dashboardData.loading ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2 className="h-6 w-6 animate-spin text-cyan-400" />
               </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Completed Projects</span>
-                <span className="text-white font-semibold">0</span>
-              </div>
-              <div className="flex justify-between items-center">
-                <span className="text-gray-400">Messages</span>
-                <span className="text-white font-semibold">0</span>
-              </div>
-              {user.role === 'developer' && (
+            ) : dashboardData.error ? (
+              <div className="text-red-400 text-sm">{dashboardData.error}</div>
+            ) : (
+              <div className="space-y-3">
                 <div className="flex justify-between items-center">
-                  <span className="text-gray-400">Earnings</span>
-                  <span className="text-white font-semibold">$0</span>
+                  <span className="text-gray-400">Active Projects</span>
+                  <span className="text-white font-semibold">{dashboardData.activeProjects}</span>
                 </div>
-              )}
-            </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Completed Projects</span>
+                  <span className="text-white font-semibold">{dashboardData.completedProjects}</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-400">Messages</span>
+                  <span className="text-white font-semibold">{dashboardData.messages}</span>
+                </div>
+                {isDeveloper() && (
+                  <>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-400">Total Earnings</span>
+                      <span className="text-white font-semibold">${dashboardData.totalEarnings.toLocaleString()}</span>
+                    </div>
+                    {profile && (
+                      <>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Hourly Rate</span>
+                          <span className="text-white font-semibold">${profile.hourly_rate}/hr</span>
+                        </div>
+                        <div className="flex justify-between items-center">
+                          <span className="text-gray-400">Reputation</span>
+                          <span className="text-white font-semibold">{profile.reputation_score.toFixed(1)}/5.0</span>
+                        </div>
+                      </>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
           </div>
           
           {/* Recent Activity */}
@@ -241,7 +363,7 @@ function DashboardContent() {
             <div className="text-center py-8">
               <p className="text-gray-400 mb-4">No recent activity to display</p>
               <p className="text-gray-500 text-sm">
-                Start by {user.role === 'client' ? 'posting a project' : 'browsing available projects'} to see activity here.
+                Start by {isClient() ? 'posting a project' : 'browsing available projects'} to see activity here.
               </p>
             </div>
           </div>
@@ -252,9 +374,5 @@ function DashboardContent() {
 }
 
 export default function DashboardPage() {
-  return (
-    <AuthProvider>
-      <DashboardContent />
-    </AuthProvider>
-  );
+  return <DashboardContent />;
 }

@@ -393,12 +393,15 @@ export function MultiDashboardNavigation({
 
           {/* Quick Actions */}
           <div className="flex flex-wrap gap-2">
-            <Link
-              href="/projects/create"
-              className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200"
-            >
-              New Project
-            </Link>
+            {/* Only clients can create projects */}
+            {(user?.user_type === 'client' || user?.role === 'client') && (
+              <Link
+                href="/projects/create"
+                className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white font-medium rounded-lg transition-all duration-200"
+              >
+                New Project
+              </Link>
+            )}
             
             <Link
               href="/messages"

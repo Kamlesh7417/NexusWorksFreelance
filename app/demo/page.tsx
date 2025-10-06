@@ -1,14 +1,14 @@
 'use client';
 
 import { DemoCredentials } from '@/components/demo/demo-credentials';
-import { AuthTest } from '@/components/auth/auth-test';
-import { AuthProvider } from '@/components/auth/auth-provider';
+// import { AuthTest } from '@/components/auth/auth-test';
+import { DjangoAuthProvider } from '@/components/auth/django-auth-provider';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DemoPage() {
   return (
-    <AuthProvider>
+    <DjangoAuthProvider>
       <div className="min-h-screen bg-black animate-fadeIn">
         <div className="container mx-auto px-4 py-8">
           <div className="mb-8">
@@ -23,10 +23,10 @@ export default function DemoPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             <DemoCredentials />
-            <AuthTest />
+            {/* <AuthTest /> */}
           </div>
         </div>
       </div>
-    </AuthProvider>
+    </DjangoAuthProvider>
   );
 }

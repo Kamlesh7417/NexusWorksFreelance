@@ -40,23 +40,24 @@ export function ConsoleSidebar() {
   const { user, hasRole } = useDjangoAuth();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-  // Navigation items configuration
+  // Navigation items configuration with role-based quick actions
+  const isClient = user?.user_type === 'client' || user?.role === 'client';
+  
   const navigationItems: NavigationItem[] = [
     {
       id: 'dashboard',
       label: 'Dashboard',
       icon: LayoutDashboard,
-      quickActions: [
+      quickActions: isClient ? [
         {
           id: 'create-project',
           label: 'Create Project',
           icon: Plus,
           onClick: () => {
-            // TODO: Implement quick project creation
-            console.log('Create project');
+            setCurrentSection('projects');
           }
         }
-      ]
+      ] : []
     },
     {
       id: 'profile',
@@ -73,17 +74,16 @@ export function ConsoleSidebar() {
       id: 'projects',
       label: 'Projects',
       icon: FolderOpen,
-      quickActions: [
+      quickActions: isClient ? [
         {
           id: 'new-project',
           label: 'New Project',
           icon: Plus,
           onClick: () => {
-            // TODO: Navigate to project creation
             setCurrentSection('projects');
           }
         }
-      ]
+      ] : []
     },
     {
       id: 'payments',

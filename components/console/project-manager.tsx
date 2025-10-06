@@ -7,6 +7,7 @@ import { projectService } from '@/lib/services/project-service';
 // import { useRealtimeProjectData, useConnectionStatus } from '@/lib/hooks/use-realtime-data';
 // import { useRealtimeUpdates } from '@/lib/services/realtime-update-service';
 import { ProjectManagementConsole } from '../dashboard/project-management-console';
+import { ProjectProvider } from '../dashboard/project-context';
 import { Project as APIProject } from '@/lib/api-client';
 import { 
   Search, 
@@ -199,7 +200,9 @@ export function ProjectManager() {
           </button>
         </div>
         <div className="flex-1 overflow-hidden">
-          <ProjectManagementConsole projectId={selectedProject} />
+          <ProjectProvider user={user} profile={null}>
+            <ProjectManagementConsole projectId={selectedProject} />
+          </ProjectProvider>
         </div>
       </div>
     );
@@ -223,13 +226,16 @@ export function ProjectManager() {
             >
               <RefreshCw className="h-5 w-5 text-gray-400" />
             </button>
-            <button
-              onClick={handleCreateProject}
-              className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors"
-            >
-              <Plus className="h-4 w-4" />
-              New Project
-            </button>
+            {/* Only clients can create projects */}
+            {(user?.user_type === 'client' || user?.role === 'client') && (
+              <button
+                onClick={handleCreateProject}
+                className="flex items-center gap-2 px-4 py-2 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                New Project
+              </button>
+            )}
           </div>
         </div>
 
@@ -338,12 +344,15 @@ export function ProjectManager() {
                 : 'Create your first project to get started'
               }
             </p>
-            <button
-              onClick={handleCreateProject}
-              className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-lg transition-colors"
-            >
-              Create Project
-            </button>
+            {/* Only clients can create projects */}
+            {(user?.user_type === 'client' || user?.role === 'client') && (
+              <button
+                onClick={handleCreateProject}
+                className="bg-cyan-600 hover:bg-cyan-700 text-white px-6 py-3 rounded-lg transition-colors"
+              >
+                Create Project
+              </button>
+            )}
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">

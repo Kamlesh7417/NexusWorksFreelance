@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MessageSquare, Heart, Plus, Send, Pin, ThumbsUp, Reply } from 'lucide-react';
 import { communityService, CommunityPost, CommunityComment } from '@/lib/services/community-service';
-import { useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth as useAuth } from '@/components/auth/django-auth-provider';
 
 export function CommunityDiscussions() {
   const { user } = useAuth();

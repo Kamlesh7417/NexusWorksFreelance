@@ -3,14 +3,14 @@
 import React, { useState, useCallback } from 'react';
 import { useProject } from './project-context';
 import { projectService } from '@/lib/services/project-service';
-import { 
-  CheckCircle, 
-  Clock, 
-  User, 
-  AlertCircle, 
-  Play, 
-  Pause, 
-  Edit, 
+import {
+  CheckCircle,
+  Clock,
+  User,
+  AlertCircle,
+  Play,
+  Pause,
+  Edit,
   Eye,
   Filter,
   Search,
@@ -40,7 +40,7 @@ interface Task {
   id: string;
   title: string;
   description: string;
-  status: string;
+  status: 'pending' | 'assigned' | 'in_progress' | 'review' | 'completed' | 'approved';
   priority: number;
   estimated_hours: number;
   completion_percentage: number;
@@ -67,6 +67,7 @@ export function TaskManagement({
   const { hasPermission, isSeniorDeveloper } = useProject();
   const [selectedTask, setSelectedTask] = useState<Task | null>(null);
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [showCreateTaskModal, setShowCreateTaskModal] = useState(false);
   const [updatingTask, setUpdatingTask] = useState<string | null>(null);
 
   // Task status colors and icons
@@ -89,7 +90,7 @@ export function TaskManagement({
     return 'text-green-400';
   };
 
-  // Update task status
+  // Update task status with Django API integration
   const updateTaskStatus = useCallback(async (taskId: string, newStatus: 'pending' | 'assigned' | 'in_progress' | 'review' | 'completed' | 'approved') => {
     if (!hasPermission('update_tasks') && !hasPermission('approve_tasks')) {
       return;
@@ -97,7 +98,12 @@ export function TaskManagement({
 
     try {
       setUpdatingTask(taskId);
-      await projectService.updateTask(taskId, { status: newStatus });
+      const response = await projectService.updateTaskWithDjango(taskId, { status: newStatus });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
       onTaskUpdate();
     } catch (error) {
       console.error('Failed to update task status:', error);
@@ -106,7 +112,7 @@ export function TaskManagement({
     }
   }, [hasPermission, onTaskUpdate]);
 
-  // Update task progress
+  // Update task progress with Django API integration
   const updateTaskProgress = useCallback(async (taskId: string, progress: number) => {
     if (!hasPermission('update_tasks')) {
       return;
@@ -114,7 +120,12 @@ export function TaskManagement({
 
     try {
       setUpdatingTask(taskId);
-      await projectService.updateTask(taskId, { completion_percentage: progress });
+      const response = await projectService.updateTaskWithDjango(taskId, { completion_percentage: progress });
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
       onTaskUpdate();
     } catch (error) {
       console.error('Failed to update task progress:', error);
@@ -123,7 +134,7 @@ export function TaskManagement({
     }
   }, [hasPermission, onTaskUpdate]);
 
-  // Assign developer to task
+  // Assign developer to task with Django API integration
   const assignDeveloper = useCallback(async (taskId: string, developerId: string) => {
     if (!hasPermission('manage_team')) {
       return;
@@ -131,12 +142,58 @@ export function TaskManagement({
 
     try {
       setUpdatingTask(taskId);
-      await projectService.assignDeveloperToTask(taskId, developerId);
+      const response = await projectService.assignDeveloperToTaskWithDjango(taskId, developerId);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
       onTaskUpdate();
     } catch (error) {
       console.error('Failed to assign developer:', error);
     } finally {
       setUpdatingTask(null);
+    }
+  }, [hasPermission, onTaskUpdate]);
+
+  // Create new task
+  const createTask = useCallback(async (taskData: Partial<Task>) => {
+    if (!hasPermission('manage_team')) {
+      return;
+    }
+
+    try {
+      const response = await projectService.createTaskWithDjango(projectDetails.id, taskData);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      onTaskUpdate();
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create task:', error);
+      throw error;
+    }
+  }, [hasPermission, onTaskUpdate, projectDetails]);
+
+  // Delete task
+  const deleteTask = useCallback(async (taskId: string) => {
+    if (!hasPermission('manage_team')) {
+      return;
+    }
+
+    try {
+      const response = await projectService.deleteTaskWithDjango(taskId);
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      onTaskUpdate();
+    } catch (error) {
+      console.error('Failed to delete task:', error);
+      throw error;
     }
   }, [hasPermission, onTaskUpdate]);
 
@@ -147,7 +204,7 @@ export function TaskManagement({
         {taskProgress?.task_statistics && Object.entries(taskProgress.task_statistics).map(([key, value]) => {
           const statusInfo = getTaskStatusInfo(key.replace('_tasks', ''));
           const Icon = statusInfo.icon;
-          
+
           return (
             <div key={key} className={`${statusInfo.bg} rounded-lg p-4`}>
               <div className="flex items-center gap-2 mb-2">
@@ -177,12 +234,11 @@ export function TaskManagement({
               className="pl-10 pr-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-cyan-500"
             />
           </div>
-          
+
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
-              showFilters ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
-            }`}
+            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${showFilters ? 'bg-cyan-600 text-white' : 'bg-gray-800 text-gray-400 hover:text-white'
+              }`}
           >
             <Filter className="h-4 w-4" />
             Filters
@@ -190,7 +246,10 @@ export function TaskManagement({
         </div>
 
         {hasPermission('manage_team') && (
-          <button className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg transition-colors">
+          <button
+            onClick={() => setShowCreateTaskModal(true)}
+            className="flex items-center gap-2 bg-cyan-600 hover:bg-cyan-700 text-white px-4 py-2 rounded-lg transition-colors"
+          >
             <Plus className="h-4 w-4" />
             Add Task
           </button>
@@ -205,11 +264,10 @@ export function TaskManagement({
               <button
                 key={status}
                 onClick={() => setTaskFilter(status)}
-                className={`px-3 py-1 rounded-full text-sm transition-colors ${
-                  taskFilter === status
+                className={`px-3 py-1 rounded-full text-sm transition-colors ${taskFilter === status
                     ? 'bg-cyan-600 text-white'
                     : 'bg-gray-700 text-gray-400 hover:text-white'
-                }`}
+                  }`}
               >
                 {status === 'all' ? 'All Tasks' : status.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
               </button>
@@ -261,7 +319,7 @@ export function TaskManagement({
             const statusInfo = getTaskStatusInfo(task.status);
             const StatusIcon = statusInfo.icon;
             const isUpdating = updatingTask === task.id;
-            
+
             return (
               <div
                 key={task.id}
@@ -280,7 +338,7 @@ export function TaskManagement({
                       </div>
                     </div>
                     <p className="text-gray-400 text-sm mb-3">{task.description}</p>
-                    
+
                     {/* Task Skills */}
                     {task.required_skills?.length > 0 && (
                       <div className="flex flex-wrap gap-1 mb-3">
@@ -295,7 +353,7 @@ export function TaskManagement({
                       </div>
                     )}
                   </div>
-                  
+
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => {
@@ -307,7 +365,7 @@ export function TaskManagement({
                     >
                       <Eye className="h-4 w-4 text-gray-400" />
                     </button>
-                    
+
                     {hasPermission('update_tasks') && (
                       <button
                         className="p-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors"
@@ -403,7 +461,7 @@ export function TaskManagement({
                         Assign
                       </button>
                     )}
-                    
+
                     {task.status === 'assigned' && hasPermission('update_tasks') && (
                       <button
                         onClick={() => updateTaskStatus(task.id, 'in_progress')}
@@ -414,7 +472,7 @@ export function TaskManagement({
                         Start
                       </button>
                     )}
-                    
+
                     {task.status === 'in_progress' && hasPermission('update_tasks') && (
                       <button
                         onClick={() => updateTaskStatus(task.id, 'completed')}
@@ -425,7 +483,7 @@ export function TaskManagement({
                         Complete
                       </button>
                     )}
-                    
+
                     {task.status === 'completed' && hasPermission('approve_tasks') && (
                       <button
                         onClick={() => updateTaskStatus(task.id, 'approved')}
@@ -460,6 +518,19 @@ export function TaskManagement({
           onUpdate={onTaskUpdate}
         />
       )}
+
+      {/* Create Task Modal */}
+      {showCreateTaskModal && (
+        <CreateTaskModal
+          projectId={projectDetails.id}
+          onClose={() => setShowCreateTaskModal(false)}
+          onSuccess={() => {
+            setShowCreateTaskModal(false);
+            onTaskUpdate();
+          }}
+          onCreate={createTask}
+        />
+      )}
     </div>
   );
 }
@@ -480,14 +551,14 @@ function TaskDetailModal({ task, onClose, onUpdate }: { task: Task; onClose: () 
             </button>
           </div>
         </div>
-        
+
         <div className="p-6">
           <div className="space-y-6">
             <div>
               <h3 className="text-lg font-semibold text-white mb-2">Description</h3>
               <p className="text-gray-300">{task.description}</p>
             </div>
-            
+
             {task.required_skills?.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Required Skills</h3>
@@ -503,7 +574,7 @@ function TaskDetailModal({ task, onClose, onUpdate }: { task: Task; onClose: () 
                 </div>
               </div>
             )}
-            
+
             {task.dependencies?.length > 0 && (
               <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Dependencies</h3>
@@ -517,7 +588,7 @@ function TaskDetailModal({ task, onClose, onUpdate }: { task: Task; onClose: () 
                 </div>
               </div>
             )}
-            
+
             <div className="grid grid-cols-2 gap-6">
               <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Progress</h3>
@@ -531,7 +602,7 @@ function TaskDetailModal({ task, onClose, onUpdate }: { task: Task; onClose: () 
                   />
                 </div>
               </div>
-              
+
               <div>
                 <h3 className="text-lg font-semibold text-white mb-2">Time Tracking</h3>
                 <div className="space-y-2 text-sm">
@@ -550,6 +621,208 @@ function TaskDetailModal({ task, onClose, onUpdate }: { task: Task; onClose: () 
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  );
+}
+
+// Create Task Modal Component
+function CreateTaskModal({
+  projectId,
+  onClose,
+  onSuccess,
+  onCreate
+}: {
+  projectId: string;
+  onClose: () => void;
+  onSuccess: () => void;
+  onCreate: (taskData: Partial<Task>) => Promise<any>;
+}) {
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    priority: 2,
+    estimated_hours: '',
+    required_skills: '',
+    dependencies: ''
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!formData.title.trim() || !formData.description.trim()) {
+      setError('Title and description are required');
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setError(null);
+
+      const taskData: Partial<Task> = {
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+        priority: formData.priority,
+        estimated_hours: formData.estimated_hours ? parseInt(formData.estimated_hours) : 0,
+        required_skills: formData.required_skills
+          ? formData.required_skills.split(',').map(s => s.trim()).filter(Boolean)
+          : [],
+        dependencies: formData.dependencies
+          ? formData.dependencies.split(',').map(s => s.trim()).filter(Boolean)
+          : [],
+        status: 'pending' as const,
+        completion_percentage: 0
+      };
+
+      await onCreate(taskData);
+      onSuccess();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to create task');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-gray-900 border border-gray-700 rounded-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div className="p-6 border-b border-gray-700">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-white">Create New Task</h2>
+            <button
+              onClick={onClose}
+              className="p-2 hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <span className="text-gray-400 text-xl">×</span>
+            </button>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="p-6 space-y-4">
+          {error && (
+            <div className="bg-red-900/20 border border-red-500/30 rounded-lg p-4">
+              <div className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-red-400" />
+                <span className="text-red-400">{error}</span>
+              </div>
+            </div>
+          )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">
+              Task Title *
+            </label>
+            <input
+              type="text"
+              value={formData.title}
+              onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+              placeholder="Enter task title..."
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">
+              Task Description *
+            </label>
+            <textarea
+              value={formData.description}
+              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+              rows={4}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400 resize-none"
+              placeholder="Describe the task requirements..."
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-2">
+                Priority
+              </label>
+              <select
+                value={formData.priority}
+                onChange={(e) => setFormData(prev => ({ ...prev, priority: parseInt(e.target.value) }))}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-cyan-400"
+              >
+                <option value={1}>Low (1)</option>
+                <option value={2}>Medium (2)</option>
+                <option value={3}>High (3)</option>
+                <option value={4}>Critical (4)</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-400 mb-2">
+                Estimated Hours
+              </label>
+              <input
+                type="number"
+                value={formData.estimated_hours}
+                onChange={(e) => setFormData(prev => ({ ...prev, estimated_hours: e.target.value }))}
+                className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+                placeholder="8"
+                min="0"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">
+              Required Skills (comma-separated)
+            </label>
+            <input
+              type="text"
+              value={formData.required_skills}
+              onChange={(e) => setFormData(prev => ({ ...prev, required_skills: e.target.value }))}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+              placeholder="React, TypeScript, Node.js..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-400 mb-2">
+              Dependencies (comma-separated task IDs)
+            </label>
+            <input
+              type="text"
+              value={formData.dependencies}
+              onChange={(e) => setFormData(prev => ({ ...prev, dependencies: e.target.value }))}
+              className="w-full bg-gray-800 border border-gray-700 rounded-lg px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-cyan-400"
+              placeholder="task-1, task-2..."
+            />
+          </div>
+
+          <div className="flex items-center gap-4 pt-4">
+            <button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 text-white py-3 px-6 rounded-lg transition-colors flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Clock className="h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                <>
+                  <Plus className="h-4 w-4" />
+                  Create Task
+                </>
+              )}
+            </button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Video, Calendar, Users, Clock, Plus, Play, Square, ExternalLink } from 'lucide-react';
 import { communityService, VirtualMeeting } from '@/lib/services/community-service';
-import { useAuth } from '@/components/auth/auth-provider';
+import { useDjangoAuth as useAuth } from '@/components/auth/django-auth-provider';
 
 export function VirtualMeetups() {
   const { user } = useAuth();
